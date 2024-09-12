@@ -1,15 +1,20 @@
 /**
- * Title of Project
- * Author Name
+ * Fonction Calls
+ * Ellie "DASH" Desjardins
  * 
- * HOW EMBARRASSING! I HAVE NO DESCRIPTION OF MY PROJECT!
- * PLEASE REMOVE A GRADE FROM MY WORK IF IT'S GRADED!
+ * An exploration of programming, Javascript and stuff.
+ * 
+ * Credit to Pippin Barr for the original code and files
+ * 
+ * Uses:
+ * p5.js
+ * https://p5js.org/
  */
 
 "use strict";
 
 /**
- * OH LOOK I DIDN'T DESCRIBE SETUP!!
+ * Create a 640 x 480 Pink canvas
 */
 function setup() {
     createCanvas(640, 480);
@@ -17,7 +22,7 @@ function setup() {
 
 
 /**
- * OOPS I DIDN'T DESCRIBE WHAT MY DRAW DOES!
+ *Draw a white rectangle on the canvas
 */
 function draw() {
     background(255, 100, 100);
