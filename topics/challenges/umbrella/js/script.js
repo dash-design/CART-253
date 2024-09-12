@@ -1,58 +1,86 @@
 /**
- * Title of Project
+ * Umbrella Challenge
  * Ellie "DASH" Desjardins
  * 
- * Umbrella challenge
+ * Blue umbrella on red background
  *
  */
 
 "use strict";
 
 /**
- * Setup of the project and create canvas
+ * Setup of the project
 */
 function setup() {
-    //400x400 canvas
-    createCanvas(400, 400);
+    createCanvas(800, 800);
+    background("red")
 }
 
+
 /**
- * Sets background and setup umbrella
+ * Draws umbrella
 */
 function draw() {
-    // The background
-    background("red");
+    //Top of umbrella
+    drawTop();
 
-    // The umbrella
-    drawUmbrella();
+    //Core
+    drawCore();
+
+    //Handle
+    drawHandle();
 }
 
-/**
- * Draws an umbrella
- */
-function drawUmbrella() {
-    // stick
+//Top of umbrella
+function drawTop(){
+    //Blue top
     push();
-    strokeweight(10);
-    stroke(200, 200, 200, 300);
+    noStroke();
+    fill("blue");
+    ellipse(400, 400, 600);
     pop();
 
-    // handle
+    //Red mask
     push();
-    noFill();
+    noStroke();
+    fill("red");
+    rect(0, 400, 800, 800);
+    pop();
+
+    //Small round mask 1
+    push();
+    noStroke();
+    fill("red");
+    ellipse(400, 400, 200);
+    pop();
+
+    //Small round mask left
+    push();
+    noStroke();
+    fill("red");
+    ellipse(200, 400, 200);
+    pop();
+
+    //Small round mask right
+    push();
+    noStroke();
+    fill("red");
+    ellipse(600, 400, 200);
+    pop();
+}
+
+//Core
+function drawCore(){
+    strokeWeight(20);
+    line(400, 600, 400, 300);
+}
+
+//Handle
+function drawHandle(){
+    push();
     stroke("yellow");
-    strokeweight(10);
-    arc(220, 300,40, 60, 0, PI);
-    pop();
-
-    //Umbrella
-    push();
+    strokeWeight(20);
+    noFill();
+    arc(450, 600, 100, 100, 0, PI);
     pop();
 }
-
-// /**
-//  * Draws OBJECT
-// */
-// function draw() {
-
-// }
