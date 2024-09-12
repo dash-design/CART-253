@@ -33,7 +33,7 @@ function drawEye() {
     // Eyeball
     push();
     noStroke();
-    fill("#ffffff");
+    fill("#ffff00");
     ellipse(200, 200, 100);
     pop();
 
@@ -42,5 +42,12 @@ function drawEye() {
     noStroke();
     fill("#000000");
     ellipse(200, 200, 25);
+    pop();
+
+    //Eyelid
+    push();
+    noStroke();
+    fill("#000000");
+    ellipse(200, 20, 300);
     pop();
 }
