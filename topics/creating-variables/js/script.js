@@ -8,6 +8,9 @@
 
 "use strict";
 
+//Variables
+let holeSize = 180;
+
 /**
  * Creates canvas
 */
@@ -27,6 +30,6 @@ function draw() {
     push();
     noStroke();
     fill(0);
-    ellipse(140, 175, 180);
+    ellipse(140, 175, holeSize);
     pop();
 }
