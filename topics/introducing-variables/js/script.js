@@ -1,8 +1,8 @@
 /**
- * Title of Project
+ * Introducing variables
  * Ellie "DASH" Desjardins
  * 
- * Description of the project
+ * An introduction to variables as part of CART 253 classe
  *
  */
 
