@@ -1,24 +1,32 @@
 /**
- * Title of Project
+ * Creating variables
  * Ellie "DASH" Desjardins
  * 
- * Description of the project
+ * Exercise about the creation of variables for CART 253 classe
  *
  */
 
 "use strict";
 
 /**
- * Setup of the project
+ * Creates canvas
 */
 function setup() {
-
+    createCanvas(480, 480);
 }
 
 
 /**
- * Draws OBJECT
+ * Draws a hole in a piece of cheese
 */
 function draw() {
+    //The cheese
+    background(255, 255, 0);
 
+    //The hole
+    push();
+    noStroke();
+    fill(0);
+    ellipse(140, 175, 180);
+    pop();
 }
