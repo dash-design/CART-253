@@ -1,8 +1,8 @@
 /**
- * Title of Project
+ * Movement variables
  * Ellie "DASH" Desjardins
  * 
- * Description of the project
+ * A practice of movement variables for CART 253 classe
  *
  */
 
