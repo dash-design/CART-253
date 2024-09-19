@@ -19,19 +19,18 @@ let mrFurious = {
         r: 255,
         g: 225,
         b: 225
-    }
+    },
+    shakeAmount: 0
 };
 
 // Bird
 let bird = {
-    // Position
-    x1: 0,
-    y1: 40,
-    x2: 0,
-    y2: 80,
-    x3: 60,
-    y3: 60,
-    // Size
+    // Position and size
+    x: 0,
+    y: 200,
+    w: 10,
+    h: 10,
+    angle: 0,
 
     // Colour
     fill: {
@@ -42,27 +41,25 @@ let bird = {
     // Velocity
     velocity: {
         x: 0,
-        // y: 0
     },
     // Movement
     minVelocity: {
         x: 0,
-        // y: -1
     },
     maxVelocity: {
-        x: 3,
-        // y: 2
+        x: 1,
     },
     acceleration: {
         x: 0.0175,
-        // y: 0.05
     }
 }
 
 let sky = {
-    r: 160,
-    g: 180,
-    b: 200
+    fill: {
+        r: 160,
+        g: 180,
+        b: 200
+    }
 };
 
 /**
@@ -77,45 +74,63 @@ function setup() {
  */
 function draw() {
     // Sky changing
-    sky.r = sky.r - 0.8;
-    sky.g = sky.g - 0.8;
-    sky.b = sky.b - 0.8;
+    sky.fill.r = sky.fill.r - 0.8;
+    sky.fill.g = sky.fill.g - 0.8;
+    sky.fill.b = sky.fill.b - 0.8;
+
     // Sky colour
-    background(sky.r, sky.g, sky.b);
+    background(sky.fill.r, sky.fill.g, sky.fill.b);
+
     // Constrain sky colour
-    sky.r = constrain(sky.r, 0, 255)
-    sky.g = constrain(sky.g, 0, 255)
-    sky.b = constrain(sky.b, 0, 255)
+    sky.fill.r = constrain(sky.fill.r, 0, 255)
+    sky.fill.g = constrain(sky.fill.g, 0, 255)
+    sky.fill.b = constrain(sky.fill.b, 0, 255)
 
     // Mr.Furious get more and more red
-    mrFurious.fill.g = mrFurious.fill.g - 0.9;
-    mrFurious.fill.b = mrFurious.fill.b - 0.9;
+    mrFurious.fill.g = mrFurious.fill.g - 0.5;
+    mrFurious.fill.b = mrFurious.fill.b - 0.5;
 
     // Constrain Mr.Furious skin problem
     mrFurious.fill.g = constrain(mrFurious.fill.g, 0, 255);
     mrFurious.fill.b = constrain(mrFurious.fill.b, 0, 255);
 
+    // Mr.Furious shaking
+    mrFurious.shakeAmount += 0.01;
+    mrFurious.shakeAmount = constrain(mrFurious.shakeAmount, 0, 10)
+
+    const x = mrFurious.x + random(-mrFurious.shakeAmount, mrFurious.shakeAmount);
+    const y = mrFurious.y + random(-mrFurious.shakeAmount, mrFurious.shakeAmount);
+
+
+    // // Constrain Mr.Furious shaking
+    mrFurious.x = constrain(mrFurious.x, 190, 210)
+    mrFurious.y = constrain(mrFurious.y, 190, 210)
+
     // Draw Mr. Furious as a coloured circle
     push();
     noStroke();
     fill(mrFurious.fill.r, mrFurious.fill.g, mrFurious.fill.b);
-    ellipse(mrFurious.x, mrFurious.y, mrFurious.size);
+    ellipse(x, y, mrFurious.size);
     pop();
 
     // Bird velocity
     bird.velocity.x = bird.velocity.x + bird.acceleration.x;
-    // bird.velocity.y = bird.velocity.y + bird.acceleration.y;
 
     bird.velocity.x = constrain(bird.velocity.x, bird.minVelocity.x, bird.maxVelocity.x);
 
-    bird.x1 = bird.x1 + bird.velocity.x;
-    bird.x2 = bird.x2 + bird.velocity.x;
-    bird.x3 = bird.x3 + bird.velocity.x;
+    bird.x = bird.x + bird.velocity.x;
 
     // Draw the bird
     push();
-    noStroke();
+    // To make the wings move
+    bird.h = map(sin(bird.angle), -1, 1, 0, 10);
+    // Stroke to see the point
+    stroke("red");
     fill(bird.fill.r, bird.fill.g, bird.fill.b);
-    triangle(bird.x1, bird.y1, bird.x2, bird.y2, bird.x3, bird.y3)
+    triangle(bird.x - bird.w, bird.y - bird.h, bird.x - bird.w, bird.y + bird.h, bird.x + bird.w, bird.y)
+    // Point at the centre of the triangle
+    point(bird.x, bird.y);
+    // Bird angle
+    bird.angle += 0.06;
     pop();
 }
