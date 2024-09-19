@@ -38,6 +38,24 @@ let bird = {
         r: 100,
         g: 100,
         b: 150
+    },
+    // Velocity
+    velocity: {
+        x: 0,
+        // y: 0
+    },
+    // Movement
+    minVelocity: {
+        x: 0,
+        // y: -1
+    },
+    maxVelocity: {
+        x: 3,
+        // y: 2
+    },
+    acceleration: {
+        x: 0.0175,
+        // y: 0.05
     }
 }
 
@@ -59,9 +77,9 @@ function setup() {
  */
 function draw() {
     // Sky changing
-    sky.r = sky.r - 0.5;
-    sky.g = sky.g - 0.5;
-    sky.b = sky.b - 0.5;
+    sky.r = sky.r - 0.8;
+    sky.g = sky.g - 0.8;
+    sky.b = sky.b - 0.8;
     // Sky colour
     background(sky.r, sky.g, sky.b);
     // Constrain sky colour
@@ -70,8 +88,8 @@ function draw() {
     sky.b = constrain(sky.b, 0, 255)
 
     // Mr.Furious get more and more red
-    mrFurious.fill.g = mrFurious.fill.g - 0.5;
-    mrFurious.fill.b = mrFurious.fill.b - 0.5;
+    mrFurious.fill.g = mrFurious.fill.g - 0.9;
+    mrFurious.fill.b = mrFurious.fill.b - 0.9;
 
     // Constrain Mr.Furious skin problem
     mrFurious.fill.g = constrain(mrFurious.fill.g, 0, 255);
@@ -83,6 +101,16 @@ function draw() {
     fill(mrFurious.fill.r, mrFurious.fill.g, mrFurious.fill.b);
     ellipse(mrFurious.x, mrFurious.y, mrFurious.size);
     pop();
+
+    // Bird velocity
+    bird.velocity.x = bird.velocity.x + bird.acceleration.x;
+    // bird.velocity.y = bird.velocity.y + bird.acceleration.y;
+
+    bird.velocity.x = constrain(bird.velocity.x, bird.minVelocity.x, bird.maxVelocity.x);
+
+    bird.x1 = bird.x1 + bird.velocity.x;
+    bird.x2 = bird.x2 + bird.velocity.x;
+    bird.x3 = bird.x3 + bird.velocity.x;
 
     // Draw the bird
     push();
