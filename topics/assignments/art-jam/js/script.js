@@ -15,6 +15,13 @@ function setup() {
 
 }
 
+// Variables to change something (movement, scale, colour, etc.)
+
+// Use "mouseX" & "mouseY" to allow user interaction/input
+
+// Use "map()"
+
+// Use min. one conditional
 
 /**
  * Draws OBJECT
