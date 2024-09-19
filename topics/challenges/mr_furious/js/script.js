@@ -35,6 +35,15 @@ function setup() {
 function draw() {
     background(160, 180, 200);
 
+    // Mr.Furious get more and more red
+    mrFurious.fill.g = mrFurious.fill.g - 0.5;
+    mrFurious.fill.b = mrFurious.fill.b - 0.5;
+
+    // Constrain Mr.Furious skin problem
+    mrFurious.fill.g = constrain(mrFurious.fill.g, 0, 255);
+    mrFurious.fill.b = constrain(mrFurious.fill.b, 0, 255);
+
+
     // Draw Mr. Furious as a coloured circle
     push();
     noStroke();
