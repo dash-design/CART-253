@@ -1,5 +1,5 @@
 /**
- * Title of Project
+ * Art Jam
  * Ellie "DASH" Desjardins
  * 
  * Description of the project
