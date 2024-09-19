@@ -22,6 +22,25 @@ let mrFurious = {
     }
 };
 
+// Bird
+let bird = {
+    // Position
+    x1: 0,
+    y1: 40,
+    x2: 0,
+    y2: 80,
+    x3: 60,
+    y3: 60,
+    // Size
+
+    // Colour
+    fill: {
+        r: 100,
+        g: 100,
+        b: 150
+    }
+}
+
 let sky = {
     r: 160,
     g: 180,
@@ -58,11 +77,17 @@ function draw() {
     mrFurious.fill.g = constrain(mrFurious.fill.g, 0, 255);
     mrFurious.fill.b = constrain(mrFurious.fill.b, 0, 255);
 
-
     // Draw Mr. Furious as a coloured circle
     push();
     noStroke();
     fill(mrFurious.fill.r, mrFurious.fill.g, mrFurious.fill.b);
     ellipse(mrFurious.x, mrFurious.y, mrFurious.size);
+    pop();
+
+    // Draw the bird
+    push();
+    noStroke();
+    fill(bird.fill.r, bird.fill.g, bird.fill.b);
+    triangle(bird.x1, bird.y1, bird.x2, bird.y2, bird.x3, bird.y3)
     pop();
 }
