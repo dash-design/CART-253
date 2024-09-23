@@ -33,7 +33,9 @@ let shadow = {
  * Setup of the project
 */
 function setup() {
-
+    createCanvas(640, 640)
+    // Sky colour
+    background(0, 0, 100)
 }
 
 // Variables to change something (movement, scale, colour, etc.)
@@ -54,4 +56,24 @@ function setup() {
 */
 function draw() {
 
+}
+
+// Draws sand dunes
+function draw() {
+    push();
+    noStroke();
+    fill(255, 255, 0);
+    // Starts the sand dunes shape
+    beginShape();
+    // SHape vertices
+    vertex(640, 425)
+    vertex(640, 640)
+    vertex(0, 640)
+    vertex(0, 300)
+    bezierVertex(75, 275, 250, 300, 300, 350)
+    bezierVertex(350, 335, 540, 350, 640, 425)
+    // Ends the sand dunes shape
+    endShape(CLOSE);
+
+    pop();
 }
