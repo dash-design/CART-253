@@ -33,9 +33,12 @@ let shadow = {
  * Setup of the project
 */
 function setup() {
-    createCanvas(640, 640)
+    createCanvas(640, 640);
     // Sky colour
-    background(0, 0, 100)
+    background(0, 0, 100);
+
+    drawSandDunes();
+    drawPyramid();
 }
 
 // Variables to change something (movement, scale, colour, etc.)
@@ -59,7 +62,7 @@ function draw() {
 }
 
 // Draws sand dunes
-function draw() {
+function drawSandDunes() {
     push();
     noStroke();
     fill(255, 255, 0);
@@ -74,6 +77,21 @@ function draw() {
     bezierVertex(350, 335, 540, 350, 640, 425)
     // Ends the sand dunes shape
     endShape(CLOSE);
+    pop();
+}
 
+// Draws the pyramid
+function drawPyramid() {
+    // Illuminated side
+    push();
+    noStroke();
+    fill(255, 204, 0);
+    triangle(200, 425, 400, 475, 340, 235);
+    pop();
+    // Shadow side
+    push();
+    noStroke();
+    fill(235, 204, 0);
+    triangle(400, 475, 500, 400, 340, 235);
     pop();
 }
