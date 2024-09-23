@@ -8,6 +8,27 @@
 
 "use strict";
 
+// The sky that changes colour according to time of day (sun's position)
+let sky = {
+
+};
+// The sand dunes that change colour according to timeOfDay
+let sand = {
+
+};
+// The pyramid that changes shade according to timeOfDay
+let pyramid = {
+
+};
+// The sun that moves according to mouse position
+let sun = {
+
+};
+// The pyramid shadow that changes according to timeOfDay
+let shadow = {
+
+};
+
 /**
  * Setup of the project
 */
@@ -26,17 +47,6 @@ function setup() {
 
 // Use min. one conditional
 // If mouseX at < 1/2 of canvas = morning, then bright colours. else mouseX at > 1/2 canvas = evening/night, then dark colours
-
-
-// The sky that changes colour according to time of day (sun's position)
-
-// The sand dunes that change colour according to timeOfDay
-
-// The pyramid that changes shade according to timeOfDay
-
-// The sun that moves according to mouse position
-
-// The pyramid shadow that changes according to timeOfDay
 
 
 /**
