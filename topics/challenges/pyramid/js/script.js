@@ -32,7 +32,7 @@ function draw() {
 /**
  * Draws sand dunes
  */
-function drawDunes(){
+function drawDunes() {
     // Ground
     push();
     noStroke();
@@ -58,7 +58,7 @@ function drawDunes(){
 /**
  * Draws pyramid
  */
-function drawPyramid(){
+function drawPyramid() {
     // Shadow side
     push();
     noStroke();

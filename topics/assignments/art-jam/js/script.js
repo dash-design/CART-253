@@ -10,19 +10,69 @@
 
 // The sky that changes colour according to time of day (sun's position)
 let sky = {
-
+    fill: {
+        r: 0,
+        g: 128,
+        b: 255,
+    }
 };
 // The sand dunes that change colour according to timeOfDay
 let sand = {
-
+    fill: {
+        r: 255,
+        g: 255,
+        b: 51,
+    }
 };
 // The pyramid that changes shade according to timeOfDay
 let pyramid = {
-
+    // Position of the pyramid
+    // North vertex
+    north: {
+        x: 340,
+        y: 235
+    },
+    // East vertex
+    east: {
+        x: 500,
+        y: 400
+    },
+    // South vertex
+    south: {
+        x: 400,
+        y: 475
+    },
+    // West vertex
+    west: {
+        x: 200,
+        y: 425
+    },
+    // Colour of the pyramid
+    shiny: {
+        r: 300,
+        g: 204,
+        b: 0
+    },
+    shadowy: {
+        r: 184,
+        g: 134,
+        b: 11
+    }
 };
 // The sun that moves according to mouse position
 let sun = {
-
+    x: 320,
+    y: 200,
+    size: 50,
+    // The sun colour in the morning
+    fill: "#ff9933",
+    // The sun colours as the day progress towards night
+    fills: {
+        morning: "#ffb266",
+        noon: "#ffcc99",
+        afternoon: "#ffe5cc",
+        night: "#fffaf3",
+    }
 };
 // The pyramid shadow that changes according to timeOfDay
 let shadow = {
@@ -35,7 +85,7 @@ let shadow = {
 function setup() {
     createCanvas(640, 640);
     // Sky colour
-    background(0, 0, 100);
+    background(sky.fill.r, sky.fill.g, sky.fill.b);
 
     drawSandDunes();
     drawPyramid();
@@ -65,10 +115,10 @@ function draw() {
 function drawSandDunes() {
     push();
     noStroke();
-    fill(255, 255, 0);
+    fill(sand.fill.r, sand.fill.g, sand.fill.b);
     // Starts the sand dunes shape
     beginShape();
-    // SHape vertices
+    // Shape vertices
     vertex(640, 425)
     vertex(640, 640)
     vertex(0, 640)
@@ -82,16 +132,31 @@ function drawSandDunes() {
 
 // Draws the pyramid
 function drawPyramid() {
-    // Illuminated side
+    // Background of the pyramid
     push();
     noStroke();
-    fill(255, 204, 0);
-    triangle(200, 425, 400, 475, 340, 235);
+    fill(pyramid.shiny.r, pyramid.shiny.g, pyramid.shiny.b);
+    beginShape();
+    vertex(pyramid.north.x, pyramid.north.y);
+    vertex(pyramid.east.x, pyramid.east.y);
+    vertex(pyramid.south.x, pyramid.south.y);
+    vertex(pyramid.west.x, pyramid.west.y);
+    vertex(pyramid.north.x, pyramid.north.y);
+    endShape();
     pop();
-    // Shadow side
+    // Shadow side of the pyramid
     push();
     noStroke();
-    fill(235, 204, 0);
+    fill(pyramid.shadowy.r, pyramid.shadowy.g, pyramid.shadowy.b);
     triangle(400, 475, 500, 400, 340, 235);
+    pop();
+}
+
+function drawSun() {
+    push();
+    noStroke();
+    fill(sun.fill)
+    // let x = map(mouseX, 0, width, 0, width)
+    circle(sun.x, sun.y, sun.size)
     pop();
 }
