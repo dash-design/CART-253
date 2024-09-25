@@ -62,8 +62,8 @@ let pyramid = {
 // The sun that moves according to mouse position
 let sun = {
     x: 320,
-    y: 200,
-    size: 50,
+    y: 115,
+    size: 75,
     // The sun colour in the morning
     fill: "#ff9933",
     // The sun colours as the day progress towards night
@@ -73,10 +73,6 @@ let sun = {
         afternoon: "#ffe5cc",
         night: "#fffaf3",
     }
-};
-// The pyramid shadow that changes according to timeOfDay
-let shadow = {
-
 };
 
 /**
@@ -89,6 +85,7 @@ function setup() {
 
     drawSandDunes();
     drawPyramid();
+    drawSun();
 }
 
 // Variables to change something (movement, scale, colour, etc.)
@@ -108,7 +105,16 @@ function setup() {
  * Draws OBJECT
 */
 function draw() {
+}
 
+// Draws the sun that will
+function drawSun() {
+    push();
+    noStroke();
+    fill(sun.fill)
+    let x = map(mouseX, 0, 640, 0, 320)
+    circle(x, sun.y, sun.size)
+    pop();
 }
 
 // Draws sand dunes
@@ -149,14 +155,5 @@ function drawPyramid() {
     noStroke();
     fill(pyramid.shadowy.r, pyramid.shadowy.g, pyramid.shadowy.b);
     triangle(400, 475, 500, 400, 340, 235);
-    pop();
-}
-
-function drawSun() {
-    push();
-    noStroke();
-    fill(sun.fill)
-    // let x = map(mouseX, 0, width, 0, width)
-    circle(sun.x, sun.y, sun.size)
     pop();
 }
