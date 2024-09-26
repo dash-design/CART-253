@@ -9,7 +9,7 @@
 "use strict";
 
 // The sky that changes colour according to time of day (sun's position)
-let sky = {
+const sky = {
     fill: {
         r: 0,
         g: 128,
@@ -17,7 +17,7 @@ let sky = {
     }
 };
 // The sand dunes that change colour according to timeOfDay
-let sand = {
+const sand = {
     fill: {
         r: 255,
         g: 255,
@@ -25,7 +25,7 @@ let sand = {
     }
 };
 // The pyramid that changes shade according to timeOfDay
-let pyramid = {
+const pyramid = {
     // Position of the pyramid
     // North vertex
     north: {
@@ -60,9 +60,9 @@ let pyramid = {
     }
 };
 // The sun that moves according to mouse position
-let sun = {
+const sun = {
     x: 320,
-    y: 115,
+    y: 200,
     size: 75,
     // The sun colour in the morning
     fill: "#ff9933",
@@ -80,12 +80,6 @@ let sun = {
 */
 function setup() {
     createCanvas(640, 640);
-    // Sky colour
-    background(sky.fill.r, sky.fill.g, sky.fill.b);
-
-    drawSandDunes();
-    drawPyramid();
-    drawSun();
 }
 
 // Variables to change something (movement, scale, colour, etc.)
@@ -105,15 +99,29 @@ function setup() {
  * Draws OBJECT
 */
 function draw() {
+    // Sky colour
+    background(sky.fill.r, sky.fill.g, sky.fill.b);
+
+    drawSandDunes();
+    drawPyramid();
+    drawSun();
 }
 
 // Draws the sun that will
 function drawSun() {
+    // Remap mouseX
+    let x = map(mouseX, 0, width, 0, width / 1.3)
+
+    // Makes the sun move along a curve
+    // Used ChatGPT to write those two lines, due to ChatGPT limitations I changed the equation from "width" to "width / 3" to try to obtain the curve I want
+    // Needs to find better way probably
+    let curveAmplitude = 100;
+    let y = sun.y - curveAmplitude * sin(map(mouseX, 0, width * 1.3, 0, PI));
+
     push();
     noStroke();
     fill(sun.fill)
-    let x = map(mouseX, 0, 640, 0, 320)
-    circle(x, sun.y, sun.size)
+    circle(x, y, sun.size)
     pop();
 }
 
@@ -151,6 +159,7 @@ function drawPyramid() {
     endShape();
     pop();
     // Shadow side of the pyramid
+
     push();
     noStroke();
     fill(pyramid.shadowy.r, pyramid.shadowy.g, pyramid.shadowy.b);
