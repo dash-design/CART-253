@@ -88,32 +88,32 @@ function checkMouse() {
             bug.fill = bug.fills.dead;
         }
     }
+}
 
-    function moveBug() {
-        bug.x += bug.velocity.x;
-        bug.y += bug.velocity.y;
-    }
+function moveBug() {
+    bug.x += bug.velocity.x;
+    bug.y += bug.velocity.y;
+}
 
-    /**
-     * Displays the bug with its six legs sticking out
-     */
-    function drawBug() {
-        // Body
-        push();
-        noStroke();
-        fill(bug.fill);
-        ellipse(bug.x, bug.y, bug.w, bug.h);
-        pop();
+/**
+ * Displays the bug with its six legs sticking out
+ */
+function drawBug() {
+    // Body
+    push();
+    noStroke();
+    fill(bug.fill);
+    ellipse(bug.x, bug.y, bug.w, bug.h);
+    pop();
 
-        // Legs
-        push();
-        stroke(bug.fill);
-        // Thicken the legs a bit
-        strokeWeight(2);
-        // Three lines horizontally across the body at different heights for the legs
-        line(bug.x - bug.w, bug.y - bug.h / 4, bug.x + bug.w, bug.y - bug.h / 4);
-        line(bug.x - bug.w, bug.y, bug.x + bug.w, bug.y);
-        line(bug.x - bug.w, bug.y + bug.h / 4, bug.x + bug.w, bug.y + bug.h / 4);
-        pop();
-    }
+    // Legs
+    push();
+    stroke(bug.fill);
+    // Thicken the legs a bit
+    strokeWeight(2);
+    // Three lines horizontally across the body at different heights for the legs
+    line(bug.x - bug.w, bug.y - bug.h / 4, bug.x + bug.w, bug.y - bug.h / 4);
+    line(bug.x - bug.w, bug.y, bug.x + bug.w, bug.y);
+    line(bug.x - bug.w, bug.y + bug.h / 4, bug.x + bug.w, bug.y + bug.h / 4);
+    pop();
 }

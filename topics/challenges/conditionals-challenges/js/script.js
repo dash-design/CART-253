@@ -7,10 +7,21 @@
  */
 
 const puck = {
-    x: 350,
-    y: 350,
+    x: 300,
+    y: 300,
     size: 100,
     fill: "#ff0000"
+};
+
+const target = {
+    x: 200,
+    y: 200,
+    size: 50,
+    fill: "#ffff00",
+    fills: {
+        noOverlap: "#ffff00",
+        overlap: "#fffff0"
+    }
 };
 
 const user = {
@@ -37,10 +48,13 @@ function movetarget() {
 function draw() {
     background("#aaaaaa");
 
+
     // Move user circle
     moveUser();
-
+    movePuck();
     // Draw the user and puck
+    checkTarget();
+    drawTarget();
     drawUser();
     drawPuck();
 }
@@ -51,6 +65,54 @@ function draw() {
 function moveUser() {
     user.x = mouseX;
     user.y = mouseY;
+}
+
+/**
+ * Move the puck based on it being pushed by the user
+ */
+function movePuck() {
+    const d = dist(user.x, user.y, puck.x, puck.y);
+    const overlap = (d < user.size / 2 + puck.size / 2);
+    if (overlap) {
+        const dx = user.x - puck.x;
+        const dy = user.y - puck.y;
+        if (abs(dx) > abs(dy)) {
+            if (dx < 0) {
+                puck.x += 5;
+            }
+            else if (dx > 0) {
+                puck.x -= 5;
+            }
+        }
+        else {
+            if (dy < 0) {
+                puck.y += 5;
+            }
+            else if (dy > 0) {
+                puck.y -= 5;
+            }
+        }
+    }
+
+}
+
+function checkTarget() {
+    const d = dist(puck.x, puck.y, target.x, target.y);
+    const overlap = (d < puck.size / 2 + target.size / 2);
+    if (overlap) {
+        target.fill = target.fills.overlap;
+    }
+    else {
+        target.fill = target.fills.noOverlap;
+    }
+}
+
+function drawTarget() {
+    push();
+    noStroke();
+    fill(target.fill);
+    circle(target.x, target.y, target.size)
+    pop();
 }
 
 /**
