@@ -132,24 +132,25 @@ function drawSun() {
     let curveAmplitude = 100;
     let y = sun.y - curveAmplitude * sin(map(mouseX, 0, width, 0, PI));
 
-    // const itIsMorning = (mouseX > 80 && moveX < 240);
-    // const itIsNoon = (mouseX > 240 && moveX < 400);
-    // const itIsAfternoon = (mouseX > 400 && moveX < 560);
-    // const itIsNight = (mouseX > 560);
+    const itIsSunrise = (mouseX < 80);
+    const itIsMorning = (mouseX < 240);
+    const itIsNoon = (mouseX < 400);
+    const itIsAfternoon = (mouseX < 480)
+    const itIsEvening = (mouseX > 560);
 
-    if (mouseX < 80) {
+    if (itIsSunrise) {
         sun.fill = sun.fill;
     }
-    else if (mouseX < 240) {
+    else if (itIsMorning) {
         sun.fill = sun.fills.morning;
     }
-    else if (mouseX < 400) {
+    else if (itIsNoon) {
         sun.fill = sun.fills.noon;
     }
-    else if (mouseX < 480) {
+    else if (itIsAfternoon) {
         sun.fill = sun.fills.afternoon;
     }
-    else if (mouseX < 560) {
+    else if (itIsEvening) {
         sun.fill = sun.fills.evening;
     }
     else {
