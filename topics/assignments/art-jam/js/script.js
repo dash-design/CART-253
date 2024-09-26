@@ -65,13 +65,15 @@ const sun = {
     y: 200,
     size: 75,
     // The sun colour in the morning
-    fill: "#ff9933",
+    fill: "#ffc14f",
+
     // The sun colours as the day progress towards night
     fills: {
-        morning: "#ffb266",
-        noon: "#ffcc99",
-        afternoon: "#ffe5cc",
-        night: "#fffaf3",
+        morning: "#ffa42b",
+        noon: "#ff8400",
+        afternoon: "#e39871",
+        evening: "#e3cbc6",
+        night: "#ffffff",
     }
 };
 
@@ -107,16 +109,52 @@ function draw() {
     drawSun();
 }
 
+// function checkInput() {
+//     if (mouseX >= width / 5) {
+//         sun.fill = sun.fills.morning;
+//     }
+//     else if (mouseX >= width / 4) {
+//         sun.fill = sun.fills.noon;
+//     }
+//     else {
+//         sun.fill = sun.fills.afternoon;
+//     }
+// }
+
 // Draws the sun that will
 function drawSun() {
     // Remap mouseX
-    let x = map(mouseX, 0, width, 0, width / 1.3)
+    let x = map(mouseX, 0, width, 0, width)
 
     // Makes the sun move along a curve
     // Used ChatGPT to write those two lines, due to ChatGPT limitations I changed the equation from "width" to "width / 3" to try to obtain the curve I want
     // Needs to find better way probably
     let curveAmplitude = 100;
-    let y = sun.y - curveAmplitude * sin(map(mouseX, 0, width * 1.3, 0, PI));
+    let y = sun.y - curveAmplitude * sin(map(mouseX, 0, width, 0, PI));
+
+    // const itIsMorning = (mouseX > 80 && moveX < 240);
+    // const itIsNoon = (mouseX > 240 && moveX < 400);
+    // const itIsAfternoon = (mouseX > 400 && moveX < 560);
+    // const itIsNight = (mouseX > 560);
+
+    if (mouseX < 80) {
+        sun.fill = sun.fill;
+    }
+    else if (mouseX < 240) {
+        sun.fill = sun.fills.morning;
+    }
+    else if (mouseX < 400) {
+        sun.fill = sun.fills.noon;
+    }
+    else if (mouseX < 480) {
+        sun.fill = sun.fills.afternoon;
+    }
+    else if (mouseX < 560) {
+        sun.fill = sun.fills.evening;
+    }
+    else {
+        sun.fill = sun.fills.night;
+    }
 
     push();
     noStroke();
