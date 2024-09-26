@@ -21,7 +21,7 @@ const sand = {
     fill: {
         r: 255,
         g: 255,
-        b: 51,
+        b: 153,
     }
 };
 // The pyramid that changes shade according to timeOfDay
@@ -64,15 +64,17 @@ const sun = {
     x: 320,
     y: 200,
     size: 75,
-    // The sun colour in the morning
-    fill: "#ffc14f",
+    // The sun colour at sunset
+    fill: "#ffe5cc",
 
     // The sun colours as the day progress towards night
     fills: {
-        morning: "#ffa42b",
-        noon: "#ff8400",
-        afternoon: "#e39871",
-        evening: "#e3cbc6",
+        sunrise: "#ffe5cc",
+        morning: "#ffb266",
+        noon: "#ff8000",
+        afternoon: "#ff9d79",
+        evening: "#ffbeb6",
+        lateEvening: "#ffdce0",
         night: "#ffffff",
     }
 };
@@ -103,7 +105,7 @@ function setup() {
 function draw() {
     // Sky colour
     background(sky.fill.r, sky.fill.g, sky.fill.b);
-
+    calcTime();
     drawSandDunes();
     drawPyramid();
     drawSun();
@@ -120,42 +122,166 @@ function draw() {
 //         sun.fill = sun.fills.afternoon;
 //     }
 // }
+function calcTime() {
+    const itIsSunrise = (mouseX < 80);
+    const itIsMorning = (mouseX < 240);
+    const itIsNoon = (mouseX < 400);
+    const itIsAfternoon = (mouseX < 480);
+    const itIsEvening = (mouseX < 520);
+    const itIsLateEvening = (mouseX < 560);
+
+    if (itIsSunrise) {
+        // Sun
+        sun.fill = sun.fills.sunrise;
+        // Sand
+        sand.fill.r = 255;
+        sand.fill.g = 255;
+        sand.fill.b = 204;
+        // Sky
+        sky.fill.r = 204;
+        sky.fill.g = 229;
+        sky.fill.b = 255;
+        // West side of pyramid
+        pyramid.shiny.r = 255;
+        pyramid.shiny.g = 244;
+        pyramid.shiny.b = 204;
+        // East side of pyramid
+        pyramid.shadowy.r = 249;
+        pyramid.shadowy.g = 235;
+        pyramid.shadowy.b = 166;
+    }
+    else if (itIsMorning) {
+        // Sun
+        sun.fill = sun.fills.morning;
+        // Sand
+        sand.fill.r = 255;
+        sand.fill.g = 255;
+        sand.fill.b = 102;
+        // Sky
+        sky.fill.r = 102;
+        sky.fill.g = 178;
+        sky.fill.b = 255;
+        // West side of pyramid
+        pyramid.shiny.r = 255;
+        pyramid.shiny.g = 224;
+        pyramid.shiny.b = 102;
+        // East side of pyramid
+        pyramid.shadowy.r = 219;
+        pyramid.shadowy.g = 183;
+        pyramid.shadowy.b = 8;
+    }
+    else if (itIsNoon) {
+        // Sun
+        sun.fill = sun.fills.noon;
+        // Sand
+        sand.fill.r = 255;
+        sand.fill.g = 255;
+        sand.fill.b = 0;
+        // Sky
+        sky.fill.r = 0;
+        sky.fill.g = 128;
+        sky.fill.b = 255;
+        // West side of pyramid
+        pyramid.shiny.r = 255;
+        pyramid.shiny.g = 204;
+        pyramid.shiny.b = 0;
+        // East side of pyramid
+        pyramid.shadowy.r = 184;
+        pyramid.shadowy.g = 134;
+        pyramid.shadowy.b = 11;
+    }
+    else if (itIsAfternoon) {
+        // Sun
+        sun.fill = sun.fills.afternoon;
+        // Sand
+        sand.fill.r = 204;
+        sand.fill.g = 204;
+        sand.fill.b = 0;
+        // Sky
+        sky.fill.r = 0;
+        sky.fill.g = 102;
+        sky.fill.b = 204;
+        // West side of pyramid
+        pyramid.shiny.r = 186;
+        pyramid.shiny.g = 161;
+        pyramid.shiny.b = 29;
+        // East side of pyramid
+        pyramid.shadowy.r = 155;
+        pyramid.shadowy.g = 128;
+        pyramid.shadowy.b = 43;
+    }
+    else if (itIsEvening) {
+        // Sun
+        sun.fill = sun.fills.evening;
+        // Sand
+        sand.fill.r = 153;
+        sand.fill.g = 153;
+        sand.fill.b = 0;
+        // Sky
+        sky.fill.r = 0;
+        sky.fill.g = 76;
+        sky.fill.b = 153;
+        // West side of pyramid
+        pyramid.shiny.r = 127;
+        pyramid.shiny.g = 117;
+        pyramid.shiny.b = 37;
+        // East side of pyramid
+        pyramid.shadowy.r = 132;
+        pyramid.shadowy.g = 120;
+        pyramid.shadowy.b = 63;
+    }
+    else if (itIsLateEvening) {
+        // Sun
+        sun.fill = sun.fills.lateEvening;
+        // Sand
+        sand.fill.r = 102;
+        sand.fill.g = 102;
+        sand.fill.b = 0;
+        // Sky
+        sky.fill.r = 0;
+        sky.fill.g = 51;
+        sky.fill.b = 102;
+        // West side of pyramid
+        pyramid.shiny.r = 76;
+        pyramid.shiny.g = 74;
+        pyramid.shiny.b = 38;
+        // East side of pyramid
+        pyramid.shadowy.r = 113;
+        pyramid.shadowy.g = 110;
+        pyramid.shadowy.b = 81;
+    }
+    else {
+        // Sun
+        sun.fill = sun.fills.night;
+        // Sand
+        sand.fill.r = 64;
+        sand.fill.g = 64;
+        sand.fill.b = 64;
+        // Sky
+        sky.fill.r = 0;
+        sky.fill.g = 0;
+        sky.fill.b = 0;
+        // West side of pyramid
+        pyramid.shiny.r = 32;
+        pyramid.shiny.g = 32;
+        pyramid.shiny.b = 32;
+        // East side of pyramid
+        pyramid.shadowy.r = 96;
+        pyramid.shadowy.g = 96;
+        pyramid.shadowy.b = 96;
+    }
+}
 
 // Draws the sun that will
 function drawSun() {
     // Remap mouseX
-    let x = map(mouseX, 0, width, 0, width)
+    let x = mouseX
 
     // Makes the sun move along a curve
     // Used ChatGPT to write those two lines, due to ChatGPT limitations I changed the equation from "width" to "width / 3" to try to obtain the curve I want
     // Needs to find better way probably
     let curveAmplitude = 100;
     let y = sun.y - curveAmplitude * sin(map(mouseX, 0, width, 0, PI));
-
-    const itIsSunrise = (mouseX < 80);
-    const itIsMorning = (mouseX < 240);
-    const itIsNoon = (mouseX < 400);
-    const itIsAfternoon = (mouseX < 480)
-    const itIsEvening = (mouseX > 560);
-
-    if (itIsSunrise) {
-        sun.fill = sun.fill;
-    }
-    else if (itIsMorning) {
-        sun.fill = sun.fills.morning;
-    }
-    else if (itIsNoon) {
-        sun.fill = sun.fills.noon;
-    }
-    else if (itIsAfternoon) {
-        sun.fill = sun.fills.afternoon;
-    }
-    else if (itIsEvening) {
-        sun.fill = sun.fills.evening;
-    }
-    else {
-        sun.fill = sun.fills.night;
-    }
 
     push();
     noStroke();
