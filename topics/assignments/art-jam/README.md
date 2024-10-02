@@ -1,4 +1,4 @@
-# Template p5 Project
+# Art Jam Assignment: The pyramid
 
 Ellie "DASH" Desjardins
 
@@ -6,16 +6,16 @@ Ellie "DASH" Desjardins
 
 ## Description
 
-This description should help the reader understand what the program is, what any controls do, and perhaps what the desired experience it.
+This is a view of a pyramid in the middle of a desert, sitting on top of sand dunes. The user uses the mouse to progress or regress through the day. By moving the mouse on the X axis, the sun will move from left to right as if it was rising until nighttime. By doing so, the user changes the brightness of the sun and as a result changes the colours of every element on the screen. It is meant to be a representation of a real day from the point of view of someone observing a pyramid far away.
 
 ## Credits
 
 This bit should describe what tools were used. For example:
 
 This project uses [p5.js](https://p5js.org).
+Made on VS Studio.
+With the help of Gradient Generator (https://colordesigner.io/gradient-generator).
 
 ## Attribution
 
-This bit should attribute any assets or other elements used taken from other sources. For example:
-
-The fish images were sourced from the [Creative Commons image "Georgia Aquarium Fish"](https://search.creativecommons.org/photos/96f6f770-eac1-488c-8abb-16bee7bcc874) by Mike Johnston which is licensed with CC BY 2.0. To view a copy of this license, visit https://creativecommons.org/licenses/by/2.0/.
+The original concept of the pyramid was inspired by the drawing challenge #2, A pyramid with sand dunes in the background, from CART 253 A 2242 (Fall 2024) instructed by Pippin Barr.
