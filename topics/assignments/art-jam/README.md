@@ -2,15 +2,13 @@
 
 Ellie "DASH" Desjardins
 
-[View this project online](URL_FOR_THE_RUNNING_PROJECT)
+[View this project online](https://dash-design.github.io/CART-253/topics/assignments/art-jam/).
 
 ## Description
 
 This is a view of a pyramid in the middle of a desert, sitting on top of sand dunes. The user uses the mouse to progress or regress through the day. By moving the mouse on the X axis, the sun will move from left to right as if it was rising until nighttime. By doing so, the user changes the brightness of the sun and as a result changes the colours of every element on the screen. It is meant to be a representation of a real day from the point of view of someone observing a pyramid far away.
 
 ## Credits
-
-This bit should describe what tools were used. For example:
 
 This project uses [p5.js](https://p5js.org).
 Made on VS Studio.
