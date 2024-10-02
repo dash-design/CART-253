@@ -70,8 +70,11 @@ const sun = {
     // The sun colours as the day progress towards night
     fills: {
         sunrise: "#ffe5cc",
+        earlyMorning: "#ffcc99",
         morning: "#ffb266",
+        beforeNoon: "#ff9b3c",
         noon: "#ff8000",
+        afterZenit: "#ff8d4d",
         afternoon: "#ff9d79",
         evening: "#ffbeb6",
         lateEvening: "#ffdce0",
@@ -124,8 +127,12 @@ function draw() {
 // }
 function calcTime() {
     const itIsSunrise = (mouseX < 80);
+    const itIsEarlyMorning = (mouseX < 160);
     const itIsMorning = (mouseX < 240);
+    const itIsBeforeNoon = (mouseX < 320);
+    const itIsZenit = (mouseX < 340);
     const itIsNoon = (mouseX < 400);
+    const itIsAfterZenit = (mouseX < 440);
     const itIsAfternoon = (mouseX < 480);
     const itIsEvening = (mouseX < 520);
     const itIsLateEvening = (mouseX < 560);
@@ -150,6 +157,26 @@ function calcTime() {
         pyramid.shadowy.g = 235;
         pyramid.shadowy.b = 166;
     }
+    else if (itIsEarlyMorning) {
+        // Sun
+        sun.fill = sun.fills.earlyMorning;
+        // Sand
+        sand.fill.r = 255;
+        sand.fill.g = 255;
+        sand.fill.b = 153;
+        // Sky
+        sky.fill.r = 154;
+        sky.fill.g = 204;
+        sky.fill.b = 255;
+        // West side of pyramid
+        pyramid.shiny.r = 248;
+        pyramid.shiny.g = 230;
+        pyramid.shiny.b = 173;
+        // East side of pyramid
+        pyramid.shadowy.r = 239;
+        pyramid.shadowy.g = 211;
+        pyramid.shadowy.b = 103;
+    }
     else if (itIsMorning) {
         // Sun
         sun.fill = sun.fills.morning;
@@ -162,13 +189,53 @@ function calcTime() {
         sky.fill.g = 178;
         sky.fill.b = 255;
         // West side of pyramid
-        pyramid.shiny.r = 255;
-        pyramid.shiny.g = 224;
-        pyramid.shiny.b = 102;
+        pyramid.shiny.r = 240;
+        pyramid.shiny.g = 218;
+        pyramid.shiny.b = 141;
         // East side of pyramid
         pyramid.shadowy.r = 219;
         pyramid.shadowy.g = 183;
         pyramid.shadowy.b = 8;
+    }
+    else if (itIsBeforeNoon) {
+        // Sun
+        sun.fill = sun.fills.beforeNoon;
+        // Sand
+        sand.fill.r = 255;
+        sand.fill.g = 255;
+        sand.fill.b = 69;
+        // Sky
+        sky.fill.r = 60;
+        sky.fill.g = 154;
+        sky.fill.b = 255;
+        // West side of pyramid
+        pyramid.shiny.r = 233;
+        pyramid.shiny.g = 205;
+        pyramid.shiny.b = 105;
+        // East side of pyramid
+        pyramid.shadowy.r = 201;
+        pyramid.shadowy.g = 158;
+        pyramid.shadowy.b = 3;
+    }
+    else if (itIsZenit) {
+        // Sun
+        sun.fill = sun.fills.noon;
+        // Sand
+        sand.fill.r = 255;
+        sand.fill.g = 255;
+        sand.fill.b = 0;
+        // Sky
+        sky.fill.r = 0;
+        sky.fill.g = 128;
+        sky.fill.b = 255;
+        // West side of pyramid
+        pyramid.shiny.r = 228;
+        pyramid.shiny.g = 194;
+        pyramid.shiny.b = 59;
+        // East side of pyramid
+        pyramid.shadowy.r = 200;
+        pyramid.shadowy.g = 166;
+        pyramid.shadowy.b = 30;
     }
     else if (itIsNoon) {
         // Sun
@@ -182,13 +249,33 @@ function calcTime() {
         sky.fill.g = 128;
         sky.fill.b = 255;
         // West side of pyramid
-        pyramid.shiny.r = 255;
-        pyramid.shiny.g = 204;
-        pyramid.shiny.b = 0;
+        pyramid.shiny.r = 193;
+        pyramid.shiny.g = 169;
+        pyramid.shiny.b = 56;
         // East side of pyramid
-        pyramid.shadowy.r = 184;
-        pyramid.shadowy.g = 134;
-        pyramid.shadowy.b = 11;
+        pyramid.shadowy.r = 199;
+        pyramid.shadowy.g = 173;
+        pyramid.shadowy.b = 46;
+    }
+    else if (itIsAfterZenit) {
+        // Sun
+        sun.fill = sun.fills.afterZenit;
+        // Sand
+        sand.fill.r = 229;
+        sand.fill.g = 229;
+        sand.fill.b = 0;
+        // Sky
+        sky.fill.r = 0;
+        sky.fill.g = 115;
+        sky.fill.b = 229;
+        // West side of pyramid
+        pyramid.shiny.r = 160;
+        pyramid.shiny.g = 145;
+        pyramid.shiny.b = 54;
+        // East side of pyramid
+        pyramid.shadowy.r = 169;
+        pyramid.shadowy.g = 153;
+        pyramid.shadowy.b = 61;
     }
     else if (itIsAfternoon) {
         // Sun
@@ -202,13 +289,13 @@ function calcTime() {
         sky.fill.g = 102;
         sky.fill.b = 204;
         // West side of pyramid
-        pyramid.shiny.r = 186;
-        pyramid.shiny.g = 161;
-        pyramid.shiny.b = 29;
+        pyramid.shiny.r = 129;
+        pyramid.shiny.g = 120;
+        pyramid.shiny.b = 50;
         // East side of pyramid
-        pyramid.shadowy.r = 155;
-        pyramid.shadowy.g = 128;
-        pyramid.shadowy.b = 43;
+        pyramid.shadowy.r = 141;
+        pyramid.shadowy.g = 131;
+        pyramid.shadowy.b = 68;
     }
     else if (itIsEvening) {
         // Sun
@@ -222,13 +309,13 @@ function calcTime() {
         sky.fill.g = 76;
         sky.fill.b = 153;
         // West side of pyramid
-        pyramid.shiny.r = 127;
-        pyramid.shiny.g = 117;
-        pyramid.shiny.b = 37;
+        pyramid.shiny.r = 101;
+        pyramid.shiny.g = 96;
+        pyramid.shiny.b = 44;
         // East side of pyramid
-        pyramid.shadowy.r = 132;
+        pyramid.shadowy.r = 124;
         pyramid.shadowy.g = 120;
-        pyramid.shadowy.b = 63;
+        pyramid.shadowy.b = 75;
     }
     else if (itIsLateEvening) {
         // Sun
