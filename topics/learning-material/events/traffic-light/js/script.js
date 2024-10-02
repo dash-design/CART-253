@@ -19,7 +19,7 @@ const trafficLight = {
         slow: "#ffbb00", // Orange
         go: "#00ff00" // Green
     },
-    delay: 1000 // How long between lights
+    delay: 2000 // How long between lights
 };
 
 /**
@@ -27,6 +27,9 @@ const trafficLight = {
  */
 function setup() {
     createCanvas(400, 400);
+
+    // Starts a timer for the light to change
+    setInterval(changeLight, trafficLight.delay);
 }
 
 /**
@@ -41,4 +44,18 @@ function draw() {
     fill(trafficLight.fill);
     ellipse(trafficLight.x, trafficLight.y, trafficLight.size);
     pop();
+}
+
+// Called when the timer finishes
+function changeLight() {
+    if (trafficLight.fill === trafficLight.fills.go) {
+        trafficLight.fill = trafficLight.fills.slow;
+    }
+    else if (trafficLight.fill === trafficLight.fills.slow) {
+        trafficLight.fill = trafficLight.fills.stop;
+    }
+    else if (trafficLight.fill === trafficLight.fills.stop) {
+        trafficLight.fill = trafficLight.fills.go;
+    }
+
 }
