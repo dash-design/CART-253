@@ -1,14 +1,20 @@
 /**
- * Art Jam
+ * Art Jam Assignment: The pyramid
  * Ellie "DASH" Desjardins
  * 
- * Description of the project
+ * A pyramid in the desert throughout the day, from sunset to nighttime, where the sun is controlled by the user's mouse movement.
+ * 
+ * Controls:
+ * Move the mouse along the X axis to make the sun move accordingly.
  *
+ * Uses:
+ * p5.js
+ * https://p5js.org
  */
 
 "use strict";
 
-// The sky that changes colour according to time of day (sun's position)
+// The colour of the sky
 const sky = {
     fill: {
         r: 0,
@@ -16,7 +22,7 @@ const sky = {
         b: 255,
     }
 };
-// The sand dunes that change colour according to timeOfDay
+// The colour of the sand dunes
 const sand = {
     fill: {
         r: 255,
@@ -24,7 +30,7 @@ const sand = {
         b: 153,
     }
 };
-// The pyramid that changes shade according to timeOfDay
+// The position and colours of the pyramid
 const pyramid = {
     // Position of the pyramid
     // North vertex
@@ -59,15 +65,15 @@ const pyramid = {
         b: 11
     }
 };
-// The sun that moves according to mouse position
+// The sun that will move according to mouse position
 const sun = {
     x: 320,
     y: 200,
     size: 75,
-    // The sun colour at sunset
+    // The sun colour at sunrise
     fill: "#ffe5cc",
 
-    // The sun colours as the day progress towards night
+    // The colours of the sun as the day progress towards night
     fills: {
         sunrise: "#ffe5cc",
         earlyMorning: "#ffcc99",
@@ -86,45 +92,27 @@ const sun = {
  * Setup of the project
 */
 function setup() {
+    // Size of the canvas
     createCanvas(640, 640);
 }
 
-// Variables to change something (movement, scale, colour, etc.)
-// Sun position = changes colour of sky, pyramid, sand dunes, and size and shade of pyramid' shadow
-
-// Use "mouseX" & "mouseY" to allow user interaction/input
-// MouseX = Sun position = timeOfDay
-
-// Use "map()"
-// MouseX moves sun in the sky = timeOfDay
-
-// Use min. one conditional
-// If mouseX at < 1/2 of canvas = morning, then bright colours. else mouseX at > 1/2 canvas = evening/night, then dark colours
-
-
 /**
- * Draws OBJECT
+ * Draws objects
 */
 function draw() {
     // Sky colour
     background(sky.fill.r, sky.fill.g, sky.fill.b);
+    // Checks time of day
     calcTime();
+    // Draws the sand dunes
     drawSandDunes();
+    // Draw the pyramid
     drawPyramid();
+    // Draw the sun
     drawSun();
 }
 
-// function checkInput() {
-//     if (mouseX >= width / 5) {
-//         sun.fill = sun.fills.morning;
-//     }
-//     else if (mouseX >= width / 4) {
-//         sun.fill = sun.fills.noon;
-//     }
-//     else {
-//         sun.fill = sun.fills.afternoon;
-//     }
-// }
+// Checks time of day
 function calcTime() {
     const itIsSunrise = (mouseX < 80);
     const itIsEarlyMorning = (mouseX < 160);
@@ -359,14 +347,12 @@ function calcTime() {
     }
 }
 
-// Draws the sun that will
+// Draws the sun that moves according to the mouse position (time of day)
 function drawSun() {
     // Remap mouseX
     let x = mouseX
 
     // Makes the sun move along a curve
-    // Used ChatGPT to write those two lines, due to ChatGPT limitations I changed the equation from "width" to "width / 3" to try to obtain the curve I want
-    // Needs to find better way probably
     let curveAmplitude = 100;
     let y = sun.y - curveAmplitude * sin(map(mouseX, 0, width, 0, PI));
 
@@ -377,7 +363,7 @@ function drawSun() {
     pop();
 }
 
-// Draws sand dunes
+// Draws the sand dunes that change colour according to the time of day
 function drawSandDunes() {
     push();
     noStroke();
@@ -396,9 +382,9 @@ function drawSandDunes() {
     pop();
 }
 
-// Draws the pyramid
+// Draws the pyramid that changes colour according to the time of day and sun's position
 function drawPyramid() {
-    // Background of the pyramid
+    // West side of the pyramid
     push();
     noStroke();
     fill(pyramid.shiny.r, pyramid.shiny.g, pyramid.shiny.b);
@@ -410,8 +396,7 @@ function drawPyramid() {
     vertex(pyramid.north.x, pyramid.north.y);
     endShape();
     pop();
-    // Shadow side of the pyramid
-
+    // East side of the pyramid
     push();
     noStroke();
     fill(pyramid.shadowy.r, pyramid.shadowy.g, pyramid.shadowy.b);
