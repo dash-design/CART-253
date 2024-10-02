@@ -2,7 +2,7 @@
  * Introducing events
  * Ellie "DASH" Desjardins
  * 
- * Description of the project
+ * An introduction to events in JavaScript and p5
  *
  */
 
@@ -12,7 +12,8 @@
  * Setup of the project
 */
 function setup() {
-
+    createCanvas(400, 400);
+    background(0);
 }
 
 
@@ -21,4 +22,13 @@ function setup() {
 */
 function draw() {
 
+}
+
+// Draw circle at mouse location
+function mousePressed() {
+    push();
+    noStroke();
+    fill(255, 255, 0);
+    ellipse(mouseX, mouseY, 50);
+    pop();
 }
