@@ -12,7 +12,8 @@
 */
 function setup() {
     createCanvas(500, 500);
-
+    // function mousePressed is actually this, handled in the background by p5
+    // document.addEventListener("mousedown", mousePressed);
     frameRate(1);
 }
 
@@ -27,6 +28,8 @@ function draw() {
     rect(width / 2, height / 2, 200);
     pop();
 }
+
+
 
 /**
  * Fill the background on click
