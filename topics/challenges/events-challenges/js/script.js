@@ -18,6 +18,20 @@ let gameOver = false;
  */
 function setup() {
     createCanvas(400, 400);
+    // Challenge 1 in plain JavaScript
+    document.addEventListener("keydown", endGame);
+    document.addEventListener("keyup", endGame);
+    // Challenge 2 in plain JavaScript
+    document.addEventListener("mousedown", endGame);
+    document.addEventListener("mouseup", endGame);
+    document.addEventListener("mousemove", endGame);
+    document.addEventListener("wheel", endGame);
+    // Challenge 3 in plain JavaScript
+    // window. instead of document.
+    window.addEventListener("online", endGame);
+    window.addEventListener("offline", endGame);
+    // Challenge 4 in plain JavaScript
+    window.addEventListener("visibilitychange", endGame);
 }
 
 /**
@@ -62,13 +76,27 @@ function displayScore() {
 }
 
 // Challenge 1, attempt 1
-function keyPressed(event) {
-    endGame();
-}
+// Can be handled by event listener in the setup
+// function keyPressed(event) {
+//     endGame();
+// }
 
-function keyReleased(event) {
-    endGame();
-}
+// function keyReleased(event) {
+//     endGame();
+// }
+
+// // Challenge 2, different options
+// function mousePressed(event) {
+//     endGame();
+// }
+
+// function mouseReleased(event) {
+//     endGame();
+// }
+
+// function mouseMoved(event) {
+//     endGame();
+// }
 
 function endGame() {
     gameOver = true
