@@ -40,15 +40,18 @@ const frog = {
 const fly = {
     x: 0,
     y: 200, // Will be random
-    size: 10,
+    size: 20,
     speed: 3
 };
 
 // The current score
 let score = 0;
 
+// The current number of lives
+let lives = 5;
+
 // The current state
-let state = "title"; // Can be "title" or "game"
+let state = "start"; // Can be "title" or "game"
 
 /**
  * Creates the canvas and initializes the fly
@@ -62,20 +65,31 @@ function setup() {
 
 function draw() {
     // Defines states
-    if (state === "title") {
-        title();
+    if (state === "start") {
+        start();
     }
     else if (state === "game") {
         game();
+    }
+    else if (state === "end") {
+        end();
     }
 }
 
 /**
  * Title screen
  */
-function title() {
+function start() {
     background("pink");
     text("Name of the game", 100, 100)
+}
+
+/**
+ * Game Over screen
+ */
+function end() {
+    background("red");
+    text("Game Over", 100, 100)
 }
 
 /**
@@ -89,7 +103,9 @@ function game() {
     drawFly();
     drawFrog();
     drawScore();
+    drawLife();
     checkTongueFlyOverlap();
+    checkIfEndGame();
 }
 
 /**
@@ -102,6 +118,8 @@ function moveFly() {
     // Handle the fly going off the canvas
     if (fly.x > width) {
         resetFly();
+        frog.tongue.state = "inbound";
+        lives = lives - 1;
     }
 }
 
@@ -121,6 +139,11 @@ function moveTongue() {
     // If the tongue is idle, it doesn't do anything
     if (frog.tongue.state === "idle") {
         // Do nothing
+    }
+    else if (frog.tongue.state === "catch") {
+        frog.tongue.y += -frog.tongue.speed;
+        frog.tongue.x = fly.x;
+
     }
     // If the tongue is outbound, it moves up
     else if (frog.tongue.state === "outbound") {
@@ -193,8 +216,30 @@ function drawScore() {
     textAlign(RIGHT, TOP);
     textSize(36);
     textStyle(BOLD);
-    fill("#fff000")
+    fill("#fff000");
     text(score, width - 20, 20);
+    pop();
+}
+
+/**
+ * Display the number of lives in the bottom right corner
+ */
+function drawLife() {
+    push();
+    textAlign(RIGHT, BOTTOM);
+    textSize(28);
+    textStyle(BOLD);
+    fill("red");
+    text("♥️".repeat(lives), width - 20, height - 20);
+    // if (lives === 3) {
+    //     text("♥️♥️♥️", width - 20, height - 20)
+    // }
+    // else if (lives === 2) {
+    //     text("♥️♥️", width - 20, height - 20)
+    // }
+    // if (lives === 1) {
+    //     text("♥️", width - 20, height - 20)
+    // }
     pop();
 }
 
@@ -206,7 +251,7 @@ function checkTongueFlyOverlap() {
     const d = dist(frog.tongue.x, frog.tongue.y, fly.x, fly.y);
     // Check if it's an overlap
     const eaten = (d < frog.tongue.size / 2 + fly.size / 2);
-    if (eaten) {
+    if (eaten && frog.tongue.state === "catch") {
         // Increase the score
         score = score + 1; // score += 1;
         // Reset the fly
@@ -216,16 +261,37 @@ function checkTongueFlyOverlap() {
     }
 }
 
+function checkIfEndGame() {
+    if (state === "game" && lives === 0) {
+        state = "end"
+    }
+}
+
 /**
  * Launch the tongue on click (if it's not launched yet)
  */
 function mousePressed() {
-    if (state === "title") {
+    if (state === "start") {
         state = "game";
     }
     else if (state === "game") {
         if (frog.tongue.state === "idle") {
-            frog.tongue.state = "outbound";
+            const mouseOnFly = dist(mouseX, mouseY, fly.x, fly.y);
+            const eaten = (mouseOnFly < fly.size)
+            if (eaten) {
+                frog.tongue.state = "catch"
+            }
+            else {
+                frog.tongue.state = "outbound";
+            }
         }
-    }
+    };
 }
+
+
+// // Increase the score
+// score = score + 1; // score += 1;
+// // Reset the fly
+// resetFly();
+// // Bring back the tongue
+// // frog.tongue.state = "inbound";
