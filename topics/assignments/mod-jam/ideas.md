@@ -1,24 +1,18 @@
-# Starting points
+Ideas:
+Start/End screen you click to start the game showing the high score
 
+You need to click ON the fly to catch it
+Score shown on-screen while playing
+    score = 1
+    
+    if (frog catches fly)
+        score = score + 1
+    
+    drawScore()
+        display score at top right corner
+        
+Add lives <3 you can lose if fly escape, game end if you lose all 3
 
-Finding metro tickets on the ground and trying to sell them
+Fly move up and down too
 
-**Frog eating flies but it gets harder and harder to catch them**
-
-Swimming lessons but controlling your body is really hard
-
-Crossing the street and it’s busy
-
-Riding a tricycle but the wheel keeps falling off
-
-Shaving people’s heads in beautiful patterns and showing them at an art gallery
-
-Making cups out of clay and seeing what cafe customers say about them
-
-Growing plants that eat you
-
-Keeping a computer mouse as a pet and looking after it
-
-Rewiring a light
-
-Cooking spaghetti with a dog
+Add bees you lose a life/points if you catch it

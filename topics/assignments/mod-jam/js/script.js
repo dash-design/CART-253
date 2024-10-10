@@ -11,6 +11,7 @@
  * 
  * Made with p5
  * https://p5js.org/
+ * 
  */
 
 "use strict";
@@ -43,6 +44,9 @@ const fly = {
     speed: 3
 };
 
+// The current score
+let score = 0;
+
 /**
  * Creates the canvas and initializes the fly
  */
@@ -56,10 +60,11 @@ function setup() {
 function draw() {
     background("#87ceeb");
     moveFly();
-    drawFly();
     moveFrog();
     moveTongue();
+    drawFly();
     drawFrog();
+    drawScore();
     checkTongueFlyOverlap();
 }
 
@@ -74,25 +79,6 @@ function moveFly() {
     if (fly.x > width) {
         resetFly();
     }
-}
-
-/**
- * Draws the fly as a black circle
- */
-function drawFly() {
-    push();
-    noStroke();
-    fill("#000000");
-    ellipse(fly.x, fly.y, fly.size);
-    pop();
-}
-
-/**
- * Resets the fly to the left with a random y
- */
-function resetFly() {
-    fly.x = 0;
-    fly.y = random(0, 300);
 }
 
 /**
@@ -131,6 +117,25 @@ function moveTongue() {
 }
 
 /**
+ * Draws the fly as a black circle
+ */
+function drawFly() {
+    push();
+    noStroke();
+    fill("#000000");
+    ellipse(fly.x, fly.y, fly.size);
+    pop();
+}
+
+/**
+ * Resets the fly to the left with a random y
+ */
+function resetFly() {
+    fly.x = 0;
+    fly.y = random(0, 300);
+}
+
+/**
  * Displays the tongue (tip and line connection) and the frog (body)
  */
 function drawFrog() {
@@ -157,14 +162,29 @@ function drawFrog() {
 }
 
 /**
+ * Displays the score on the top right corner
+ */
+function drawScore() {
+    push();
+    textAlign(RIGHT, TOP);
+    textSize(36);
+    textStyle(BOLD);
+    fill("#fff000")
+    text(score, width - 20, 20);
+    pop();
+}
+
+/**
  * Handles the tongue overlapping the fly
  */
 function checkTongueFlyOverlap() {
     // Get distance from tongue to fly
     const d = dist(frog.tongue.x, frog.tongue.y, fly.x, fly.y);
     // Check if it's an overlap
-    const eaten = (d < frog.tongue.size/2 + fly.size/2);
+    const eaten = (d < frog.tongue.size / 2 + fly.size / 2);
     if (eaten) {
+        // Increase the score
+        score = score + 1; // score += 1;
         // Reset the fly
         resetFly();
         // Bring back the tongue
