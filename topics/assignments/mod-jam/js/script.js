@@ -47,6 +47,9 @@ const fly = {
 // The current score
 let score = 0;
 
+// The current state
+let state = "title"; // Can be "title" or "game"
+
 /**
  * Creates the canvas and initializes the fly
  */
@@ -58,6 +61,27 @@ function setup() {
 }
 
 function draw() {
+    // Defines states
+    if (state === "title") {
+        title();
+    }
+    else if (state === "game") {
+        game();
+    }
+}
+
+/**
+ * Title screen
+ */
+function title() {
+    background("pink");
+    text("Name of the game", 100, 100)
+}
+
+/**
+ * The actual game elements
+ */
+function game() {
     background("#87ceeb");
     moveFly();
     moveFrog();
@@ -196,7 +220,12 @@ function checkTongueFlyOverlap() {
  * Launch the tongue on click (if it's not launched yet)
  */
 function mousePressed() {
-    if (frog.tongue.state === "idle") {
-        frog.tongue.state = "outbound";
+    if (state === "title") {
+        state = "game";
+    }
+    else if (state === "game") {
+        if (frog.tongue.state === "idle") {
+            frog.tongue.state = "outbound";
+        }
     }
 }
