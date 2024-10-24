@@ -44,14 +44,23 @@ const fly = {
     speed: 3
 };
 
+// Colour of the sky
+let sky = "#87ceeb";
+
 // The current score
 let score = 0;
 
+// The high score to be displayed
+let highScore;
+
+const maxLives = 5;
+
 // The current number of lives
-let lives = 5;
+let lives = maxLives;
 
 // The current state
 let state = "start"; // Can be "title" or "game"
+
 
 /**
  * Creates the canvas and initializes the fly
@@ -61,6 +70,13 @@ function setup() {
 
     // Give the fly its first random position
     resetFly();
+
+    // Retrieve the last saved highscore
+    highScore = getItem('high score');
+
+    if (highScore === null) {
+        highScore = 0;
+    }
 }
 
 function draw() {
@@ -70,6 +86,8 @@ function draw() {
     }
     else if (state === "game") {
         game();
+        cursor(CROSS);
+
     }
     else if (state === "end") {
         end();
@@ -80,23 +98,51 @@ function draw() {
  * Title screen
  */
 function start() {
-    background("pink");
-    text("Name of the game", 100, 100)
+    // Screen appearance
+    push();
+    background(sky);
+    noStroke();
+    fill("green");
+    rectMode(CENTER);
+    rect(width / 2, height / 2, width - 50, height - 50);
+    pop();
+    // Text parameters
+    push();
+    fill(255);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text(`Welcome to\nFROGGY McFROGFACE: The Game\n\nCatch the fly by clicking on it\nDo not let the fly escape!\n\nHigh score: ${score}\nClick to play`, width / 2, height / 2);
+    pop();
 }
 
 /**
  * Game Over screen
  */
 function end() {
-    background("red");
-    text("Game Over", 100, 100)
+    // Store the latest high score
+    highScore = max(score, highScore);
+    storeItem('high score', highScore);
+    // Screen appearance
+    push();
+    noStroke();
+    fill(32);
+    rectMode(CENTER);
+    rect(width / 2, height / 2, width - 50, height - 50);
+    pop();
+    // Text parameters
+    push();
+    fill(220);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text(`Game over!\n\nScore: ${score}\nHigh score: ${highScore}\nClick to try again`, width / 2, height / 2);
+    pop();
 }
 
 /**
  * The actual game elements
  */
 function game() {
-    background("#87ceeb");
+    background(sky);
     moveFly();
     moveFrog();
     moveTongue();
@@ -258,6 +304,10 @@ function checkTongueFlyOverlap() {
         resetFly();
         // Bring back the tongue
         frog.tongue.state = "inbound";
+        // Increase the speed of the fly according to the score
+        if (score % 5 === 0) {
+            fly.speed = fly.speed + 1
+        }
     }
 }
 
@@ -285,6 +335,11 @@ function mousePressed() {
                 frog.tongue.state = "outbound";
             }
         }
+    }
+    else if (state === "end") {
+        state = "game";
+        lives = maxLives;
+        score = 0;
     };
 }
 
