@@ -106,14 +106,20 @@ function movePaddle() {
  */
 function checkBallBounce(ball) {
     // Check if ball1 overlaps the paddle
-    const overlap = (ball.x + ball.size > paddle.x &&
-        ball.x < paddle.x + paddle.width &&
-        ball.y + ball.size > paddle.y &&
-        ball.y < paddle.y + paddle.height);
+    const overlap = checkBallOverlap(ball, paddle);
     // If there is an overlap, bounce the ball back up
     if (overlap) {
         ball.velocity.y *= -1;
     }
+}
+
+function checkBallOverlap(ball, paddle) {
+    let result = (ball.x + ball.size > paddle.x &&
+        ball.x < paddle.x + paddle.width &&
+        ball.y + ball.size > paddle.y &&
+        ball.y < paddle.y + paddle.height);
+
+    return result;
 }
 
 /**
