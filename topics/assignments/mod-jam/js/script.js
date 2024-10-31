@@ -1,13 +1,18 @@
 /**
- * Frogfrogfrog
- * Pippin Barr
+ * Froggy McFrogFace
  * 
- * A game of catching flies with your frog-tongue
+ * Ellie "DASH" Desjardins
+ * 
+ * A game where you, Froggy McFrogFace, try to catch flies with your tongue.
+ * 
+ * Be careful, the more flies you catch, the faster they become!
+ * 
+ * If too many flies escape you will starve and lose!
  * 
  * Instructions:
  * - Move the frog with your mouse
- * - Click to launch the tongue
- * - Catch flies
+ * - Click on the flies to catch them
+ * 
  * 
  * Made with p5
  * https://p5js.org/
@@ -15,6 +20,12 @@
  */
 
 "use strict";
+
+let font;
+
+function preload() {
+    font = loadFont('../assets/fonts/slkscr.ttf');
+}
 
 // Our frog
 const frog = {
@@ -53,13 +64,43 @@ let score = 0;
 // The high score to be displayed
 let highScore;
 
-const maxLives = 5;
+const maxLives = 1;
 
 // The current number of lives
 let lives = maxLives;
 
 // The current state
 let state = "start"; // Can be "title" or "game"
+
+let starting = {
+    rectFill: "green",
+    textFill: 255,
+    textSize: 28,
+    text: `
+Welcome to
+FROGGY McFROGFACE: The Game
+    
+Catch the fly by clicking on it
+Do not let the fly escape!
+    
+High score: ${highScore}
+    
+Click to play`
+}
+
+let ending = {
+    rectFill: 32,
+    textFill: 220,
+    textSize: 32,
+    text: `
+Game over!
+
+Score: ${score}
+High score: ${highScore}
+
+Click to try again`
+
+}
 
 
 /**
@@ -82,7 +123,8 @@ function setup() {
 function draw() {
     // Defines states
     if (state === "start") {
-        start();
+        background(sky);
+        menu(starting.rectFill, starting.textFill, starting.textSize, starting.text);
     }
     else if (state === "game") {
         game();
@@ -90,53 +132,56 @@ function draw() {
 
     }
     else if (state === "end") {
-        end();
+        menu(ending.rectFill, ending.textFill, ending.textSize, ending.text);
+        cursor();
+        // Store the latest high score
+        highScore = max(score, highScore);
+        storeItem('high score', highScore);
     }
 }
 
 /**
  * Title screen
  */
-function start() {
+function menu(squareFill, textFill, fontSize, textContent) {
     // Screen appearance
     push();
-    background(sky);
     noStroke();
-    fill("green");
+    fill(squareFill);
     rectMode(CENTER);
     rect(width / 2, height / 2, width - 50, height - 50);
     pop();
     // Text parameters
     push();
-    fill(255);
-    textSize(32);
+    textFont(font);
+    fill(textFill);
+    textSize(fontSize);
     textAlign(CENTER, CENTER);
-    text(`Welcome to\nFROGGY McFROGFACE: The Game\n\nCatch the fly by clicking on it\nDo not let the fly escape!\n\nHigh score: ${score}\nClick to play`, width / 2, height / 2);
+    text(textContent, width / 2, height / 2);
     pop();
 }
 
-/**
- * Game Over screen
- */
-function end() {
-    // Store the latest high score
-    highScore = max(score, highScore);
-    storeItem('high score', highScore);
-    // Screen appearance
-    push();
-    noStroke();
-    fill(32);
-    rectMode(CENTER);
-    rect(width / 2, height / 2, width - 50, height - 50);
-    pop();
-    // Text parameters
-    push();
-    fill(220);
-    textSize(32);
-    textAlign(CENTER, CENTER);
-    text(`Game over!\n\nScore: ${score}\nHigh score: ${highScore}\nClick to try again`, width / 2, height / 2);
-    pop();
-}
+
+// /**
+//  * Game Over screen
+//  */
+// function end() {
+//     // Screen appearance
+//     push();
+//     noStroke();
+//     fill(32);
+//     rectMode(CENTER);
+//     rect(width / 2, height / 2, width - 50, height - 50);
+//     pop();
+//     // Text parameters
+//     push();
+//     textFont(font);
+//     fill(220);
+//     textSize(32);
+//     textAlign(CENTER, CENTER);
+//     text(, width / 2, height / 2);
+//     pop();
+// }
 
 /**
  * The actual game elements
@@ -277,15 +322,6 @@ function drawLife() {
     textStyle(BOLD);
     fill("red");
     text("♥️".repeat(lives), width - 20, height - 20);
-    // if (lives === 3) {
-    //     text("♥️♥️♥️", width - 20, height - 20)
-    // }
-    // else if (lives === 2) {
-    //     text("♥️♥️", width - 20, height - 20)
-    // }
-    // if (lives === 1) {
-    //     text("♥️", width - 20, height - 20)
-    // }
     pop();
 }
 
@@ -342,11 +378,3 @@ function mousePressed() {
         score = 0;
     };
 }
-
-
-// // Increase the score
-// score = score + 1; // score += 1;
-// // Reset the fly
-// resetFly();
-// // Bring back the tongue
-// // frog.tongue.state = "inbound";
