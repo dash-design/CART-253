@@ -21,10 +21,13 @@
 
 "use strict";
 
-let font;
+let pixelFont;
+
+let froggy;
 
 function preload() {
-    font = loadFont('../assets/fonts/slkscr.ttf');
+    pixelFont = loadFont('../assets/fonts/slkscr.ttf');
+    froggy = loadImage('../assets/images/froggy.png');
 }
 
 // Our frog
@@ -32,8 +35,8 @@ const frog = {
     // The frog's body has a position and size
     body: {
         x: 320,
-        y: 520,
-        size: 150
+        y: 460,
+        // size: 150
     },
     // The frog's tongue has a position, size, speed, and state
     tongue: {
@@ -64,7 +67,7 @@ let score = 0;
 // The high score to be displayed
 let highScore;
 
-const maxLives = 1;
+const maxLives = 5;
 
 // The current number of lives
 let lives = maxLives;
@@ -76,32 +79,16 @@ let starting = {
     rectFill: "green",
     textFill: 255,
     textSize: 28,
-    text: `
-Welcome to
-FROGGY McFROGFACE: The Game
-    
-Catch the fly by clicking on it
-Do not let the fly escape!
-    
-High score: ${highScore}
-    
-Click to play`
+    text: undefined
 }
 
 let ending = {
     rectFill: 32,
     textFill: 220,
     textSize: 32,
-    text: `
-Game over!
-
-Score: ${score}
-High score: ${highScore}
-
-Click to try again`
+    text: undefined
 
 }
-
 
 /**
  * Creates the canvas and initializes the fly
@@ -124,6 +111,16 @@ function draw() {
     // Defines states
     if (state === "start") {
         background(sky);
+        starting.text = `
+Welcome to
+FROGGY McFROGFACE: The Game
+    
+Catch the fly by clicking on it
+Do not let the fly escape!
+    
+High score: ${highScore}
+    
+Click to play`;
         menu(starting.rectFill, starting.textFill, starting.textSize, starting.text);
     }
     else if (state === "game") {
@@ -132,6 +129,13 @@ function draw() {
 
     }
     else if (state === "end") {
+        ending.text = `
+Game over!
+
+Score: ${score}
+High score: ${highScore}
+
+Click to try again`;
         menu(ending.rectFill, ending.textFill, ending.textSize, ending.text);
         cursor();
         // Store the latest high score
@@ -153,35 +157,13 @@ function menu(squareFill, textFill, fontSize, textContent) {
     pop();
     // Text parameters
     push();
-    textFont(font);
+    textFont(pixelFont);
     fill(textFill);
     textSize(fontSize);
     textAlign(CENTER, CENTER);
     text(textContent, width / 2, height / 2);
     pop();
 }
-
-
-// /**
-//  * Game Over screen
-//  */
-// function end() {
-//     // Screen appearance
-//     push();
-//     noStroke();
-//     fill(32);
-//     rectMode(CENTER);
-//     rect(width / 2, height / 2, width - 50, height - 50);
-//     pop();
-//     // Text parameters
-//     push();
-//     textFont(font);
-//     fill(220);
-//     textSize(32);
-//     textAlign(CENTER, CENTER);
-//     text(, width / 2, height / 2);
-//     pop();
-// }
 
 /**
  * The actual game elements
@@ -295,7 +277,9 @@ function drawFrog() {
     push();
     fill("#00ff00");
     noStroke();
-    ellipse(frog.body.x, frog.body.y, frog.body.size);
+    imageMode(CENTER); // the image is gonna be centered on the frog x and y
+    image(froggy, frog.body.x, frog.body.y);
+    // ellipse(frog.body.x, frog.body.y, frog.body.size);
     pop();
 }
 
