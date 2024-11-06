@@ -282,7 +282,7 @@ function moveTongue() {
 }
 
 /**
- * Draws the fly as a black circle
+ * Draws the fly
  */
 function drawFly() {
     push();
@@ -300,7 +300,7 @@ function drawFly() {
  */
 function resetFly() {
     fly.x = 0;
-    fly.y = random(0, 300);
+    fly.y = random(30, 300);
 }
 
 /**
