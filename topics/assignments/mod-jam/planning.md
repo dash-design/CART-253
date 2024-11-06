@@ -1,4 +1,4 @@
-# Planning
+# Planning as written by Pippin Barr
 
 ## Starting point
 

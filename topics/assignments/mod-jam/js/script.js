@@ -1,5 +1,5 @@
 /**
- * Froggy McFrogFace
+ * Froggy McFrogFace: The Game
  * 
  * Ellie "DASH" Desjardins
  * 
@@ -12,7 +12,8 @@
  * Instructions:
  * - Move the frog with your mouse
  * - Click on the flies to catch them
- * 
+ * - Follow the start screen instructions to start playing
+ * - Have fun!
  * 
  * Made with p5
  * https://p5js.org/
@@ -21,16 +22,33 @@
 
 "use strict";
 
+/**
+ * Declares the font variable
+ */
 let pixelFont;
 
+/**
+ * Declares the frog variable
+ */
 let froggy;
 
+/**
+ * Declares the fly variable
+ */
+let flyBug;
+
+/**
+ * Preloads the assets
+ */
 function preload() {
     pixelFont = loadFont('../assets/fonts/slkscr.ttf');
     froggy = loadImage('../assets/images/froggy.png');
+    flyBug = loadImage('../assets/images/fly.png');
 }
 
-// Our frog
+/**
+ * Defines the frog
+ */
 const frog = {
     // The frog's body has a position and size
     body: {
@@ -49,32 +67,49 @@ const frog = {
     }
 };
 
-// Our fly
-// Has a position, size, and speed of horizontal movement
+/**
+ * Fly has a position, size, and speed of horizontal movement
+ */
 const fly = {
     x: 0,
     y: 200, // Will be random
-    size: 20,
+    size: 50,
     speed: 3
 };
 
-// Colour of the sky
+/**
+ * Defines the fly colour
+ */
 let sky = "#87ceeb";
 
-// The current score
+/**
+ * The current score
+ */
 let score = 0;
 
-// The high score to be displayed
+/**
+ * The high score to be displayed
+ */
 let highScore;
 
+/**
+ * The starting number of lives
+ */
 const maxLives = 5;
 
-// The current number of lives
+/**
+ * The current number of lives
+ */
 let lives = maxLives;
 
-// The current state
+/**
+ * The current state
+ */
 let state = "start"; // Can be "title" or "game"
 
+/**
+ * Start screen properties
+ */
 let starting = {
     rectFill: "green",
     textFill: 255,
@@ -82,6 +117,9 @@ let starting = {
     text: undefined
 }
 
+/**
+ * End screen properties
+ */
 let ending = {
     rectFill: 32,
     textFill: 220,
@@ -102,15 +140,20 @@ function setup() {
     // Retrieve the last saved highscore
     highScore = getItem('high score');
 
+    // Set the highscore to 0 if no prior score exists
     if (highScore === null) {
         highScore = 0;
     }
 }
 
+/**
+ * Draws the start and end screen
+ * */
 function draw() {
     // Defines states
     if (state === "start") {
         background(sky);
+        // The start screen text
         starting.text = `
 Welcome to
 FROGGY McFROGFACE: The Game
@@ -125,9 +168,11 @@ Click to play`;
     }
     else if (state === "game") {
         game();
+        // Defines the cursor while playing
         cursor(CROSS);
 
     }
+    // The end screen text
     else if (state === "end") {
         ending.text = `
 Game over!
@@ -145,7 +190,7 @@ Click to try again`;
 }
 
 /**
- * Title screen
+ * Title screens properties
  */
 function menu(squareFill, textFill, fontSize, textContent) {
     // Screen appearance
@@ -183,7 +228,7 @@ function game() {
 
 /**
  * Moves the fly according to its speed
- * Resets the fly if it gets all the way to the right
+ * Remove one life and resets the fly if it gets all the way to the right
  */
 function moveFly() {
     // Move the fly
@@ -242,8 +287,11 @@ function moveTongue() {
 function drawFly() {
     push();
     noStroke();
-    fill("#000000");
-    ellipse(fly.x, fly.y, fly.size);
+    noFill();
+    imageMode(CENTER); // the image is gonna be centered on the fly x and y
+    image(flyBug, fly.x, fly.y, fly.size, fly.size);
+    // fill("#000000");
+    // ellipse(fly.x, fly.y, fly.size);
     pop();
 }
 
@@ -275,7 +323,7 @@ function drawFrog() {
 
     // Draw the frog's body
     push();
-    fill("#00ff00");
+    // fill("#00ff00");
     noStroke();
     imageMode(CENTER); // the image is gonna be centered on the frog x and y
     image(froggy, frog.body.x, frog.body.y);
@@ -288,11 +336,12 @@ function drawFrog() {
  */
 function drawScore() {
     push();
+    textFont(pixelFont);
     textAlign(RIGHT, TOP);
-    textSize(36);
+    textSize(48);
     textStyle(BOLD);
     fill("#fff000");
-    text(score, width - 20, 20);
+    text(score, width - 20, 15);
     pop();
 }
 
@@ -325,12 +374,16 @@ function checkTongueFlyOverlap() {
         // Bring back the tongue
         frog.tongue.state = "inbound";
         // Increase the speed of the fly according to the score
+        // Boolean provided by Pippin Barr
         if (score % 5 === 0) {
-            fly.speed = fly.speed + 1
+            fly.speed = fly.speed + .5
         }
     }
 }
 
+/**
+ * Checks if the game ended
+ */
 function checkIfEndGame() {
     if (state === "game" && lives === 0) {
         state = "end"
@@ -341,9 +394,11 @@ function checkIfEndGame() {
  * Launch the tongue on click (if it's not launched yet)
  */
 function mousePressed() {
+    // Pressing the mosue starts the game
     if (state === "start") {
         state = "game";
     }
+    // Pressing the mouse while playing outbouds the tongue
     else if (state === "game") {
         if (frog.tongue.state === "idle") {
             const mouseOnFly = dist(mouseX, mouseY, fly.x, fly.y);
@@ -356,6 +411,7 @@ function mousePressed() {
             }
         }
     }
+    // Pressing the mouse after the game has ended starts a new game
     else if (state === "end") {
         state = "game";
         lives = maxLives;

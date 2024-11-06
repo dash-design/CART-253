@@ -1,4 +1,4 @@
-# Pseudocode for Frogfrogfrog
+# Pseudocode for Frogfrogfrog as written by Pippin Barr
 
 ```
 frog

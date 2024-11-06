@@ -1,4 +1,4 @@
-Ideas:
+Starting ideas:
 Start/End screen you click to start the game showing the high score
 
 You need to click ON the fly to catch it
