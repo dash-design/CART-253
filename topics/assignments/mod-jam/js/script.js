@@ -289,7 +289,7 @@ function drawFly() {
     noStroke();
     noFill();
     imageMode(CENTER); // the image is gonna be centered on the fly x and y
-    image(flyBug, fly.x, fly.y, fly.size, fly.size);
+    image(flyBug, fly.x, fly.y, fly.size * 2, fly.size * 2);
     // fill("#000000");
     // ellipse(fly.x, fly.y, fly.size);
     pop();
