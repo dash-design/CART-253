@@ -34,11 +34,19 @@ function drawGradient() {
 
     for (let z = 0; z <= height; z += 2) {
         let hue = map(z, 0, height, 0, 360);
-        strokeWeight(0.99);
+        strokeWeight(0.75);
         stroke(hue, 100, 100);
         line(0, z, width, z);
         // shade += 1;
     }
+
+    // for (let v = 0; v <= width; v += 2) {
+    //     let hue = map(z, 0, height, 0, 360);
+    //     strokeWeight(0.75);
+    //     stroke(hue, 100, 100);
+    //     line(v, 0, v, height);
+    //     // shade += 1;
+    // }
 
 }
 
