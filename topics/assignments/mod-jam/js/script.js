@@ -74,8 +74,10 @@ const fly = {
     x: 0,
     y: 200, // Will be random
     size: 50,
-    speed: 3
+    speed: 4
 };
+
+let flySpeed = fly.speed;
 
 /**
  * Defines the fly colour
@@ -95,7 +97,7 @@ let highScore;
 /**
  * The starting number of lives
  */
-const maxLives = 5;
+const maxLives = 3;
 
 /**
  * The current number of lives
@@ -157,13 +159,16 @@ function draw() {
         starting.text = `
 Welcome to
 FROGGY McFROGFACE: The Game
+
+by ellie "DASH" desjardins
     
 Catch the fly by clicking on it
 Do not let the fly escape!
     
 High score: ${highScore}
     
-Click to play`;
+Click to play
+`;
         menu(starting.rectFill, starting.textFill, starting.textSize, starting.text);
     }
     else if (state === "game") {
@@ -180,7 +185,8 @@ Game over!
 Score: ${score}
 High score: ${highScore}
 
-Click to try again`;
+Click to try again
+`;
         menu(ending.rectFill, ending.textFill, ending.textSize, ending.text);
         cursor();
         // Store the latest high score
@@ -232,7 +238,7 @@ function game() {
  */
 function moveFly() {
     // Move the fly
-    fly.x += fly.speed;
+    fly.x += flySpeed;
     // Handle the fly going off the canvas
     if (fly.x > width) {
         resetFly();
@@ -290,8 +296,6 @@ function drawFly() {
     noFill();
     imageMode(CENTER); // the image is gonna be centered on the fly x and y
     image(flyBug, fly.x, fly.y, fly.size * 2, fly.size * 2);
-    // fill("#000000");
-    // ellipse(fly.x, fly.y, fly.size);
     pop();
 }
 
@@ -323,11 +327,9 @@ function drawFrog() {
 
     // Draw the frog's body
     push();
-    // fill("#00ff00");
     noStroke();
     imageMode(CENTER); // the image is gonna be centered on the frog x and y
     image(froggy, frog.body.x, frog.body.y);
-    // ellipse(frog.body.x, frog.body.y, frog.body.size);
     pop();
 }
 
@@ -375,8 +377,8 @@ function checkTongueFlyOverlap() {
         frog.tongue.state = "inbound";
         // Increase the speed of the fly according to the score
         // Boolean provided by Pippin Barr
-        if (score % 5 === 0) {
-            fly.speed = fly.speed + .5
+        if (score % 3 === 0) {
+            flySpeed = flySpeed + .25
         }
     }
 }
@@ -386,7 +388,8 @@ function checkTongueFlyOverlap() {
  */
 function checkIfEndGame() {
     if (state === "game" && lives === 0) {
-        state = "end"
+        state = "end";
+        flySpeed = fly.speed;
     }
 }
 
