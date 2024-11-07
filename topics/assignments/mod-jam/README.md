@@ -16,11 +16,11 @@ This is a game where you play as Froggy McFrogFace, a frog, and try to catch fli
 
 ## Credits
 
-This project uses [p5.js](https://p5js.org).
+This project uses [p5.js](https://p5js.org)
 
-Original code, titled Frogfrogfrog, by Pippin Barr modified by Ellie "DASH" Desjardins
+Original code by Pippin Barr, modified by Ellie "DASH" Desjardins
 
-Some code for the score system and the start and end screen was inspired and taken from p5js.org examples page, specificaly the [Circle Clicker game](https://p5js.org/examples/games-circle-clicker/) and the [Snake game](https://p5js.org/examples/games-snake/).
+Some code for the score system and the start and end screen was inspired and taken from p5js.org examples page, specificaly the [Circle Clicker game](https://p5js.org/examples/games-circle-clicker/) and the [Snake game](https://p5js.org/examples/games-snake/)
 
 ## Attribution
 
