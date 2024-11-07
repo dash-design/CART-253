@@ -41,9 +41,9 @@ let flyBug;
  * Preloads the assets
  */
 function preload() {
-    pixelFont = loadFont('../assets/fonts/slkscr.ttf');
-    froggy = loadImage('../assets/images/froggy.png');
-    flyBug = loadImage('../assets/images/fly.png');
+    pixelFont = loadFont('assets/fonts/slkscr.ttf');
+    froggy = loadImage('assets/images/froggy.png');
+    flyBug = loadImage('assets/images/fly.png');
 }
 
 /**
