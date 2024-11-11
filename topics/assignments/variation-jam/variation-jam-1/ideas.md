@@ -49,6 +49,33 @@ Safe in the dark horror tile based exploration game
 
 Card game roguelike
 
+# THE idea
+
+Innsmouth Adventure
+
+A top view platformer where the protagonist explore the streets of Innsmouth, helped only of their lantern.
+The player has to walk around trying not to get lost and collect clues/tools/etc. to escape the scary town.
+The player can only see what the light of the lantern let them see, carefull there might be dangers in the shadow.
+
+Dangers:
+    Holes in the streets
+    Angry Fish folks
+    Ritual circles
+Collectibles:
+    Keys
+    Flashlight
+    Clues
+    Notes
+Other elements:
+    Doors/Doorway
+    Water/Sewer
+    
+
 
 # just cool ideas to integrate
 pippin's name tag simulator https://editor.p5js.org/pippinbarr/sketches/ssgYeBo8R
+
+# functions
+erase();
+clip();
+mask();
