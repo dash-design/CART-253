@@ -49,7 +49,7 @@ Safe in the dark horror tile based exploration game
 
 Card game roguelike
 
-# THE idea
+# An idea
 
 Innsmouth Adventure
 
@@ -70,7 +70,32 @@ Other elements:
     Doors/Doorway
     Water/Sewer
     
+# Another idea
 
+Goblin & Adventures
+
+A top view platformer where the player is a little goblin walking around (a forest, a canyon, a cave, etc.).
+The player can pick things around the map (mushrooms, wood, gold, etc.).
+During their travel they might meet stranges characters (a troll guarding a bridge, a wizard called Tim, a fellow goblin, etc.),
+which whom the player might be able to have conversations or simply listen to what they have to say.
+
+With a randomly? generated map on a grid
+
+With objects (trees, mushrooms, gold, etc.) one might pick up
+
+Collecting certain object might unlock dialogues and/or let them finish the level.
+
+First variation = 
+    Introduction to our friend and the environment, minor interaction with NPC.
+
+Second variation =
+    Enter a new level after completing the first variation.
+    Includes more interactions, dialogues, need to collect things to leave the level and go to the next one.
+
+Third variation = 
+    After entering the level, things happen...
+        Scary music/night sounds. sun goes down/it gets dark. Need to pick up a torch/lantern to see.
+    The player needs to go through a labyrinth? or a scary forest filled with creatures, before exiting and getting home safely after such long adventures.
 
 # just cool ideas to integrate
 pippin's name tag simulator https://editor.p5js.org/pippinbarr/sketches/ssgYeBo8R
@@ -79,3 +104,12 @@ pippin's name tag simulator https://editor.p5js.org/pippinbarr/sketches/ssgYeBo8
 erase();
 clip();
 mask();
+keyPressed() for controls (AWSD, E for interact)
+
+JSON for dialogues.
+
+grid for making the map.
+
+array for objects on the map.
+
+
