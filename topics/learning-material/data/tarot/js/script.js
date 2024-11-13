@@ -8,10 +8,10 @@
 "use strict";
 
 // tarot data
-let tarot = undefined;
+let tarot;
 
 /**
- * Load the tarot data
+ * Load tarot
  */
 function preload() {
     tarot = loadJSON("assets/data/tarot_interpretations.json");
@@ -31,15 +31,13 @@ function setup() {
 function draw() {
     background(0);
 
-    const description = tarot.description;
+    // const description = tarot.description;
 
-    // displays the information
-    push();
-    textSize(16);
-    fill("yellow");
-    textALign(CENTER, CENTER);
-    text(description, width / 2, height / 2);
-    pop();
-
-
+    // // displays the information
+    // push();
+    // textSize(16);
+    // fill("yellow");
+    // textALign(CENTER, CENTER);
+    // text(description, width / 2, height / 2);
+    // pop();
 }
