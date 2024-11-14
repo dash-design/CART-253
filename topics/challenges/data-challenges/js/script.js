@@ -14,7 +14,7 @@
 let honorificsData = undefined;
 let lovecraftData = undefined;
 let langData = undefined;
-let lang = "fr";
+let lang = "en";
 
 let titledDeity = "Click to meet a distinguished gentleman";
 
@@ -32,6 +32,18 @@ function preload() {
 */
 function setup() {
     createCanvas(600, 400);
+
+    // Better way to implement the lang without repetition
+    titledDeity = langData.instructions[lang];
+
+    // Way to do it with an if statement
+    // if (lang === "fr") {
+    //     titledDeity = langData.instructions.fr;
+    // }
+
+    // else if (lang === "en") {
+    //     titledDeity = langData.instructions.en;
+    // }
 }
 
 /**
@@ -58,6 +70,10 @@ function mousePressed() {
     const deity = random(lovecraftData.deities);
     // Join them together
     titledDeity = honorific + "\n" + deity;
+
+    // Alternative way to write it
+    // titledDeity = `My name is ${honorific} ${deity}`;
+
     // Convert to upper case
     // titledDeity = titledDeity.toUpperCase();
     // Replace all the spaces with \n to make each word go on a new line
