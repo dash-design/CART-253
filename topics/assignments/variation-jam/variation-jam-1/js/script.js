@@ -2,35 +2,34 @@
  * Title of Project
  * Ellie "DASH" Desjardins
  * 
- * Description of the project
+ * A primitive grid-based program that you can move around in and
+ * collect the letter c, and where the W serves as a wall
  *
  */
 
 "use strict";
 
-/**
-A primitive grid-based program that you can move around in and
-collect the letter O, and where the W serves as a wall
-*/
-
-let grid = [];
+let grid = [
+    ["W", "W", "W", "W", "W", "W", " ", "W", "W", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
+];
 // How many rows and columns in the grid?
-let rows = 15;
-let cols = 11;
+const rows = 9;
+const cols = 13;
 // The unit size (how big a square for each tile)
 let unit = 64;
 
-// What are the possible things can can be put in the grid?
-// Here it's just a (W) wall and (c) collectible. There empty
-// strings are there to make it more likely we put "nothing" in
-// a grid space
-let walls = [`W`, ``, ``, ``, ``];
-let items = [`c`, ``, ``, ``, ``, ``, ``];
-
 // The player starts at 0,0 on the grid and starts out a bit small
 let player = {
-    r: 7,
-    c: 0,
+    r: 0,
+    c: 6,
     size: unit / 5
 }
 
@@ -38,25 +37,36 @@ let player = {
 Create and populate the grid
 */
 function setup() {
-    createCanvas(rows * unit, cols * unit);
+    createCanvas(cols * unit, rows * unit);
 
-    // Go through the grid's rows
-    for (let r = 0; r < rows; r++) {
-        // For each row add an empty array to represent the row
-        grid.push([]);
-        // Go through all the columns in this row
-        for (let c = 0; c < cols; c++) {
-            // Choose a random item to add at this position
-            // (A W, c, or nothing)
-            let item = random(items);
-            let wall = random(walls);
-            // Add it to the row
-            grid[r].push(item);
-            grid[r].push(wall);
+    // Walls
+    let wallsToPlace = 9;
+    while (wallsToPlace > 0) {
+        // Find position
+        let r = floor(random(0, rows));
+        let c = floor(random(0, cols));
+        // Place an item
+        if (grid[r][c] === " ") {
+            grid[r][c] = "W";
+            wallsToPlace = wallsToPlace - 1;
         }
     }
+
+    // Items
+    let itemsToPlace = 3;
+    while (itemsToPlace > 0) {
+        // Find position
+        let r = floor(random(0, rows));
+        let c = floor(random(0, cols));
+        // Place an item
+        if (grid[r][c] === " ") {
+            grid[r][c] = "c";
+            itemsToPlace = itemsToPlace - 1;
+        }
+    }
+
     // Make the position the player starts at empty!
-    grid[player.r][player.c] = ``;
+    grid[player.r][player.c] = ` `;
 }
 
 /**
@@ -72,19 +82,53 @@ function draw() {
             let item = grid[r][c];
 
             // Draw a square so we can see the grid space
-            push();
-            stroke(255);
-            noFill();
-            rect(r * unit, c * unit, unit, unit);
-            pop();
+            // push();
+            // noStroke();
+            // stroke(255);
+            // noFill();
+            // rect(c * unit, r * unit, unit, unit);
+            // pop();
 
-            // Display the item (as text for now)
-            push();
-            textSize(unit);
-            textAlign(CENTER, CENTER);
-            fill(255);
-            text(item, r * unit + unit / 2, c * unit + unit / 2);
-            pop();
+            if (item === "W") {
+                push();
+                fill(230, 230, 230);
+                noStroke();
+                rectMode(CENTER);
+                rect(c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                pop();
+            }
+
+            else if (item === "c") {
+                push();
+                fill(255, 255, 0);
+                noStroke();
+                rectMode(CENTER);
+                ellipse(c * unit + unit / 2, r * unit + unit / 2, unit / 3, unit / 3);
+                pop();
+            }
+
+            else if (item === "D") {
+                push();
+                fill(0, 255, 0);
+                noStroke();
+                rectMode(CENTER);
+                rect(c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                pop();
+            }
+
+
+
+            // // Display the item (as text for now)
+            // push();
+            // // fill(255, 255, 255);
+            // // noStroke();
+            // // rectMode(CENTER);
+            // // rect(c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            // textSize(unit);
+            // textAlign(CENTER, CENTER);
+            // fill(255);
+            // text(item, c * unit + unit / 2, r * unit + unit / 2);
+            // pop();
         }
     }
 
@@ -93,7 +137,7 @@ function draw() {
     fill(255, 0, 0);
     noStroke();
     rectMode(CENTER);
-    rect(player.r * unit + unit / 2, player.c * unit + unit / 2, player.size, player.size);
+    rect(player.c * unit + unit / 2, player.r * unit + unit / 2, player.size, player.size);
     pop();
 }
 
@@ -112,19 +156,19 @@ function keyPressed() {
     // Adjust the row and column position based on the arrow key
     // A
     if (keyCode === 65) {
-        newR -= 1;
+        newC -= 1;
     }
     // D
     else if (keyCode === 68) {
-        newR += 1;
+        newC += 1;
     }
     // W
     else if (keyCode === 87) {
-        newC -= 1;
+        newR -= 1;
     }
     // S
     else if (keyCode === 83) {
-        newC += 1;
+        newR += 1;
     }
 
     // Constrain so the player can't walk off the edges
@@ -132,14 +176,14 @@ function keyPressed() {
     newC = constrain(newC, 0, cols - 1);
 
     // Now check what is at the position the player tried to move to
-    if (grid[newR][newC] === ``) {
+    if (grid[newR][newC] === ` ` || grid[newR][newC] === `D`) {
         // If nothing, they can just move there
         player.r = newR;
         player.c = newC;
     }
     else if (grid[newR][newC] === `c`) {
         // If it's a collectible then empty that spot
-        grid[newR][newC] = ``;
+        grid[newR][newC] = ` `;
         // Make the player grow (but constrain to the unit size)
         player.size += unit / 10;
         player.size = constrain(player.size, 0, unit);
