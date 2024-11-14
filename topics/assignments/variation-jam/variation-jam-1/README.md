@@ -18,4 +18,6 @@ This project uses [p5.js](https://p5js.org).
 
 This bit should attribute any assets or other elements used taken from other sources. For example:
 
+The base code on which the project was builded was taken from [Pippin Barr's "Random tile-based "maze" with collection" example](https://editor.p5js.org/pippinbarr/sketches/Xq3qsbQWA)
+
 The fish images were sourced from the [Creative Commons image "Georgia Aquarium Fish"](https://search.creativecommons.org/photos/96f6f770-eac1-488c-8abb-16bee7bcc874) by Mike Johnston which is licensed with CC BY 2.0. To view a copy of this license, visit https://creativecommons.org/licenses/by/2.0/.
