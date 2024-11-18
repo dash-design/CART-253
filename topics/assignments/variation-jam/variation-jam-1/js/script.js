@@ -176,7 +176,7 @@ function keyPressed() {
     newC = constrain(newC, 0, cols - 1);
 
     // Now check what is at the position the player tried to move to
-    if (grid[newR][newC] === ` ` || grid[newR][newC] === `D`) {
+    if (grid[newR][newC] === ` ` || grid[newR][newC] === `D` || grid[newR][newC] === `N`) {
         // If nothing, they can just move there
         player.r = newR;
         player.c = newC;
