@@ -19,10 +19,12 @@ let grid = [
     ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
     ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
     ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+
 ];
 
 // How many rows and columns in the grid?
-const rows = 9;
+const rows = 10;
 const cols = 13;
 // The unit size (how big a square for each tile)
 let unit = 64;
@@ -45,6 +47,14 @@ let ground;
 // The coin item
 let coin;
 
+// Max nomber of keys
+const maxKeys = 3;
+
+// Current nomber of keys
+let keys = maxKeys;
+
+const enemyToPlace = 2;
+
 function preload() {
     pixelFont = loadFont('assets/font/slkscr.ttf');
     goblin = loadImage('assets/images/goblin.png');
@@ -66,9 +76,11 @@ let enemy = {
     c: 0,
     size: unit,
     direction: 1,
-    moveInterval: 50,
+    moveInterval: 30,
     moveTime: 0
 };
+
+const enemies = [];
 
 // The rabbit speed
 let enemySpeed = enemy.direction;
@@ -165,6 +177,10 @@ function draw() {
     // Draw the player
     drawPlayer();
     drawEnemy();
+    drawKeys();
+    // for (let i = 0; i < enemies.length; i++) {
+    //     let enemies = enemies[i];
+    // }
 }
 
 // Display the player
@@ -174,6 +190,17 @@ function drawPlayer() {
     noStroke();
     imageMode(CENTER);
     image(goblin, player.c * unit + unit / 2, player.r * unit + unit / 2, player.size, player.size)
+    pop();
+}
+
+// Display the number of keys in the bottom right corner
+function drawKeys() {
+    push();
+    textAlign(RIGHT, BOTTOM);
+    textSize(28);
+    textStyle(BOLD);
+    fill("red");
+    text("♥️".repeat(keys), width - 20, height - 20);
     pop();
 }
 
@@ -208,14 +235,23 @@ function moveEnemy() {
     enemy.moveTime++;
 
     if (enemy.moveTime >= enemy.moveInterval) {
-        enemy.c += enemySpeed;
-        enemy.moveTime = 0;
-        if (enemy.c >= cols) {
-            resetEnemy();
+        // Next col according to the enemy direction
+        let nextCol = enemy.c + enemy.direction;
+
+        // Checks if next col is valid
+        if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
+            // If it is
+            enemy.c += enemy.direction;
         }
+        else {
+            enemy.direction *= -1;
+            // enemy.moveTime = 0;
+            // if (enemy.c >= cols) {
+            // resetEnemy();
+        }
+        enemy.moveTime = 0;
     }
 }
-
 
 /**
 Key pressed are there to handle movement, but we also use this to check
