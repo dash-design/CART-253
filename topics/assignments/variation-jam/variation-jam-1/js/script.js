@@ -29,39 +29,53 @@ const cols = 13;
 // The unit size (how big a square for each tile)
 let unit = 64;
 
-// The font
 let pixelFont;
 
-// The player character
 let goblin;
 
-// The rabbit
 let rabbit;
 
-// The wall tile
 let wall;
 
-// The ground tile
 let ground;
 
-// The coin item
 let coin;
 
-// Max nomber of keys
+let door;
+
+let key;
+
+let keyOutline;
+
+let wizard;
+
+let npcNames = undefined;
+
+// Max number of keys
 const maxKeys = 3;
 
 // Current nomber of keys
-let keys = maxKeys;
+let keys = [];
 
-const enemyToPlace = 2;
+// The key in the inventory
+let inventoryKey = {
+    r: 8,
+    c: 0,
+    size: unit * 1.75
+}
 
 function preload() {
     pixelFont = loadFont('assets/font/slkscr.ttf');
     goblin = loadImage('assets/images/goblin.png');
     rabbit = loadImage('assets/images/rabbit.png');
-    wall = loadImage('assets/images/wall.png');
+    wall = loadImage('assets/images/brick.png');
     ground = loadImage('assets/images/ground.png');
     coin = loadImage('assets/images/coin.png');
+    door = loadImage('assets/images/block.png');
+    key = loadImage('assets/images/key.png');
+    keyOutline = loadImage('assets/images/keyoutline.png');
+    wizard = loadImage('assets/images/wizard.png');
+    npcNames = loadJSON('assets/data/lovecraft.json');
 }
 
 // The player starts at 0,0 on the grid
@@ -69,6 +83,17 @@ let player = {
     r: 0,
     c: 6,
     size: unit
+}
+
+const maxLives = 3;
+
+let lives = [0];
+
+// The lives in the inventory
+let inventoryLives = {
+    r: 8,
+    c: 13,
+    size: unit * 1.75
 }
 
 let enemy = {
@@ -80,10 +105,18 @@ let enemy = {
     moveTime: 0
 };
 
-const enemies = [];
+let enemiesTotal = 2;
+
+let enemies = [];
 
 // The rabbit speed
 let enemySpeed = enemy.direction;
+
+let npc = {
+    r: 0,
+    c: 0,
+    size: unit
+}
 
 /**
 Create and populate the grid
@@ -121,6 +154,7 @@ function setup() {
     grid[player.r][player.c] = " ";
 
     resetEnemy();
+    placeNpc();
 }
 
 /**
@@ -159,7 +193,7 @@ function draw() {
                 noFill();
                 noStroke();
                 imageMode(CENTER);
-                image(coin, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+                image(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25)
                 pop();
             }
 
@@ -168,19 +202,34 @@ function draw() {
                 noFill();
                 noStroke();
                 imageMode(CENTER);
-                image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+
+                if (keys.length >= maxKeys) {
+                    image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+                }
+                else {
+                    image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+                }
                 pop();
             }
         }
     }
+    game();
+}
 
+function game() {
     // Draw the player
     drawPlayer();
+    // Draws the enemy
     drawEnemy();
+    // Draws the NPC
+    drawNpc();
+    // Draws the keys
     drawKeys();
-    // for (let i = 0; i < enemies.length; i++) {
-    //     let enemies = enemies[i];
-    // }
+    // Checks collision with the enemy
+    checkEnemyCollision();
+    // Draws the player's life
+    drawLife();
+    openDialogue()
 }
 
 // Display the player
@@ -193,34 +242,91 @@ function drawPlayer() {
     pop();
 }
 
-// Display the number of keys in the bottom right corner
-function drawKeys() {
-    push();
-    textAlign(RIGHT, BOTTOM);
-    textSize(28);
-    textStyle(BOLD);
-    fill("red");
-    text("♥️".repeat(keys), width - 20, height - 20);
-    pop();
+function drawEnemy() {
+    let enemyToPlace = 2;
+    while (enemyToPlace = enemyToPlace - 1) {
+        push();
+        noStroke();
+        noFill();
+        imageMode(CENTER);
+        image(rabbit, enemy.c * unit + unit / 2, enemy.r * unit + unit / 2, enemy.size, enemy.size);
+        pop();
+    }
 }
 
-function drawEnemy() {
+function placeNpc() {
+    while (true) {
+        let r = floor(random(0, rows));
+        let c = floor(random(0, cols));
+        if (grid[r][c] === " ") {
+            npc.r = r;
+            npc.c = c;
+            break;
+        }
+    }
+}
+
+function drawNpc() {
     push();
     noStroke();
     noFill();
     imageMode(CENTER);
-    image(rabbit, enemy.c * unit + unit / 2, enemy.r * unit + unit / 2, enemy.size, enemy.size);
+    image(wizard, npc.c * unit + unit / 2, npc.r * unit + unit / 2, npc.size, npc.size);
     pop();
 }
 
+// Display the number of keys in the bottom left corner
+function drawKeys() {
+    for (let k = 0; k < maxKeys; k++) {
+        push();
+        noStroke();
+        noFill();
+        imageMode(CENTER);
+        if (k < keys.length) {
+            image(key, (inventoryKey.c + k) * unit + unit / 2, (inventoryKey.r * unit) + unit, inventoryKey.size, inventoryKey.size);
+        }
+        else {
+            image(keyOutline, (inventoryKey.c + k) * unit + unit / 2, (inventoryKey.r * unit) + unit, inventoryKey.size, inventoryKey.size);
+        }
+        pop();
+    }
+}
+
+// Checks if the player get killed by an enemy
+function checkEnemyCollision() {
+    if (player.c === enemy.c && player.r === enemy.r) {
+        console.log("You died!");
+        lives = lives - 1;
+    }
+}
+
+// Display the number of lives in the bottom right corner
+function drawLife() {
+    for (let i = 0; i < maxLives; i++) {
+        push();
+        noStroke();
+        noFill();
+        imageMode(CENTER);
+        if (i < lives.length) {
+            image(key, (inventoryLives.c - i) * unit - unit / 2, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
+        }
+        else {
+            image(keyOutline, (inventoryLives.c - i) * unit - unit / 2, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
+        }
+        pop();
+    }
+}
+
 function resetEnemy() {
-    let enemyToPlace = 1;
+    let enemyToPlace = enemiesTotal;
+
+    enemies = [];
 
     while (enemyToPlace > 0) {
         // Find position
         let r = floor(random(1, rows));
         let c = floor(random(0, cols));
-        // Place an enemy
+        // Place an enemy on an empty tile
         if (grid[r][c] === " ") {
             enemy.r = r;
             enemy.c = c;
@@ -288,7 +394,7 @@ function keyPressed() {
     newC = constrain(newC, 0, cols - 1);
 
     // Now check what is at the position the player tried to move to
-    if (grid[newR][newC] === ` ` || grid[newR][newC] === `D` || grid[newR][newC] === `N`) {
+    if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
         // If nothing, they can just move there
         player.r = newR;
         player.c = newC;
@@ -297,10 +403,46 @@ function keyPressed() {
         // If it's a collectible then empty that spot
         grid[newR][newC] = ` `;
         // Make the player grow (but constrain to the unit size)
-        player.size += unit / 10;
-        player.size = constrain(player.size, 0, unit);
+        // player.size += unit / 10;
+        // player.size = constrain(player.size, 0, unit);
         // And let them move to that space
         player.r = newR;
         player.c = newC;
+        if (keys.length < maxKeys) {
+            // Increase the number of keys that the player has
+            keys.push(true);
+        }
+
+    }
+    else if (grid[newR][newC] === `D`) {
+        // If the player has enough keys, then they can move
+        if (keys.length >= maxKeys) {
+            player.r = newR;
+            player.c = newC;
+            console.log("You win!");
+        }
+    }
+
+    // if (player.c === npc.c && player.r === npc.r && keyCode === 32) {
+    //     openDialogue();
+    // }
+    return false;
+}
+
+function openDialogue() {
+    if (player.c === npc.c && player.r === npc.r) {
+        let npcName = random(npcNames.deities);
+
+        push();
+        rectMode(CENTER);
+        noStroke();
+        fill(0, 100);
+        rect(6 * unit + unit / 2, 9 * unit, unit * 6, unit * 1.5);
+
+        fill(255);
+        textAlign(CENTER, CENTER);
+        textSize(32);
+        text(npcName, 6 * unit + unit / 2, 9 * unit);
+        pop();
     }
 }
