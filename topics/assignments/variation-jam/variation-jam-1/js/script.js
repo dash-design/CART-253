@@ -10,7 +10,7 @@
 "use strict";
 
 let grid = [
-    ["W", "W", "W", "W", "W", "W", " ", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
     ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
     ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
     ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
@@ -41,6 +41,8 @@ let ground;
 
 let coin;
 
+let coinOutline;
+
 let door;
 
 let key;
@@ -55,19 +57,6 @@ let wizard;
 
 let npcNames = undefined;
 
-// Max number of keys
-const maxKeys = 3;
-
-// Current nomber of keys
-let keys = [];
-
-// The key in the inventory
-let inventoryKey = {
-    r: 8,
-    c: 0,
-    size: unit * 1.75
-}
-
 function preload() {
     pixelFont = loadFont('assets/font/slkscr.ttf');
     goblin = loadImage('assets/images/goblin.png');
@@ -75,6 +64,7 @@ function preload() {
     wall = loadImage('assets/images/brick.png');
     ground = loadImage('assets/images/ground.png');
     coin = loadImage('assets/images/coin.png');
+    coinOutline = loadImage('assets/images/coinoutline.png');
     door = loadImage('assets/images/door.png');
     key = loadImage('assets/images/key.png');
     keyOutline = loadImage('assets/images/keyoutline.png');
@@ -99,7 +89,33 @@ let lives = [0];
 let inventoryLives = {
     r: 8,
     c: 13,
-    size: unit * 2
+    size: unit * 1.5
+}
+
+// Max number of keys
+const maxKeys = 3;
+
+// Current nomber of keys
+let keys = [];
+
+// The key in the inventory
+let inventoryKey = {
+    r: 8,
+    c: 0,
+    size: unit * 1.25
+}
+
+// Max number of coins
+const maxCoins = 3;
+
+// Current number of coins
+let coins = [];
+
+// The coins in the inventory
+let inventoryCoin = {
+    r: 9,
+    c: 0,
+    size: unit * 1.5
 }
 
 let enemy = {
@@ -107,7 +123,7 @@ let enemy = {
     c: 0,
     size: unit,
     direction: 1,
-    moveInterval: 30,
+    moveInterval: 5,
     moveTime: 0
 };
 
@@ -157,7 +173,7 @@ function setup() {
     }
 
     // Make the position the player starts at empty!
-    grid[player.r][player.c] = " ";
+    grid[player.r][player.c] = "N";
 
     resetEnemy();
     placeNpc();
@@ -229,12 +245,14 @@ function game() {
     drawEnemy();
     // Draws the NPC
     drawNpc();
-    // Draws the keys
-    drawKeys();
-    // Checks collision with the enemy
-    checkEnemyCollision();
     // Draws the player's life
     drawLife();
+    // Draws the keys
+    drawKeys();
+    // Draws the coins
+    drawCoins();
+    // Checks collision with the enemy
+    checkEnemyCollision();
     openDialogue()
 }
 
@@ -281,6 +299,23 @@ function drawNpc() {
     pop();
 }
 
+// Display the number of lives in the bottom right corner
+function drawLife() {
+    for (let i = 0; i < maxLives; i++) {
+        push();
+        noStroke();
+        noFill();
+        imageMode(CENTER);
+        if (i < lives.length) {
+            image(heart, (inventoryLives.c - i) * unit - unit / 1.5, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
+        }
+        else {
+            image(heartOutline, (inventoryLives.c - i) * unit - unit / 1.5, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
+        }
+        pop();
+    }
+}
+
 // Display the number of keys in the bottom left corner
 function drawKeys() {
     for (let k = 0; k < maxKeys; k++) {
@@ -289,10 +324,27 @@ function drawKeys() {
         noFill();
         imageMode(CENTER);
         if (k < keys.length) {
-            image(key, (inventoryKey.c + k) * unit + unit / 2, (inventoryKey.r * unit) + unit, inventoryKey.size, inventoryKey.size);
+            image(key, (inventoryKey.c + k) * (unit / 1.25) + unit / 1.6, (inventoryKey.r * unit) + unit / 1.5, inventoryKey.size, inventoryKey.size);
         }
         else {
-            image(keyOutline, (inventoryKey.c + k) * unit + unit / 2, (inventoryKey.r * unit) + unit, inventoryKey.size, inventoryKey.size);
+            image(keyOutline, (inventoryKey.c + k) * (unit / 1.25) + unit / 1.6, (inventoryKey.r * unit) + unit / 1.5, inventoryKey.size, inventoryKey.size);
+        }
+        pop();
+    }
+}
+
+// Display the number of coinss in the bottom left corner
+function drawCoins() {
+    for (let i = 0; i < maxCoins; i++) {
+        push();
+        noStroke();
+        noFill();
+        imageMode(CENTER);
+        if (i < coins.length) {
+            image(coin, (inventoryCoin.c + i) * (unit / 1.25) + unit / 1.5, (inventoryCoin.r * unit) + unit / 1.75, inventoryCoin.size, inventoryCoin.size);
+        }
+        else {
+            image(coinOutline, (inventoryCoin.c + i) * (unit / 1.25) + unit / 1.5, (inventoryCoin.r * unit) + unit / 1.75, inventoryCoin.size, inventoryCoin.size);
         }
         pop();
     }
@@ -303,23 +355,6 @@ function checkEnemyCollision() {
     if (player.c === enemy.c && player.r === enemy.r) {
         console.log("You died!");
         lives = lives - 1;
-    }
-}
-
-// Display the number of lives in the bottom right corner
-function drawLife() {
-    for (let i = 0; i < maxLives; i++) {
-        push();
-        noStroke();
-        noFill();
-        imageMode(CENTER);
-        if (i < lives.length) {
-            image(heart, (inventoryLives.c - i) * unit - unit / 2, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
-        }
-        else {
-            image(heartOutline, (inventoryLives.c - i) * unit - unit / 2, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
-        }
-        pop();
     }
 }
 
