@@ -9,7 +9,6 @@
 
 "use strict";
 
-// The game grid
 let grid = [
     ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
     ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
@@ -30,7 +29,6 @@ const cols = 13;
 // The unit size (how big a square for each tile)
 let unit = 64;
 
-// Game elements
 let pixelFont;
 
 let goblin;
@@ -57,13 +55,12 @@ let heartOutline;
 
 let wizard;
 
-let npcNames;
+let npcNames = undefined;
 
 let npcName;
 
-let night;
+let win = false;
 
-// Preload game assets
 function preload() {
     pixelFont = loadFont('assets/font/slkscr.ttf');
     goblin = loadImage('assets/images/goblin.png');
@@ -79,14 +76,7 @@ function preload() {
     heartOutline = loadImage('assets/images/heartoutline.png');
     wizard = loadImage('assets/images/wizard.png');
     npcNames = loadJSON('assets/data/lovecraft.json');
-    night = loadImage('assets/images/mask.png');
 }
-
-// let tiles = {
-//     c: c * unit + unit / 2,
-//     r: r * unit + unit / 2,
-//     size: unit
-// }
 
 // The player starts at 0,0 on the grid
 let player = {
@@ -95,20 +85,9 @@ let player = {
     size: unit
 }
 
-// Max number of lives
 const maxLives = 3;
 
 let lives = [0];
-
-// Max number of keys
-const maxKeys = 3;
-
-let keys = [];
-
-// Max number of coins
-const maxCoins = 3;
-
-let coins = [];
 
 // The lives in the inventory
 let inventoryLives = {
@@ -117,12 +96,24 @@ let inventoryLives = {
     size: unit * 1.5
 }
 
+// Max number of keys
+const maxKeys = 3;
+
+// Current nomber of keys
+let keys = [];
+
 // The key in the inventory
 let inventoryKey = {
     r: 8,
     c: 0,
     size: unit * 1.25
 }
+
+// Max number of coins
+const maxCoins = 3;
+
+// Current number of coins
+let coins = [];
 
 // The coins in the inventory
 let inventoryCoin = {
@@ -131,10 +122,12 @@ let inventoryCoin = {
     size: unit * 1.5
 }
 
-// Total amount of enemies
-let enemiesTotal = 4;
+let enemiesTotal = 3;
 
 let enemies = [];
+
+// // The rabbit speed
+// let enemySpeed = enemy.direction;
 
 // let npc = {
 //     r: 0,
@@ -142,29 +135,17 @@ let enemies = [];
 //     size: unit
 // }
 
-// Total number of NPCs
 let npcTotal = 2;
 
 let npcs = [];
 
-// The NPCs dialogues
-let npcSpeech = [
-    "Hello",
-    "Hi",
-    "Bye"];
-
-// let mask = {
-//     size: (cols * unit) * 3
-// };
-
 /**
-Creates and populate the grid
+Create and populate the grid
 */
 function setup() {
     createCanvas(cols * unit, rows * unit);
 
-    // Number of walls to place
-    // And place them
+    // Walls
     let wallsToPlace = 12;
     while (wallsToPlace > 0) {
         // Find position
@@ -177,8 +158,7 @@ function setup() {
         }
     }
 
-    // Number of items to place
-    // And place them
+    // Items
     let itemsToPlace = 3;
     while (itemsToPlace > 0) {
         // Find position
@@ -191,12 +171,10 @@ function setup() {
         }
     }
 
-    // Makes the position the player starts at empty!
+    // Make the position the player starts at empty!
     grid[player.r][player.c] = "N";
 
-    // Creates the enemies
     setEnemies();
-    // Creates the NPCs
     setNpc();
 }
 
@@ -208,13 +186,13 @@ function draw() {
 
     // moveEnemies();
 
-    // Goes through all the rows and columns
+    // Go through all the rows and columns
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            // Gets the item at this position
+            // Get the item at this position
             let item = grid[r][c];
 
-            // Draws the grid and uses the ground asset by default
+            // Draw a square so we can see the grid space
             push();
             noFill();
             noStroke();
@@ -222,7 +200,6 @@ function draw() {
             image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
             pop();
 
-            // Places the walls
             if (item === "W") {
                 push();
                 noFill();
@@ -232,7 +209,6 @@ function draw() {
                 pop();
             }
 
-            // Places the keys
             else if (item === "c") {
                 push();
                 noFill();
@@ -241,18 +217,16 @@ function draw() {
                 image(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25)
                 pop();
             }
-            // Places the door
+
             else if (item === "D") {
                 push();
                 noFill();
                 noStroke();
                 imageMode(CENTER);
 
-                //  If the player has enough keys, the door is opened
                 if (keys.length >= maxKeys) {
                     image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
-                // If not, the door stays locked
                 else {
                     image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
@@ -260,12 +234,10 @@ function draw() {
             }
         }
     }
-    // The game functions
     game();
 }
 
 function game() {
-    // Moves the enemies
     moveEnemies();
     // Checks collision with the enemy
     checkEnemiesCollision();
@@ -276,8 +248,6 @@ function game() {
     drawNpc();
     // Draw the player
     drawPlayer();
-    // Draw mask
-    // drawMask();
     // Draws the player's life
     drawLife();
     // Draws the keys
@@ -285,20 +255,10 @@ function game() {
     // Draws the coins
     drawCoins();
 
-    // Shows the dialogue wih the NPCs
     openDialogue()
 }
 
-// function drawMask() {
-//     push();
-//     noFill();
-//     noStroke();
-//     imageMode(CENTER);
-//     image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
-//     pop();
-// }
-
-// Displays the player
+// Display the player
 function drawPlayer() {
     push();
     noFill();
@@ -308,7 +268,6 @@ function drawPlayer() {
     pop();
 }
 
-// Creates the enemies
 function setEnemies() {
     let enemiesToPlace = enemiesTotal;
 
@@ -334,7 +293,6 @@ function setEnemies() {
     }
 }
 
-// Moves the enemies
 function moveEnemies() {
     for (let enemy of enemies) {
         enemy.moveTime++;
@@ -365,7 +323,6 @@ function checkEnemiesCollision() {
     }
 }
 
-// Draws the enemies
 function drawEnemies() {
     for (let enemy of enemies) {
         push();
@@ -377,20 +334,18 @@ function drawEnemies() {
     }
 }
 
-// Populates the grid with the NPCs
-// function placeNpc() {
-//     while (true) {
-//         let r = floor(random(0, rows));
-//         let c = floor(random(0, cols));
-//         if (grid[r][c] === " ") {
-//             npc.r = r;
-//             npc.c = c;
-//             break;
-//         }
-//     }
-// }
+function placeNpc() {
+    while (true) {
+        let r = floor(random(0, rows));
+        let c = floor(random(0, cols));
+        if (grid[r][c] === " ") {
+            npc.r = r;
+            npc.c = c;
+            break;
+        }
+    }
+}
 
-// Creates the NPCs
 function setNpc() {
     let npcToPlace = npcTotal;
     // npcName = random(npcNames.deities);
@@ -407,8 +362,7 @@ function setNpc() {
                 r: r,
                 c: c,
                 size: unit,
-                name: random(npcNames.deities),
-                speech: npcSpeech[npcToPlace - 1]
+                name: random(npcNames.deities)
             }
             npcs.push(newNpc);
             npcToPlace = npcToPlace - 1;
@@ -416,7 +370,6 @@ function setNpc() {
     }
 }
 
-// Draws the NPCs
 function drawNpc() {
     for (let npc of npcs) {
         push();
@@ -428,7 +381,7 @@ function drawNpc() {
     }
 }
 
-// Draws the lives in the bottom right corner of the inventory
+// Display the number of lives in the bottom right corner
 function drawLife() {
     for (let i = 0; i < maxLives; i++) {
         push();
@@ -445,7 +398,7 @@ function drawLife() {
     }
 }
 
-// Draws the keys in the bottom left corner of the inventory
+// Display the number of keys in the bottom left corner
 function drawKeys() {
     for (let k = 0; k < maxKeys; k++) {
         push();
@@ -462,7 +415,7 @@ function drawKeys() {
     }
 }
 
-// Draws the coins in the bottom left corner of the inventory
+// Display the number of coinss in the bottom left corner
 function drawCoins() {
     for (let i = 0; i < maxCoins; i++) {
         push();
@@ -480,18 +433,18 @@ function drawCoins() {
 }
 
 /**
-* Controls the movements of the player
-* Determines which tiles are accessible or not
-* Determines the effect of some tiles when the player moves on them
+Key pressed are there to handle movement, but we also use this to check
+whether the player tried to walk through a wall, or whether they
+picked up a collectible
 */
 function keyPressed() {
-    // Creates new variables for the player's position
-    // This will checks what's there
-    // Then moves the player if possible
+    // First of all create new variables for the player's position
+    // This will enable us to check what's there without actually
+    // moving the player
     let newR = player.r;
     let newC = player.c;
 
-    // Adjusts the row and column position based on the arrow key
+    // Adjust the row and column position based on the arrow key
     // A
     if (keyCode === 65) {
         newC -= 1;
@@ -513,16 +466,19 @@ function keyPressed() {
     newR = constrain(newR, 0, rows - 1);
     newC = constrain(newC, 0, cols - 1);
 
-    // Checks what is at the position the player tried to move to
+    // Now check what is at the position the player tried to move to
     if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
-        // If nothing, the player moves there
+        // If nothing, they can just move there
         player.r = newR;
         player.c = newC;
     }
     else if (grid[newR][newC] === `c`) {
         // If it's a collectible then empty that spot
         grid[newR][newC] = ` `;
-        // Then the player moves there
+        // Make the player grow (but constrain to the unit size)
+        // player.size += unit / 10;
+        // player.size = constrain(player.size, 0, unit);
+        // And let them move to that space
         player.r = newR;
         player.c = newC;
         if (keys.length < maxKeys) {
@@ -531,21 +487,18 @@ function keyPressed() {
         }
 
     }
-    // Checks if it is a door tile
     else if (grid[newR][newC] === `D`) {
         // If the player has enough keys, then they can move
         if (keys.length >= maxKeys) {
             player.r = newR;
             player.c = newC;
-            console.log("You win!");
-            // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // window.location.href = "../variation-jam-2/index.html";
+            // console.log("You win!");
+            window.location.href = "https://editor.p5js.org/";
         }
     }
     return false;
 }
 
-// The dialogue and dialogue window when talking to the NPCs
 function openDialogue() {
     for (let npc of npcs) {
         if (player.c === npc.c && player.r === npc.r) {
@@ -556,16 +509,9 @@ function openDialogue() {
             rect(6 * unit + unit / 2, 9 * unit, unit * 6, unit * 1.5);
 
             fill(255);
-            // rectMode(CENTER);
-            textFont(pixelFont);
-            textAlign(TOP, LEFT);
-            textSize(28);
-            text(npc.name + ":\n", 6 * unit + unit / 2, 9.5 * unit);
-            // rectMode(CENTER);
-            textFont(pixelFont);
             textAlign(CENTER, CENTER);
-            textSize(22);
-            text(npc.speech, 6 * unit + unit / 2, 9.25 * unit);
+            textSize(32);
+            text(npc.name, 6 * unit + unit / 2, 9 * unit);
             pop();
         }
     }
