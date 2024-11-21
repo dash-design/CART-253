@@ -47,6 +47,10 @@ let key;
 
 let keyOutline;
 
+let heart;
+
+let heartOutline;
+
 let wizard;
 
 let npcNames = undefined;
@@ -71,9 +75,11 @@ function preload() {
     wall = loadImage('assets/images/brick.png');
     ground = loadImage('assets/images/ground.png');
     coin = loadImage('assets/images/coin.png');
-    door = loadImage('assets/images/block.png');
+    door = loadImage('assets/images/door.png');
     key = loadImage('assets/images/key.png');
     keyOutline = loadImage('assets/images/keyoutline.png');
+    heart = loadImage('assets/images/heart.png');
+    heartOutline = loadImage('assets/images/heartoutline.png');
     wizard = loadImage('assets/images/wizard.png');
     npcNames = loadJSON('assets/data/lovecraft.json');
 }
@@ -93,7 +99,7 @@ let lives = [0];
 let inventoryLives = {
     r: 8,
     c: 13,
-    size: unit * 1.75
+    size: unit * 2
 }
 
 let enemy = {
@@ -308,10 +314,10 @@ function drawLife() {
         noFill();
         imageMode(CENTER);
         if (i < lives.length) {
-            image(key, (inventoryLives.c - i) * unit - unit / 2, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
+            image(heart, (inventoryLives.c - i) * unit - unit / 2, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
         }
         else {
-            image(keyOutline, (inventoryLives.c - i) * unit - unit / 2, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
+            image(heartOutline, (inventoryLives.c - i) * unit - unit / 2, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
         }
         pop();
     }
