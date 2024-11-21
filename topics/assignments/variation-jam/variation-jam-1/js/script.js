@@ -57,6 +57,8 @@ let wizard;
 
 let npcNames = undefined;
 
+let npcName;
+
 function preload() {
     pixelFont = loadFont('assets/font/slkscr.ttf');
     goblin = loadImage('assets/images/goblin.png');
@@ -118,27 +120,22 @@ let inventoryCoin = {
     size: unit * 1.5
 }
 
-let enemy = {
-    r: 0,
-    c: 0,
-    size: unit,
-    direction: 1,
-    moveInterval: 5,
-    moveTime: 0
-};
-
-let enemiesTotal = 2;
+let enemiesTotal = 3;
 
 let enemies = [];
 
-// The rabbit speed
-let enemySpeed = enemy.direction;
+// // The rabbit speed
+// let enemySpeed = enemy.direction;
 
-let npc = {
-    r: 0,
-    c: 0,
-    size: unit
-}
+// let npc = {
+//     r: 0,
+//     c: 0,
+//     size: unit
+// }
+
+let npcTotal = 2;
+
+let npcs = [];
 
 /**
 Create and populate the grid
@@ -175,8 +172,8 @@ function setup() {
     // Make the position the player starts at empty!
     grid[player.r][player.c] = "N";
 
-    resetEnemy();
-    placeNpc();
+    setEnemies();
+    setNpc();
 }
 
 /**
@@ -185,7 +182,7 @@ Handles displaying the grid
 function draw() {
     background(0);
 
-    moveEnemy();
+    // moveEnemies();
 
     // Go through all the rows and columns
     for (let r = 0; r < rows; r++) {
@@ -239,20 +236,23 @@ function draw() {
 }
 
 function game() {
-    // Draw the player
-    drawPlayer();
+    moveEnemies();
+    // Checks collision with the enemy
+    checkEnemiesCollision();
+
     // Draws the enemy
-    drawEnemy();
+    drawEnemies();
     // Draws the NPC
     drawNpc();
+    // Draw the player
+    drawPlayer();
     // Draws the player's life
     drawLife();
     // Draws the keys
     drawKeys();
     // Draws the coins
     drawCoins();
-    // Checks collision with the enemy
-    checkEnemyCollision();
+
     openDialogue()
 }
 
@@ -266,9 +266,63 @@ function drawPlayer() {
     pop();
 }
 
-function drawEnemy() {
-    let enemyToPlace = 2;
-    while (enemyToPlace = enemyToPlace - 1) {
+function setEnemies() {
+    let enemiesToPlace = enemiesTotal;
+
+    enemies = [];
+
+    while (enemiesToPlace > 0) {
+        // Find position
+        let r = floor(random(1, rows));
+        let c = floor(random(0, cols));
+        // Place an enemy on an empty tile
+        if (grid[r][c] === " ") {
+            const newEnemy = {
+                r: r,
+                c: c,
+                size: unit,
+                direction: 1,
+                moveInterval: 15,
+                moveTime: 0
+            }
+            enemies.push(newEnemy);
+            enemiesToPlace = enemiesToPlace - 1;
+        }
+    }
+}
+
+function moveEnemies() {
+    for (let enemy of enemies) {
+        enemy.moveTime++;
+        if (enemy.moveTime >= enemy.moveInterval) {
+            // Next col according to the enemy direction
+            let nextCol = enemy.c + enemy.direction;
+
+            // Checks if next col is valid
+            if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
+                // If it is
+                enemy.c += enemy.direction;
+            }
+            else {
+                enemy.direction *= -1;
+            }
+            enemy.moveTime = 0;
+        }
+    }
+}
+
+// Checks if the player get killed by an enemy
+function checkEnemiesCollision() {
+    for (let enemy of enemies) {
+        if (player.c === enemy.c && player.r === enemy.r) {
+            console.log("You died!");
+            lives = lives - 1;
+        }
+    }
+}
+
+function drawEnemies() {
+    for (let enemy of enemies) {
         push();
         noStroke();
         noFill();
@@ -290,13 +344,39 @@ function placeNpc() {
     }
 }
 
+function setNpc() {
+    let npcToPlace = npcTotal;
+    // npcName = random(npcNames.deities);
+
+    npcs = [];
+
+    while (npcToPlace > 0) {
+        // Find position
+        let r = floor(random(1, rows));
+        let c = floor(random(0, cols));
+        // Place an enemy on an empty tile
+        if (grid[r][c] === " ") {
+            const newNpc = {
+                r: r,
+                c: c,
+                size: unit,
+                name: random(npcNames.deities)
+            }
+            npcs.push(newNpc);
+            npcToPlace = npcToPlace - 1;
+        }
+    }
+}
+
 function drawNpc() {
-    push();
-    noStroke();
-    noFill();
-    imageMode(CENTER);
-    image(wizard, npc.c * unit + unit / 2, npc.r * unit + unit / 2, npc.size, npc.size);
-    pop();
+    for (let npc of npcs) {
+        push();
+        noStroke();
+        noFill();
+        imageMode(CENTER);
+        image(wizard, npc.c * unit + unit / 2, npc.r * unit + unit / 2, npc.size, npc.size);
+        pop();
+    }
 }
 
 // Display the number of lives in the bottom right corner
@@ -347,56 +427,6 @@ function drawCoins() {
             image(coinOutline, (inventoryCoin.c + i) * (unit / 1.25) + unit / 1.5, (inventoryCoin.r * unit) + unit / 1.75, inventoryCoin.size, inventoryCoin.size);
         }
         pop();
-    }
-}
-
-// Checks if the player get killed by an enemy
-function checkEnemyCollision() {
-    if (player.c === enemy.c && player.r === enemy.r) {
-        console.log("You died!");
-        lives = lives - 1;
-    }
-}
-
-function resetEnemy() {
-    let enemyToPlace = enemiesTotal;
-
-    enemies = [];
-
-    while (enemyToPlace > 0) {
-        // Find position
-        let r = floor(random(1, rows));
-        let c = floor(random(0, cols));
-        // Place an enemy on an empty tile
-        if (grid[r][c] === " ") {
-            enemy.r = r;
-            enemy.c = c;
-            enemy.direction = 1;
-            enemy.moveTime = 0;
-            enemyToPlace = enemyToPlace - 1;
-        }
-    }
-}
-
-function moveEnemy() {
-    enemy.moveTime++;
-
-    if (enemy.moveTime >= enemy.moveInterval) {
-        // Next col according to the enemy direction
-        let nextCol = enemy.c + enemy.direction;
-
-        // Checks if next col is valid
-        if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
-            // If it is
-            enemy.c += enemy.direction;
-        }
-        else {
-            enemy.direction *= -1;
-            // enemy.moveTime = 0;
-            // if (enemy.c >= cols) {
-            // resetEnemy();
-        }
-        enemy.moveTime = 0;
     }
 }
 
@@ -471,19 +501,19 @@ function keyPressed() {
 }
 
 function openDialogue() {
-    if (player.c === npc.c && player.r === npc.r) {
-        let npcName = random(npcNames.deities);
+    for (let npc of npcs) {
+        if (player.c === npc.c && player.r === npc.r) {
+            push();
+            rectMode(CENTER);
+            noStroke();
+            fill(0, 100);
+            rect(6 * unit + unit / 2, 9 * unit, unit * 6, unit * 1.5);
 
-        push();
-        rectMode(CENTER);
-        noStroke();
-        fill(0, 100);
-        rect(6 * unit + unit / 2, 9 * unit, unit * 6, unit * 1.5);
-
-        fill(255);
-        textAlign(CENTER, CENTER);
-        textSize(32);
-        text(npcName, 6 * unit + unit / 2, 9 * unit);
-        pop();
+            fill(255);
+            textAlign(CENTER, CENTER);
+            textSize(32);
+            text(npc.name, 6 * unit + unit / 2, 9 * unit);
+            pop();
+        }
     }
 }
