@@ -96,7 +96,7 @@ let player = {
 }
 
 // Max number of lives
-const maxLives = 3;
+const maxLives = 2;
 
 let lives = [0];
 
@@ -113,8 +113,8 @@ let coins = [];
 // The lives in the inventory
 let inventoryLives = {
     r: 8,
-    c: 13,
-    size: unit * 1.5
+    c: 12,
+    size: unit * 1.75
 }
 
 // The key in the inventory
@@ -143,19 +143,25 @@ let enemies = [];
 // }
 
 // Total number of NPCs
-let npcTotal = 2;
+let npcTotal = 1;
 
 let npcs = [];
 
 // The NPCs dialogues
 let npcSpeech = [
-    "Hello",
+    "Hello, I am a wizard! Tim the Wizard. Hehe",
     "Hi",
     "Bye"];
 
 // let mask = {
 //     size: (cols * unit) * 3
 // };
+
+let dialogueBox = {
+    r: 8,
+    c: 3,
+    size: unit
+}
 
 /**
 Creates and populate the grid
@@ -260,9 +266,33 @@ function draw() {
             }
         }
     }
+    // drawDialogueBox();
     // The game functions
     game();
 }
+
+// function drawDialogueBox() {
+//     for (let npc of npcs) {
+//         push();
+//         stroke(255, 95);
+//         strokeWeight(2);
+//         fill(0, 200);
+//         rect(3 * unit, 8.125 * unit, 6.75 * unit, 1.75 * unit);
+
+//         fill(255);
+//         // rectMode(CENTER);
+//         textFont(pixelFont);
+//         textAlign(TOP, LEFT);
+//         textSize(24);
+//         text(npc.name + ":\n", 3.125 * unit, 8.5 * unit);
+//         // rectMode(CENTER);
+//         textFont(pixelFont);
+//         // textAlign(CENTER, LEFT);
+//         textSize(20);
+//         text(npc.speech, 3.25 * unit, 9 * unit, 6.75 * unit, 1.5 * unit);
+//         pop();
+//     }
+// }
 
 function game() {
     // Moves the enemies
@@ -436,10 +466,10 @@ function drawLife() {
         noFill();
         imageMode(CENTER);
         if (i < lives.length) {
-            image(heart, (inventoryLives.c - i) * unit - unit / 1.5, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
+            image(heart, (11 - i) * (unit * 1.25) - unit * 1.75, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
         }
         else {
-            image(heartOutline, (inventoryLives.c - i) * unit - unit / 1.5, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
+            image(heartOutline, (11 - i) * (unit * 1.25) - unit * 1.75, (inventoryLives.r * unit) + unit, inventoryLives.size, inventoryLives.size);
         }
         pop();
     }
@@ -453,10 +483,10 @@ function drawKeys() {
         noFill();
         imageMode(CENTER);
         if (k < keys.length) {
-            image(key, (inventoryKey.c + k) * (unit / 1.25) + unit / 1.6, (inventoryKey.r * unit) + unit / 1.5, inventoryKey.size, inventoryKey.size);
+            image(key, (inventoryKey.c + k) * (unit / 1.2) + unit / 1.5, (inventoryKey.r * unit) + unit / 1.5, inventoryKey.size, inventoryKey.size);
         }
         else {
-            image(keyOutline, (inventoryKey.c + k) * (unit / 1.25) + unit / 1.6, (inventoryKey.r * unit) + unit / 1.5, inventoryKey.size, inventoryKey.size);
+            image(keyOutline, (inventoryKey.c + k) * (unit / 1.2) + unit / 1.5, (inventoryKey.r * unit) + unit / 1.5, inventoryKey.size, inventoryKey.size);
         }
         pop();
     }
@@ -470,10 +500,10 @@ function drawCoins() {
         noFill();
         imageMode(CENTER);
         if (i < coins.length) {
-            image(coin, (inventoryCoin.c + i) * (unit / 1.25) + unit / 1.5, (inventoryCoin.r * unit) + unit / 1.75, inventoryCoin.size, inventoryCoin.size);
+            image(coin, (inventoryCoin.c + i) * (unit / 1.2) + unit / 1.45, (inventoryCoin.r * unit) + unit / 1.75, inventoryCoin.size, inventoryCoin.size);
         }
         else {
-            image(coinOutline, (inventoryCoin.c + i) * (unit / 1.25) + unit / 1.5, (inventoryCoin.r * unit) + unit / 1.75, inventoryCoin.size, inventoryCoin.size);
+            image(coinOutline, (inventoryCoin.c + i) * (unit / 1.2) + unit / 1.45, (inventoryCoin.r * unit) + unit / 1.75, inventoryCoin.size, inventoryCoin.size);
         }
         pop();
     }
@@ -550,22 +580,22 @@ function openDialogue() {
     for (let npc of npcs) {
         if (player.c === npc.c && player.r === npc.r) {
             push();
-            rectMode(CENTER);
-            noStroke();
-            fill(0, 100);
-            rect(6 * unit + unit / 2, 9 * unit, unit * 6, unit * 1.5);
+            stroke(255, 95);
+            strokeWeight(2);
+            fill(0, 200);
+            rect(3 * unit, 8.125 * unit, 6.75 * unit, 1.75 * unit);
 
             fill(255);
             // rectMode(CENTER);
             textFont(pixelFont);
             textAlign(TOP, LEFT);
-            textSize(28);
-            text(npc.name + ":\n", 6 * unit + unit / 2, 9.5 * unit);
+            textSize(24);
+            text(npc.name + ":\n", 3.125 * unit, 8.5 * unit);
             // rectMode(CENTER);
             textFont(pixelFont);
-            textAlign(CENTER, CENTER);
-            textSize(22);
-            text(npc.speech, 6 * unit + unit / 2, 9.25 * unit);
+            textAlign(CENTER, LEFT);
+            textSize(20);
+            text(npc.speech, 3.25 * unit, 9 * unit, 6.75 * unit, 1.5 * unit);
             pop();
         }
     }
