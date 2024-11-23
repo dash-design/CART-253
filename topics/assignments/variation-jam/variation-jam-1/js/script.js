@@ -1,9 +1,13 @@
 /**
- * Title of Project
+ * Goblin and Dungeon
  * Ellie "DASH" Desjardins
  * 
- * A primitive grid-based program that you can move around in and
- * collect the letter c, and where the W serves as a wall
+ * A grid-based top-down view type of game.
+ * You play as a Goblin adventuring through a dungeon, but beware the dangerous killer rabbits!
+ * Use AWSD keys to move around, collect keys and escape through the door.
+ * If needed, meet one of our friendly wizards, they might help you!
+ * 
+ * When you succesfully escape the dungeon, try the next levels!
  *
  */
 
@@ -92,7 +96,7 @@ let player = {
 // Max number of lives
 const maxLives = 2;
 
-let lives = [0];
+let lives = 2;
 
 // Max number of keys
 const maxKeys = 3;
@@ -126,7 +130,7 @@ let inventoryCoin = {
 }
 
 // Total amount of enemies
-let enemiesTotal = 4;
+let enemiesTotal = 5;
 
 let enemies = [];
 
@@ -151,12 +155,35 @@ let dialogueBox = {
     size: unit
 }
 
+
+// The state
+let state = "start";
+
+// Start screen
+let home = {
+    rectFill: "green",
+    textFill: 255,
+    textSize: 32,
+    text: undefined
+}
+
+// End Screen
+let end = {
+    rectFill: 32,
+    textFill: 220,
+    textSize: 32,
+    text: undefined
+
+}
+
 /**
 Creates and populate the grid
 */
 function setup() {
     createCanvas(cols * unit, rows * unit);
-
+    /**
+     * Pre-refactored grid items
+     */
     // // Number of walls to place
     // // And place them
     // let wallsToPlace = 12;
@@ -185,6 +212,23 @@ function setup() {
     //     }
     // }
 
+    // const wallsToPlace = 12;
+    // const itemsToPlace = 3;
+
+    // drawGridItems(wallsToPlace, "W");
+    // drawGridItems(itemsToPlace, "c");
+
+    // // Makes the position the player starts at empty!
+    // grid[player.r][player.c] = "N";
+
+    // // setCharacters();
+    // // Creates the enemies
+    // setEnemies();
+    // // Creates the NPCs
+    // setNPCs();
+}
+
+function startGame() {
     const wallsToPlace = 12;
     const itemsToPlace = 3;
 
@@ -193,6 +237,9 @@ function setup() {
 
     // Makes the position the player starts at empty!
     grid[player.r][player.c] = "N";
+
+    // Reset the lives
+    lives = maxLives;
 
     // setCharacters();
     // Creates the enemies
@@ -207,9 +254,111 @@ Handles displaying the grid
 function draw() {
     background(0);
 
+    if (state === "start") {
+        home.text = `
+Goblin and Dungeon
+
+Explore, adventure, escape!
+
+Controls:
+[W]
+[A][S][D]
+
+Press [SPACE] To Play
+`;
+        menu(home.rectFill, home.textFill, home.textSize, home.text);
+    }
+
+    else if (state === "game") {
+        createGrid();
+        game();
+    }
+    else if (state === "lost") {
+        console.log("Game Over!");
+        end.text = `
+:'(
+
+Press [SPACE]
+To Try Again
+`;
+        menu(end.rectFill, end.textFill, end.textSize, end.text);
+    }
+    else if (state === "win") {
+        console.log("Go to the next level!");
+        end.text = `
+Congratulations!
+
+Press [SPACE] To Play
+The Next Level!
+`;
+        menu(end.rectFill, end.textFill, end.textSize, end.text);
+    }
+    /**
+    * Pre-refactored grid
+    */
     // displayGrid();
     // displayGridTiles();
 
+    // // Goes through all the rows and columns
+    // for (let r = 0; r < rows; r++) {
+    //     for (let c = 0; c < cols; c++) {
+    //         // Gets the item at this position
+    //         let item = grid[r][c];
+
+    //         // Draws the grid and uses the ground asset by default
+    //         push();
+    //         noFill();
+    //         noStroke();
+    //         imageMode(CENTER);
+    //         image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+    //         pop();
+
+    //         // Places the walls
+    //         if (item === "W") {
+    //             push();
+    //             noFill();
+    //             noStroke();
+    //             imageMode(CENTER);
+    //             image(wall, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+    //             pop();
+    //         }
+
+    //         // Places the keys
+    //         else if (item === "c") {
+    //             push();
+    //             noFill();
+    //             noStroke();
+    //             imageMode(CENTER);
+    //             image(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25)
+    //             pop();
+    //         }
+    //         // Places the door
+    //         else if (item === "D") {
+    //             push();
+    //             noFill();
+    //             noStroke();
+    //             imageMode(CENTER);
+
+    //             //  If the player has enough keys, the door is opened
+    //             if (keys.length >= maxKeys) {
+    //                 image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+    //             }
+    //             // If not, the door stays locked
+    //             else {
+    //                 image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+    //             }
+    //             pop();
+    //         }
+    //     }
+    // }
+    // // The game functions
+    // game();
+}
+
+/**
+ * Might be refactored?
+ */
+function createGrid() {
     // Goes through all the rows and columns
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -262,8 +411,52 @@ function draw() {
             }
         }
     }
-    // The game functions
-    game();
+}
+
+function menu(squareFill, textFill, fontSize, textContent) {
+    // Screen appearance
+    push();
+    noStroke();
+    fill(squareFill);
+    rectMode(CENTER);
+    rect(width / 2, height / 2, width - 50, height - 50);
+    pop();
+    // Text parameters
+    push();
+    textFont(pixelFont);
+    fill(textFill);
+    textSize(fontSize);
+    textAlign(CENTER, CENTER);
+    text(textContent, width / 2, height / 2);
+    pop();
+}
+
+function game() {
+    // Moves the enemies
+    moveEnemies();
+    // Checks collision with the enemy
+    checkEnemiesCollision();
+
+    // Draws the NPC
+    drawNPCs();
+    // Draws the player
+    drawPlayer();
+    // Draws the enemy
+    drawEnemies();
+    // // Draws mask
+    // drawMask();
+
+    // Draws items in inventory
+    drawInventoryItems();
+    // Draws the player's life
+    drawLives();
+    // Draws the keys
+    drawKeys();
+    // Draws the coins
+    drawCoins();
+
+    // Shows the dialogue wih the NPCs
+    openDialogue()
 }
 
 function drawGridItems(gridItemsToPlace, gridItem) {
@@ -281,6 +474,9 @@ function drawGridItems(gridItemsToPlace, gridItem) {
     }
 }
 
+/**
+ * Pre-refactoring inventory
+ */
 // function displayGrid() {
 //     // Goes through all the rows and columns
 //     for (let r = 0; r < rows; r++) {
@@ -375,6 +571,9 @@ function setNPCs() {
     }
 }
 
+/**
+ * Tried to refactor!!!
+ */
 // function setCharacters(charactersToPlace, characters, charactersTotal) {
 
 //     // let charactersToPlace = charactersTotal;
@@ -432,34 +631,6 @@ function drawNPCs() {
     drawCharacters(npcs, wizard)
 }
 
-function game() {
-    // Moves the enemies
-    moveEnemies();
-    // Checks collision with the enemy
-    checkEnemiesCollision();
-
-    // Draws the enemy
-    drawEnemies();
-    // Draws the NPC
-    drawNPCs();
-    // Draws the player
-    drawPlayer();
-    // // Draws mask
-    // drawMask();
-
-    // Draws items in inventory
-    drawInventoryItems();
-    // Draws the player's life
-    drawLives();
-    // Draws the keys
-    drawKeys();
-    // Draws the coins
-    drawCoins();
-
-    // Shows the dialogue wih the NPCs
-    openDialogue()
-}
-
 // Moves the enemies
 function moveEnemies() {
     for (let enemy of enemies) {
@@ -487,34 +658,11 @@ function checkEnemiesCollision() {
         if (player.c === enemy.c && player.r === enemy.r) {
             console.log("You died!");
             lives = lives - 1;
+            if (lives <= 0) {
+                state = "lost";
+            }
         }
     }
-}
-
-// Draws the characters (enemies, NPCs)
-function drawCharacters(characters, characterAsset) {
-    for (let character of characters) {
-        push();
-        noStroke();
-        noFill();
-        imageMode(CENTER);
-        const c = character.c * unit + unit / 2;
-        const r = character.r * unit + unit / 2;
-        const size = character.size;
-
-        image(characterAsset, c, r, size, size);
-        pop();
-    }
-}
-
-// Draws the enemies (rabbits)
-function drawEnemies() {
-    drawCharacters(enemies, rabbit)
-}
-
-// Draws the NPCs (wizards)
-function drawNPCs() {
-    drawCharacters(npcs, wizard)
 }
 
 // Draws the player
@@ -526,6 +674,10 @@ function drawPlayer() {
     image(goblin, player.c * unit + unit / 2, player.r * unit + unit / 2, player.size, player.size)
     pop();
 }
+
+/**
+ * Mask not needed right now
+ */
 
 // // Draws the mask that hide the grid
 // function drawMask() {
@@ -565,15 +717,21 @@ function drawLives() {
         noStroke();
         noFill();
         imageMode(CENTER);
-        if (i < lives.length) {
-            image(heart, (11 - i) * (unit * 1.25) - unit * 1.75, (inventoryLife.r * unit) + unit, inventoryLife.size, inventoryLife.size);
+        const c = (11 - i) * (unit * 1.25) - unit * 1.75;
+        const r = (inventoryLife.r * unit) + unit
+        const size = inventoryLife.size;
+        if (i < lives) {
+            image(heart, c, r, size, size);
         }
         else {
-            image(heartOutline, (11 - i) * (unit * 1.25) - unit * 1.75, (inventoryLife.r * unit) + unit, inventoryLife.size, inventoryLife.size);
+            image(heartOutline, c, r, size, size);
         }
         pop();
     }
 }
+/**
+ * Tried to refactor!!!
+ */
 
 // function drawLives() {
 //     drawInventoryItems(maxLives, lives, inventoryLive, heart, heartOutline)
@@ -627,55 +785,75 @@ function keyPressed() {
     let newR = player.r;
     let newC = player.c;
 
-    // Adjusts the row and column position based on the arrow key
-    // A
-    if (keyCode === 65) {
-        newC -= 1;
-    }
-    // D
-    else if (keyCode === 68) {
-        newC += 1;
-    }
-    // W
-    else if (keyCode === 87) {
-        newR -= 1;
-    }
-    // S
-    else if (keyCode === 83) {
-        newR += 1;
-    }
-
-    // Constrain so the player can't walk off the edges
-    newR = constrain(newR, 0, rows - 1);
-    newC = constrain(newC, 0, cols - 1);
-
-    // Checks what is at the position the player tried to move to
-    if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
-        // If nothing, the player moves there
-        player.r = newR;
-        player.c = newC;
-    }
-    else if (grid[newR][newC] === `c`) {
-        // If it's a collectible then empty that spot
-        grid[newR][newC] = ` `;
-        // Then the player moves there
-        player.r = newR;
-        player.c = newC;
-        if (keys.length < maxKeys) {
-            // Increase the number of keys that the player has
-            keys.push(true);
+    // Space
+    if (keyCode === 32) {
+        if (state === "start") {
+            state = "game";
+            startGame();
         }
-
-    }
-    // Checks if it is a door tile
-    else if (grid[newR][newC] === `D`) {
-        // If the player has enough keys, then they can move
-        if (keys.length >= maxKeys) {
-            player.r = newR;
-            player.c = newC;
-            console.log("You win!");
+        else if (state === "lost") {
+            location.reload();
             // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // window.location.href = "../variation-jam-2/index.html";
+        }
+        else if (state === "win") {
+            location.reload();
+            // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // window.location.href = "../variation-jam-2/index.html";
+        }
+    }
+    else if (state === "game") {
+        // Adjusts the row and column position based on the arrow key
+        // A
+        if (keyCode === 65) {
+            newC -= 1;
+        }
+        // D
+        else if (keyCode === 68) {
+            newC += 1;
+        }
+        // W
+        else if (keyCode === 87) {
+            newR -= 1;
+        }
+        // S
+        else if (keyCode === 83) {
+            newR += 1;
+        }
+
+        // Constrain so the player can't walk off the edges
+        newR = constrain(newR, 0, rows - 1);
+        newC = constrain(newC, 0, cols - 1);
+
+        // Checks what is at the position the player tried to move to
+        if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
+            // If nothing, the player moves there
+            player.r = newR;
+            player.c = newC;
+        }
+        else if (grid[newR][newC] === `c`) {
+            // If it's a collectible then empty that spot
+            grid[newR][newC] = ` `;
+            // Then the player moves there
+            player.r = newR;
+            player.c = newC;
+            if (keys.length < maxKeys) {
+                // Increase the number of keys that the player has
+                keys.push(true);
+            }
+
+        }
+        // Checks if it is a door tile
+        else if (grid[newR][newC] === `D`) {
+            // If the player has enough keys, then they can move
+            if (keys.length >= maxKeys) {
+                player.r = newR;
+                player.c = newC;
+                console.log("You win!");
+                state = "win";
+                // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // window.location.href = "../variation-jam-2/index.html";
+            }
         }
     }
     return false;
