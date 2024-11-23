@@ -194,11 +194,11 @@ function setup() {
     // Makes the position the player starts at empty!
     grid[player.r][player.c] = "N";
 
-    setCharacters();
-    // // Creates the enemies
-    // setEnemies();
-    // // Creates the NPCs
-    // setNPCs();
+    // setCharacters();
+    // Creates the enemies
+    setEnemies();
+    // Creates the NPCs
+    setNPCs();
 }
 
 /**
@@ -206,6 +206,9 @@ Handles displaying the grid
 */
 function draw() {
     background(0);
+
+    // displayGrid();
+    // displayGridTiles();
 
     // Goes through all the rows and columns
     for (let r = 0; r < rows; r++) {
@@ -263,88 +266,145 @@ function draw() {
     game();
 }
 
-// // Creates the enemies
-// function setEnemies() {
-//     let enemiesToPlace = enemiesTotal;
+function drawGridItems(gridItemsToPlace, gridItem) {
+    // const wallsToPlace = 12;
+    // const itemsToPlace = 3;
+    while (gridItemsToPlace > 0) {
+        // Find position
+        let r = floor(random(0, rows));
+        let c = floor(random(0, cols));
+        // Place an item
+        if (grid[r][c] === " ") {
+            grid[r][c] = gridItem;
+            gridItemsToPlace = gridItemsToPlace - 1;
+        }
+    }
+}
 
-//     enemies = [];
-
-//     while (enemiesToPlace > 0) {
-//         // Find position
-//         let r = floor(random(1, rows));
-//         let c = floor(random(0, cols));
-//         // Place an enemy on an empty tile
-//         if (grid[r][c] === " ") {
-//             const newEnemy = {
-//                 r: r,
-//                 c: c,
-//                 size: unit,
-//                 direction: 1,
-//                 moveInterval: 15,
-//                 moveTime: 0
-//             }
-//             enemies.push(newEnemy);
-//             enemiesToPlace = enemiesToPlace - 1;
+// function displayGrid() {
+//     // Goes through all the rows and columns
+//     for (let r = 0; r < rows; r++) {
+//         for (let c = 0; c < cols; c++) {
+//             // Gets the item at this position
+//             const item = grid[r][c];
+//             displayGridTiles(tile)
 //         }
 //     }
 // }
 
-// // Creates the NPCs
-// function setNPCs() {
-//     let npcToPlace = npcTotal;
-//     // npcName = random(npcNames.deities);
-
-//     npcs = [];
-
-//     while (npcToPlace > 0) {
-//         // Find position
-//         let r = floor(random(1, rows));
-//         let c = floor(random(0, cols));
-//         // Place an enemy on an empty tile
-//         if (grid[r][c] === " ") {
-//             const newNpc = {
-//                 r: r,
-//                 c: c,
-//                 size: unit,
-//                 name: random(npcNames.deities),
-//                 speech: npcSpeech[npcToPlace - 1]
-//             }
-//             npcs.push(newNpc);
-//             npcToPlace = npcToPlace - 1;
+// function displayGridTiles(tile) {
+//     if (item === "W") {
+//         drawGridTiles(wall, c, r, unit)
+//     }
+//     // Places the keys
+//     else if (item === "c") {
+//         drawGridTiles(key, c, r, unit / 1.25)
+//     }
+//     // Places the door
+//     else if (item === "D") {
+//         //  If the player has enough keys, the door is opened
+//         if (keys.length >= maxKeys) {
+//             drawGridTiles(ground, c, r, unit)
+//         }
+//         // If not, the door stays locked
+//         else {
+//             drawGridTiles(door, c, r, unit)
 //         }
 //     }
 // }
 
-function setCharacters(charactersToPlace, characters, charactersTotal) {
+// // Draws the keys in the inventory
+// function drawGridTiles(tileAsset, c, r, size) {
+//     push();
+//     noFill();
+//     noStroke();
+//     imageMode(CENTER);
+//     image(tileAsset, c * unit + unit / 2, r * unit + unit / 2, size, size)
+//     pop();
+// }
 
-    let charactersToPlace = charactersTotal;
-    // npcName = random(npcNames.deities);
+// Creates the enemies
+function setEnemies() {
+    let enemiesToPlace = enemiesTotal;
 
-    characters = [];
+    enemies = [];
 
-    while (charactersToPlace > 0) {
-
+    while (enemiesToPlace > 0) {
         // Find position
         let r = floor(random(1, rows));
         let c = floor(random(0, cols));
         // Place an enemy on an empty tile
         if (grid[r][c] === " ") {
-            const newCharacter = {
-
+            const newEnemy = {
+                r: r,
+                c: c,
+                size: unit,
+                direction: 1,
+                moveInterval: 15,
+                moveTime: 0
             }
-            characters.push(newCharacter);
-            charactersToPlace = charactersToPlace - 1;
+            enemies.push(newEnemy);
+            enemiesToPlace = enemiesToPlace - 1;
         }
     }
 }
 
+// Creates the NPCs
 function setNPCs() {
-    setCharacters(charactersToPlace, characters, charactersTotal)
+    let npcToPlace = npcTotal;
+    // npcName = random(npcNames.deities);
+
+    npcs = [];
+
+    while (npcToPlace > 0) {
+        // Find position
+        let r = floor(random(1, rows));
+        let c = floor(random(0, cols));
+        // Place an enemy on an empty tile
+        if (grid[r][c] === " ") {
+            const newNpc = {
+                r: r,
+                c: c,
+                size: unit,
+                name: random(npcNames.deities),
+                speech: npcSpeech[npcToPlace - 1]
+            }
+            npcs.push(newNpc);
+            npcToPlace = npcToPlace - 1;
+        }
+    }
 }
 
-function setEnemies() {
-    setCharacters(charactersToPlace, characters, charactersTotal)
-}
+// function setCharacters(charactersToPlace, characters, charactersTotal) {
+
+//     // let charactersToPlace = charactersTotal;
+//     // npcName = random(npcNames.deities);
+
+//     characters = [];
+
+//     while (charactersToPlace > 0) {
+
+//         // Find position
+//         let r = floor(random(1, rows));
+//         let c = floor(random(0, cols));
+//         // Place an enemy on an empty tile
+//         if (grid[r][c] === " ") {
+//             const newCharacter = {
+
+//             }
+//             characters.push(newCharacter);
+//             charactersToPlace = charactersToPlace - 1;
+//         }
+//     }
+// }
+
+// function setNPCs() {
+//     setCharacters(charactersToPlace, characters, charactersTotal)
+// }
+
+// function setEnemies() {
+//     setCharacters(charactersToPlace, characters, charactersTotal)
+// }
 
 // Draws the characters (enemies, NPCs)
 function drawCharacters(characters, characterAsset) {
@@ -378,7 +438,6 @@ function game() {
     // Checks collision with the enemy
     checkEnemiesCollision();
 
-    // Draws characters such as enemies and NPCs
     // Draws the enemy
     drawEnemies();
     // Draws the NPC
@@ -445,21 +504,6 @@ function drawCharacters(characters, characterAsset) {
 
         image(characterAsset, c, r, size, size);
         pop();
-    }
-}
-
-function drawGridItems(gridItemsToPlace, gridItem) {
-    // const wallsToPlace = 12;
-    // const itemsToPlace = 3;
-    while (gridItemsToPlace > 0) {
-        // Find position
-        let r = floor(random(0, rows));
-        let c = floor(random(0, cols));
-        // Place an item
-        if (grid[r][c] === " ") {
-            grid[r][c] = gridItem;
-            gridItemsToPlace = gridItemsToPlace - 1;
-        }
     }
 }
 
