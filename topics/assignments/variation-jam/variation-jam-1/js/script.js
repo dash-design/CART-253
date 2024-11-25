@@ -142,7 +142,7 @@ let npcs = [];
 // The NPCs dialogues
 let npcSpeech = [
     "For one Life I'll give you a key\nPress [SPACE] To Get a Key",
-    "For one Life I'll give you a key\nPress [SPACE] To Get a Key"
+    "For 1 Life I'll give you 1 key\nPress [SPACE] To Get a Key"
 ];
 
 // let mask = {
@@ -178,11 +178,26 @@ let end = {
 
 }
 
+// Stop Watch variables
+let score = 0;
+let start = null;
+
+let highScore;
+
 /**
 Creates and populate the grid
 */
 function setup() {
     createCanvas(cols * unit, rows * unit);
+
+    // Retrieve the last saved highscore
+    highScore = getItem('high score');
+
+    // Set the highscore to 0 if no prior score exists
+    if (highScore === null) {
+        highScore = 0;
+    }
+
     /**
      * Pre-refactored grid items
      */
@@ -230,6 +245,10 @@ function setup() {
     // setNPCs();
 }
 
+// function windowResized() {
+//     resizeCanvas(windowWidth, windowHeight);
+// }
+
 function startGame() {
     const wallsToPlace = 12;
     const itemsToPlace = 3;
@@ -248,6 +267,15 @@ function startGame() {
     setEnemies();
     // Creates the NPCs
     setNPCs();
+
+    if (start == null) {
+        start = Date.now();
+    }
+
+    // else {
+    //     accum += Date.now() - start;
+    //     start = null;
+    // }
 }
 
 /**
@@ -267,6 +295,8 @@ Controls:
 [A][S][D]
 
 Press [SPACE] To Play
+
+High score: ${highScore}
 `;
         menu(home.rectFill, home.textFill, home.textSize, home.text);
     }
@@ -289,6 +319,9 @@ To Try Again
         console.log("Go to the next level!");
         end.text = `
     Congratulations!
+    
+Score: ${score}
+High score: ${highScore}
 
     Press[SPACE] To Play
 The Next Level!
@@ -296,6 +329,13 @@ The Next Level!
     Press [R] To Play Again
 `;
         menu(end.rectFill, end.textFill, end.textSize, end.text);
+
+        accum += Date.now() - start;
+        start = null;
+
+        // Store the latest high score
+        highScore = min(score, highScore);
+        storeItem('high score', highScore);
     }
     /**
     * Pre-refactored grid
@@ -462,7 +502,22 @@ function game() {
     // Shows the dialogue wih the NPCs
     openDialogue();
 
-    // stopWatch();
+    stopWatch();
+}
+
+function stopWatch() {
+
+    const totalMillis = score + (start != null ? Date.now() - start : 0);
+    const ms = Math.floor(totalMillis % 1000 / 10);
+    const s = Math.floor(totalMillis / 1000) % 60;
+    const m = Math.floor(totalMillis / 1000 / 60) % 60;
+    const string = `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+
+    fill(255);
+    textFont(pixelFont);
+    textAlign(LEFT, CENTER);
+    textSize(24);
+    text(string, unit / 2, unit / 2);
 }
 
 function drawGridItems(gridItemsToPlace, gridItem) {
@@ -783,16 +838,6 @@ function openDialogue() {
     }
     dialogueOn = false;
 }
-
-// function stopWatch() {
-//     push();
-//     fill(255);
-//     textFont(pixelFont);
-//     textAlign(LEFT, CENTER);
-//     textSize(24);
-//     text(string, unit / 2, unit / 2);
-//     pop();
-// }
 
 /**
 * Controls the movements of the player
