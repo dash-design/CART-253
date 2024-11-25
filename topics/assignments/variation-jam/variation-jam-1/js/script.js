@@ -179,10 +179,10 @@ let end = {
 }
 
 // Stop Watch variables
-let score = 0;
+let yourTime = 0;
 let start = null;
 
-let highScore;
+let bestTime;
 
 /**
 Creates and populate the grid
@@ -191,12 +191,16 @@ function setup() {
     createCanvas(cols * unit, rows * unit);
 
     // Retrieve the last saved highscore
-    highScore = getItem('high score');
+    bestTime = getItem('best time');
 
-    // Set the highscore to 0 if no prior score exists
-    if (highScore === null) {
-        highScore = 99999999999;
+    if (bestTime === null) {
+        bestTime = 999999;
     }
+
+    // Set the best time if no prior score exists
+    // if (bestTime === null) {
+    //     bestTime = "--:--.--";
+    // }
 
     /**
      * Pre-refactored grid items
@@ -273,13 +277,31 @@ function startGame() {
     }
 }
 
+function timeFormatting(totalMillis) {
+    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    const ms = Math.floor(totalMillis % 1000 / 10);
+    const s = Math.floor(totalMillis / 1000) % 60;
+    const m = Math.floor(totalMillis / 1000 / 60) % 60;
+    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+}
+
 /**
 Handles displaying the grid
 */
 function draw() {
     background(0);
 
+    let bestTimeFormat = "--:--.--";
+
+    // Set the best time if no prior score exists
+    if (bestTime !== null) {
+        bestTimeFormat = timeFormatting(bestTime);
+    }
+
     if (state === "start") {
+
+        let bestTimeFormat = timeFormatting(bestTime);
+
         home.text = `
 Goblin and Dungeon
 
@@ -291,7 +313,7 @@ Controls:
 
 Press [SPACE] To Play
 
-High score: ${highScore}
+Best Time: ${bestTimeFormat}
 `;
         menu(home.rectFill, home.textFill, home.textSize, home.text);
     }
@@ -310,11 +332,14 @@ To Try Again
         menu(end.rectFill, end.textFill, end.textSize, end.text);
     }
     else if (state === "win") {
+
+        let yourTimeFormat = timeFormatting(yourTime);
+
         end.text = `
     Congratulations!
     
-Score: ${score}
-High score: ${highScore}
+Your Time: ${yourTimeFormat}
+Best Time: ${bestTimeFormat}
 
     Press[SPACE] To Play
 The Next Level!
@@ -499,7 +524,7 @@ function game() {
 
 function stopWatch() {
 
-    const totalMillis = score + (start != null ? Date.now() - start : 0);
+    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
     const ms = Math.floor(totalMillis % 1000 / 10);
     const s = Math.floor(totalMillis / 1000) % 60;
     const m = Math.floor(totalMillis / 1000 / 60) % 60;
@@ -935,10 +960,10 @@ function keyPressed() {
 
                 state = "win";
 
-                // Calculate the score
-                score = Date.now() - start;
-                highScore = min(score, highScore);
-                storeItem('high score', highScore);
+                // Calculate the time
+                yourTime = Date.now() - start;
+                bestTime = min(yourTime, bestTime);
+                storeItem('best time', bestTime);
             }
         }
 
