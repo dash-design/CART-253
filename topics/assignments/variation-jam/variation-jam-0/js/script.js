@@ -141,9 +141,9 @@ let npcs = [];
 
 // The NPCs dialogues
 let npcSpeech = [
-    "For one Life I'll give you a key\nPress [SPACE] To Get a Key",
-    "For one Life I'll give you a key\nPress [SPACE] To Get a Key"
-];
+    "Hello, I am a wizard! Tim the Wizard. Hehe",
+    "Hi",
+    "Bye"];
 
 // let mask = {
 //     size: (cols * unit) * 3
@@ -154,8 +154,6 @@ let dialogueBox = {
     c: 3,
     size: unit
 }
-
-let dialogueOn = false;
 
 
 // The state
@@ -437,7 +435,7 @@ function game() {
     // Moves the enemies
     moveEnemies();
     // Checks collision with the enemy
-    checkDeath();
+    checkEnemiesCollision();
 
     // Draws the NPC
     drawNPCs();
@@ -655,16 +653,15 @@ function moveEnemies() {
 }
 
 // Checks if the player get killed by an enemy
-function checkDeath() {
+function checkEnemiesCollision() {
     for (let enemy of enemies) {
         if (player.c === enemy.c && player.r === enemy.r) {
+            console.log("You died!");
             lives = lives - 1;
-            break;
+            if (lives <= 0) {
+                state = "lost";
+            }
         }
-    }
-
-    if (lives <= 0) {
-        state = "lost";
     }
 }
 
@@ -770,14 +767,10 @@ function openDialogue() {
             textFont(pixelFont);
             textAlign(CENTER, LEFT);
             textSize(20);
-            text(npc.speech, 3.125 * unit, 9 * unit, 6.625 * unit, 1.5 * unit);
+            text(npc.speech, 3.25 * unit, 9 * unit, 6.75 * unit, 1.5 * unit);
             pop();
-
-            dialogueOn = true;
-            return;
         }
     }
-    dialogueOn = false;
 }
 
 /**
@@ -798,20 +791,15 @@ function keyPressed() {
             state = "game";
             startGame();
         }
-        else if (state === "game" && dialogueOn) {
-            if (keys.length < maxKeys && lives > 1) {
-                lives = lives - 1;
-                keys.push(true);
-            }
-        }
         else if (state === "lost") {
             location.reload();
-        }
-        else if (state === "win") {
-            // newFunction();
             // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // window.location.href = "../variation-jam-2/index.html";
-            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
+        }
+        else if (state === "win") {
+            location.reload();
+            // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // window.location.href = "../variation-jam-2/index.html";
         }
     }
     else if (state === "game") {
@@ -863,12 +851,10 @@ function keyPressed() {
                 player.c = newC;
                 console.log("You win!");
                 state = "win";
+                // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // window.location.href = "../variation-jam-2/index.html";
             }
         }
     }
     return false;
-
-    function newFunction() {
-        location.reload();
-    }
 }
