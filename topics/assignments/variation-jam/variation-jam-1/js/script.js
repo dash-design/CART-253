@@ -195,7 +195,7 @@ function setup() {
 
     // Set the highscore to 0 if no prior score exists
     if (highScore === null) {
-        highScore = 0;
+        highScore = 99999999999;
     }
 
     /**
@@ -271,11 +271,6 @@ function startGame() {
     if (start == null) {
         start = Date.now();
     }
-
-    // else {
-    //     accum += Date.now() - start;
-    //     start = null;
-    // }
 }
 
 /**
@@ -306,7 +301,6 @@ High score: ${highScore}
         game();
     }
     else if (state === "lost") {
-        console.log("Game Over!");
         end.text = `
 :'(
 
@@ -316,7 +310,6 @@ To Try Again
         menu(end.rectFill, end.textFill, end.textSize, end.text);
     }
     else if (state === "win") {
-        console.log("Go to the next level!");
         end.text = `
     Congratulations!
     
@@ -330,12 +323,11 @@ The Next Level!
 `;
         menu(end.rectFill, end.textFill, end.textSize, end.text);
 
-        accum += Date.now() - start;
         start = null;
 
         // Store the latest high score
-        highScore = min(score, highScore);
-        storeItem('high score', highScore);
+        // highScore = min(score, highScore);
+        // storeItem('high score', highScore);
     }
     /**
     * Pre-refactored grid
@@ -478,8 +470,8 @@ function menu(squareFill, textFill, fontSize, textContent) {
 function game() {
     // Moves the enemies
     moveEnemies();
-    // Checks collision with the enemy
-    checkDeath();
+    // // Checks collision with the enemy
+    // checkDeath();
 
     // Draws the NPC
     drawNPCs();
@@ -702,24 +694,25 @@ function moveEnemies() {
 
             // Checks if next col is valid
             if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
-                // If it is
+                // Lets the enemy move if it is valid
                 enemy.c += enemy.direction;
+                // Check collision with the player
+                checkDeath(enemy);
             }
             else {
+                // Makes the enemy change direction 
                 enemy.direction *= -1;
             }
+            // Resets enemy movement
             enemy.moveTime = 0;
         }
     }
 }
 
 // Checks if the player get killed by an enemy
-function checkDeath() {
-    for (let enemy of enemies) {
-        if (player.c === enemy.c && player.r === enemy.r) {
-            lives = lives - 1;
-            break;
-        }
+function checkDeath(enemy) {
+    if (player.c === enemy.c && player.r === enemy.r) {
+        lives = lives - 1;
     }
 
     if (lives <= 0) {
@@ -911,11 +904,14 @@ function keyPressed() {
         newR = constrain(newR, 0, rows - 1);
         newC = constrain(newC, 0, cols - 1);
 
+        let moved = false;
+
         // Checks what is at the position the player tried to move to
         if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
             // If nothing, the player moves there
             player.r = newR;
             player.c = newC;
+            moved = true;
         }
         else if (grid[newR][newC] === `c`) {
             // If it's a collectible then empty that spot
@@ -927,6 +923,7 @@ function keyPressed() {
                 // Increase the number of keys that the player has
                 keys.push(true);
             }
+            moved = true;
 
         }
         // Checks if it is a door tile
@@ -935,14 +932,27 @@ function keyPressed() {
             if (keys.length >= maxKeys) {
                 player.r = newR;
                 player.c = newC;
-                console.log("You win!");
+
                 state = "win";
+
+                // Calculate the score
+                score = Date.now() - start;
+                highScore = min(score, highScore);
+                storeItem('high score', highScore);
+            }
+        }
+
+        // Check if the player moved onto an enemy
+        if (moved) {
+            for (let enemy of enemies) {
+                checkDeath(enemy);
             }
         }
     }
+
     return false;
 
-    function newFunction() {
-        location.reload();
-    }
+    // function newFunction() {
+    //     location.reload();
+    // }
 }
