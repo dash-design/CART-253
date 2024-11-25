@@ -292,6 +292,8 @@ Congratulations!
 
 Press [SPACE] To Play
 The Next Level!
+or
+Press [R] To Play Again
 `;
         menu(end.rectFill, end.textFill, end.textSize, end.text);
     }
@@ -459,6 +461,9 @@ function game() {
 
     // Shows the dialogue wih the NPCs
     openDialogue()
+
+    // The stopwatch
+    stopWatch()
 }
 
 function drawGridItems(gridItemsToPlace, gridItem) {
@@ -780,6 +785,16 @@ function openDialogue() {
     dialogueOn = false;
 }
 
+function stopWatch() {
+    push();
+    fill(255);
+    textFont(pixelFont);
+    textAlign(LEFT, CENTER);
+    textSize(24);
+    text("00:00:00", unit / 2, unit / 2);
+    pop();
+}
+
 /**
 * Controls the movements of the player
 * Determines which tiles are accessible or not
@@ -792,6 +807,15 @@ function keyPressed() {
     let newR = player.r;
     let newC = player.c;
 
+    // R
+    if (keyCode === 82) {
+        if (state === "win") {
+            location.reload();
+        }
+    }
+
+
+    // Menu and interaction control
     // Space
     if (keyCode === 32) {
         if (state === "start") {
@@ -814,6 +838,7 @@ function keyPressed() {
             window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
         }
     }
+    // Movement controls
     else if (state === "game") {
         // Adjusts the row and column position based on the arrow key
         // A

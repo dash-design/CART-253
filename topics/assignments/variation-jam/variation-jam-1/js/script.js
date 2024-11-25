@@ -288,10 +288,12 @@ To Try Again
     else if (state === "win") {
         console.log("Go to the next level!");
         end.text = `
-Congratulations!
+    Congratulations!
 
-Press [SPACE] To Play
+    Press[SPACE] To Play
 The Next Level!
+    or
+    Press [R] To Play Again
 `;
         menu(end.rectFill, end.textFill, end.textSize, end.text);
     }
@@ -458,7 +460,9 @@ function game() {
     drawCoins();
 
     // Shows the dialogue wih the NPCs
-    openDialogue()
+    openDialogue();
+
+    // stopWatch();
 }
 
 function drawGridItems(gridItemsToPlace, gridItem) {
@@ -780,6 +784,16 @@ function openDialogue() {
     dialogueOn = false;
 }
 
+// function stopWatch() {
+//     push();
+//     fill(255);
+//     textFont(pixelFont);
+//     textAlign(LEFT, CENTER);
+//     textSize(24);
+//     text(string, unit / 2, unit / 2);
+//     pop();
+// }
+
 /**
 * Controls the movements of the player
 * Determines which tiles are accessible or not
@@ -792,11 +806,26 @@ function keyPressed() {
     let newR = player.r;
     let newC = player.c;
 
+    // R
+    if (keyCode === 82) {
+        if (state === "win") {
+            location.reload();
+        }
+    }
+
     // Space
     if (keyCode === 32) {
         if (state === "start") {
             state = "game";
             startGame();
+
+            timer = createElement("h1");
+            if (stopWatch == null) {
+                stopWatch = Date.now();
+            } else {
+                timeElapsed += Date.now() - timerStarted;
+                stopWatch = null;
+            }
         }
         else if (state === "game" && dialogueOn) {
             if (keys.length < maxKeys && lives > 1) {
