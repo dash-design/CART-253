@@ -240,7 +240,9 @@ function setup() {
 }
 
 // function windowResized() {
-//     resizeCanvas(windowWidth, windowHeight);
+//     if (windowWidth < width || windowHeight < height) {
+//         resizeCanvas(windowWidth, windowHeight);
+//     }
 // }
 
 /**
@@ -397,9 +399,6 @@ function startGame() {
     }
 }
 
-/**
- * Might be refactored?
- */
 function createGrid() {
     // Goes through all the rows and columns
     for (let r = 0; r < rows; r++) {
@@ -408,51 +407,44 @@ function createGrid() {
             let item = grid[r][c];
 
             // Draws the grid and uses the ground asset by default
-            push();
-            noFill();
-            noStroke();
-            imageMode(CENTER);
-            image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-            pop();
+            drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
 
             // Places the walls
             if (item === "W") {
-                push();
-                noFill();
-                noStroke();
-                imageMode(CENTER);
-                image(wall, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-                pop();
+                drawTiles(wall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
 
             // Places the keys
             else if (item === "k") {
-                push();
-                noFill();
-                noStroke();
-                imageMode(CENTER);
-                image(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25)
-                pop();
+                drawTiles(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25);
             }
+
             // Places the door
             else if (item === "D") {
-                push();
-                noFill();
-                noStroke();
-                imageMode(CENTER);
-
                 //  If the player has enough keys, the door is opened
                 if (keys.length >= maxKeys) {
-                    image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+                    drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+
+                    // image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
                 // If not, the door stays locked
                 else {
-                    image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+                    drawTiles(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                    // image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
-                pop();
             }
         }
     }
+}
+
+// Draws the items (walls and keys) on the grid
+function drawTiles(asset, c, r, sizeC, sizeR) {
+    push();
+    noFill();
+    noStroke();
+    imageMode(CENTER);
+    image(asset, c, r, sizeC, sizeR)
+    pop();
 }
 
 // Draws the menu screens
