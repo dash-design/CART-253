@@ -1,13 +1,18 @@
 /**
  * Goblin and Dungeon
+ * 
  * Ellie "DASH" Desjardins
  * 
- * A grid-based top-down view type of game.
+ * Welcome to my grid-based top-down view kind of game!
  * You play as a Goblin adventuring through a dungeon, but beware the dangerous killer rabbits!
- * Use AWSD keys to move around, collect keys and escape through the door.
- * If needed, meet one of our friendly wizards, they might help you!
  * 
- * When you succesfully escape the dungeon, try the next levels!
+ * Use [A][W][S][D] keys to move around, collect keys and escape through the door.
+ * 
+ * Use [SPACE] to interact with the menus and the NPCs
+ * 
+ * If needed, meet one of our friendly wizard NPCs, they might help you!
+ * 
+ * When you succesfully escape the dungeon, try the next level!
  *
  */
 
@@ -179,10 +184,18 @@ let end = {
 }
 
 // Stop Watch variables
+// Time it takes you to win
 let yourTime = 0;
 let start = null;
-
+// Fastest time it took to win
 let bestTime;
+
+// Default frame rate
+let fps = 60;
+// Default move interval 
+let adjustedMoveInterval = 15;
+
+
 
 /**
 Creates and populate the grid
@@ -282,6 +295,11 @@ Handles displaying the grid
 */
 function draw() {
     background(0);
+
+    // Calculates the frame rate or set it to 60
+    fps = frameRate() || 60;
+    // Adjusts the move interval according to the FPS
+    adjustedMoveInterval = floor(fps / 4);
 
     // let bestTimeFormat = "--:--.--";
 
@@ -407,12 +425,6 @@ The Next Level!
     // }
     // // The game functions
     // game();
-
-    push();
-    textSize(24);
-    fill(255);
-    text(`FPS: ${floor(frameRate())}`, width / 2, height / 2);
-    pop();
 }
 
 /**
@@ -607,10 +619,10 @@ function drawGridItems(gridItemsToPlace, gridItem) {
 
 // Creates the enemies
 function setEnemies() {
-    // Checks frame rate and set it to 60 fps
-    let fps = frameRate() || 60;
-    // Creates moveInterval vaiable based on the frame rate
-    let adjustedMoveInterval = floor(fps / 4);
+    // // Checks frame rate and set it to 60 fps
+    // let fps = frameRate() || 60;
+    // // Creates moveInterval vaiable based on the frame rate
+    // let adjustedMoveInterval = floor(fps / 4);
 
     let enemiesToPlace = enemiesTotal;
 
@@ -724,13 +736,7 @@ function drawNPCs() {
 
 // Moves the enemies
 function moveEnemies() {
-    // Checks frame rate and set it to 60 fps
-    let fps = frameRate() || 60;
-    // Creates moveInterval vaiable based on the frame rate
-    let adjustedMoveInterval = floor(fps / 4);
-
     for (let enemy of enemies) {
-        enemy.moveInterval = adjustedMoveInterval;
         enemy.moveTime++;
         if (enemy.moveTime >= enemy.moveInterval) {
             // Next col according to the enemy direction

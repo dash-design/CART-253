@@ -1,13 +1,18 @@
 /**
  * Goblin and Dungeon
+ * 
  * Ellie "DASH" Desjardins
  * 
- * A grid-based top-down view type of game.
+ * Welcome to my grid-based top-down view kind of game!
  * You play as a Goblin adventuring through a dungeon, but beware the dangerous killer rabbits!
- * Use AWSD keys to move around, collect keys and escape through the door.
- * If needed, meet one of our friendly wizards, they might help you!
  * 
- * When you succesfully escape the dungeon, try the next levels!
+ * Use [A][W][S][D] keys to move around, collect keys and escape through the door.
+ * 
+ * Use [SPACE] to interact with the menus and the NPCs
+ * 
+ * If needed, meet one of our friendly wizard NPCs, they might help you!
+ * 
+ * When you succesfully escape the dungeon, try the next level!
  *
  */
 
@@ -142,7 +147,7 @@ let npcs = [];
 // The NPCs dialogues
 let npcSpeech = [
     "For one Life I'll give you a key\nPress [SPACE] To Get a Key",
-    "For one Life I'll give you a key\nPress [SPACE] To Get a Key"
+    "For 1 Life I'll give you 1 key\nPress [SPACE] To Get a Key"
 ];
 
 // let mask = {
@@ -178,11 +183,38 @@ let end = {
 
 }
 
+// Stop Watch variables
+// Time it takes you to win
+let yourTime = 0;
+let start = null;
+// Fastest time it took to win
+let bestTime;
+
+// Default frame rate
+let fps = 60;
+// Default move interval 
+let adjustedMoveInterval = 15;
+
+
+
 /**
 Creates and populate the grid
 */
 function setup() {
     createCanvas(cols * unit, rows * unit);
+
+    // Retrieve the last saved highscore
+    bestTime = getItem('best time');
+
+    if (bestTime === null) {
+        bestTime = 999999;
+    }
+
+    // Set the best time if no prior score exists
+    // if (bestTime === null) {
+    //     bestTime = "--:--.--";
+    // }
+
     /**
      * Pre-refactored grid items
      */
@@ -230,6 +262,10 @@ function setup() {
     // setNPCs();
 }
 
+// function windowResized() {
+//     resizeCanvas(windowWidth, windowHeight);
+// }
+
 function startGame() {
     const wallsToPlace = 12;
     const itemsToPlace = 3;
@@ -248,6 +284,10 @@ function startGame() {
     setEnemies();
     // Creates the NPCs
     setNPCs();
+
+    if (start == null) {
+        start = Date.now();
+    }
 }
 
 /**
@@ -256,7 +296,22 @@ Handles displaying the grid
 function draw() {
     background(0);
 
+    // Calculates the frame rate or set it to 60
+    fps = frameRate() || 60;
+    // Adjusts the move interval according to the FPS
+    adjustedMoveInterval = floor(fps / 4);
+
+    // let bestTimeFormat = "--:--.--";
+
+    // Set the best time if no prior score exists
+    // if (bestTime !== null) {
+    //     bestTimeFormat = timeFormatting(bestTime);
+    // }
+
     if (state === "start") {
+
+        let bestTimeFormat = timeFormatting(bestTime);
+
         home.text = `
 Goblin and Dungeon
 
@@ -267,6 +322,8 @@ Controls:
 [A][S][D]
 
 Press [SPACE] To Play
+
+Best Time: ${bestTimeFormat}
 `;
         menu(home.rectFill, home.textFill, home.textSize, home.text);
     }
@@ -276,7 +333,6 @@ Press [SPACE] To Play
         game();
     }
     else if (state === "lost") {
-        console.log("Game Over!");
         end.text = `
 :'(
 
@@ -286,16 +342,28 @@ To Try Again
         menu(end.rectFill, end.textFill, end.textSize, end.text);
     }
     else if (state === "win") {
-        console.log("Go to the next level!");
-        end.text = `
-Congratulations!
 
-Press [SPACE] To Play
+        let yourTimeFormat = timeFormatting(yourTime);
+        let bestTimeFormat = timeFormatting(bestTime);
+
+        end.text = `
+    Congratulations!
+    
+Your Time: ${yourTimeFormat}
+Best Time: ${bestTimeFormat}
+
+    Press[SPACE] To Play
 The Next Level!
-or
-Press [R] To Play Again
+    or
+    Press [R] To Play Again
 `;
         menu(end.rectFill, end.textFill, end.textSize, end.text);
+
+        start = null;
+
+        // Store the latest high score
+        // highScore = min(score, highScore);
+        // storeItem('high score', highScore);
     }
     /**
     * Pre-refactored grid
@@ -438,8 +506,8 @@ function menu(squareFill, textFill, fontSize, textContent) {
 function game() {
     // Moves the enemies
     moveEnemies();
-    // Checks collision with the enemy
-    checkDeath();
+    // // Checks collision with the enemy
+    // checkDeath();
 
     // Draws the NPC
     drawNPCs();
@@ -460,10 +528,33 @@ function game() {
     drawCoins();
 
     // Shows the dialogue wih the NPCs
-    openDialogue()
+    openDialogue();
 
-    // The stopwatch
-    stopWatch()
+    stopWatch();
+}
+
+function timeFormatting(totalMillis) {
+    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    const ms = Math.floor(totalMillis % 1000 / 10);
+    const s = Math.floor(totalMillis / 1000) % 60;
+    const m = Math.floor(totalMillis / 1000 / 60) % 60;
+    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+}
+
+function stopWatch() {
+
+    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    // const ms = Math.floor(totalMillis % 1000 / 10);
+    // const s = Math.floor(totalMillis / 1000) % 60;
+    // const m = Math.floor(totalMillis / 1000 / 60) % 60;
+    // const string = `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+    const string = timeFormatting(totalMillis);
+
+    fill(255);
+    textFont(pixelFont);
+    textAlign(LEFT, CENTER);
+    textSize(24);
+    text(string, unit / 2, unit / 2);
 }
 
 function drawGridItems(gridItemsToPlace, gridItem) {
@@ -528,6 +619,11 @@ function drawGridItems(gridItemsToPlace, gridItem) {
 
 // Creates the enemies
 function setEnemies() {
+    // // Checks frame rate and set it to 60 fps
+    // let fps = frameRate() || 60;
+    // // Creates moveInterval vaiable based on the frame rate
+    // let adjustedMoveInterval = floor(fps / 4);
+
     let enemiesToPlace = enemiesTotal;
 
     enemies = [];
@@ -543,7 +639,7 @@ function setEnemies() {
                 c: c,
                 size: unit,
                 direction: 1,
-                moveInterval: 15,
+                moveInterval: adjustedMoveInterval,
                 moveTime: 0
             }
             enemies.push(newEnemy);
@@ -648,24 +744,25 @@ function moveEnemies() {
 
             // Checks if next col is valid
             if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
-                // If it is
+                // Lets the enemy move if it is valid
                 enemy.c += enemy.direction;
+                // Check collision with the player
+                checkDeath(enemy);
             }
             else {
+                // Makes the enemy change direction 
                 enemy.direction *= -1;
             }
+            // Resets enemy movement
             enemy.moveTime = 0;
         }
     }
 }
 
 // Checks if the player get killed by an enemy
-function checkDeath() {
-    for (let enemy of enemies) {
-        if (player.c === enemy.c && player.r === enemy.r) {
-            lives = lives - 1;
-            break;
-        }
+function checkDeath(enemy) {
+    if (player.c === enemy.c && player.r === enemy.r) {
+        lives = lives - 1;
     }
 
     if (lives <= 0) {
@@ -785,16 +882,6 @@ function openDialogue() {
     dialogueOn = false;
 }
 
-function stopWatch() {
-    push();
-    fill(255);
-    textFont(pixelFont);
-    textAlign(LEFT, CENTER);
-    textSize(24);
-    text("00:00:00", unit / 2, unit / 2);
-    pop();
-}
-
 /**
 * Controls the movements of the player
 * Determines which tiles are accessible or not
@@ -814,13 +901,19 @@ function keyPressed() {
         }
     }
 
-
-    // Menu and interaction control
     // Space
     if (keyCode === 32) {
         if (state === "start") {
             state = "game";
             startGame();
+
+
+            if (stopWatch == null) {
+                stopWatch = Date.now();
+            } else {
+                timeElapsed += Date.now() - timerStarted;
+                stopWatch = null;
+            }
         }
         else if (state === "game" && dialogueOn) {
             if (keys.length < maxKeys && lives > 1) {
@@ -838,7 +931,6 @@ function keyPressed() {
             window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
         }
     }
-    // Movement controls
     else if (state === "game") {
         // Adjusts the row and column position based on the arrow key
         // A
@@ -862,11 +954,14 @@ function keyPressed() {
         newR = constrain(newR, 0, rows - 1);
         newC = constrain(newC, 0, cols - 1);
 
+        let moved = false;
+
         // Checks what is at the position the player tried to move to
         if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
             // If nothing, the player moves there
             player.r = newR;
             player.c = newC;
+            moved = true;
         }
         else if (grid[newR][newC] === `c`) {
             // If it's a collectible then empty that spot
@@ -878,6 +973,7 @@ function keyPressed() {
                 // Increase the number of keys that the player has
                 keys.push(true);
             }
+            moved = true;
 
         }
         // Checks if it is a door tile
@@ -886,14 +982,27 @@ function keyPressed() {
             if (keys.length >= maxKeys) {
                 player.r = newR;
                 player.c = newC;
-                console.log("You win!");
+
                 state = "win";
+
+                // Calculate the time
+                yourTime = Date.now() - start;
+                bestTime = min(yourTime, bestTime);
+                storeItem('best time', bestTime);
+            }
+        }
+
+        // Check if the player moved onto an enemy
+        if (moved) {
+            for (let enemy of enemies) {
+                checkDeath(enemy);
             }
         }
     }
+
     return false;
 
-    function newFunction() {
-        location.reload();
-    }
+    // function newFunction() {
+    //     location.reload();
+    // }
 }
