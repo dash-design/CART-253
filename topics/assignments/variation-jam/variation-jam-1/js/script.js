@@ -608,7 +608,7 @@ function setNPCs() {
         // Find position
         let r = floor(random(1, rows));
         let c = floor(random(0, cols));
-        // Place an enemy on an empty tile
+        // Place an NPC on an empty tile
         if (grid[r][c] === " ") {
             const newNpc = {
                 r: r,
@@ -695,7 +695,7 @@ function moveEnemies() {
             if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
                 // Lets the enemy move if it is valid
                 enemy.c += enemy.direction;
-                // Check collision with the player
+                // Checks collision with the player
                 checkDeath(enemy);
             }
             else {
@@ -708,12 +708,13 @@ function moveEnemies() {
     }
 }
 
-// Checks if the player get killed by an enemy
+// Checks and handles losing lives
 function checkDeath(enemy) {
+    // Player loses a life if collision with an enemy
     if (player.c === enemy.c && player.r === enemy.r) {
         lives = lives - 1;
     }
-
+    // Player loses the game if no lives left
     if (lives <= 0) {
         state = "lost";
     }
@@ -753,10 +754,11 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         const c = (inventoryItem.c + i) * (unit / 1.2) + unit / 1.5;
         const r = (inventoryItem.r * unit) + unit / 1.5;
         const size = inventoryItem.size;
-
+        // Displays items if collected
         if (i < items.length) {
             image(itemAsset, c, r, size, size);
         }
+        // Displays items outline if not collected
         else {
             image(itemAssetOutline, c, r, size, size);
         }
@@ -774,9 +776,11 @@ function drawLives() {
         const c = (11 - i) * (unit * 1.25) - unit * 1.75;
         const r = (inventoryLife.r * unit) + unit
         const size = inventoryLife.size;
+        // Displays lives remaining
         if (i < lives) {
             image(heart, c, r, size, size);
         }
+        // Displays lives missing as outline
         else {
             image(heartOutline, c, r, size, size);
         }
@@ -801,23 +805,26 @@ function drawCoins() {
     drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
 }
 
-// The dialogue and dialogue window when talking to the NPCs
+// Handles dialogue and dialogue window when talking to the NPCs
 function openDialogue() {
     for (let npc of npcs) {
+        // Draws dialogue if player on same tile as NPC
         if (player.c === npc.c && player.r === npc.r) {
+            // Dialogue window
             push();
-            stroke(255, 95);
+            stroke(255, 95); // White with slightly reduced opacity
             strokeWeight(2);
-            fill(0, 200);
+            fill(0, 200); // Black with reduced opacity 
             rect(3 * unit, 8.125 * unit, 6.75 * unit, 1.75 * unit);
 
-            fill(255);
-            // rectMode(CENTER);
+            // Dialogue text
+            // NPC name
+            fill(255); // White
             textFont(pixelFont);
             textAlign(TOP, LEFT);
             textSize(24);
             text(npc.name + ":\n", 3.125 * unit, 8.5 * unit);
-            // rectMode(CENTER);
+            // NPC dialogue
             textFont(pixelFont);
             textAlign(CENTER, LEFT);
             textSize(20);
@@ -828,11 +835,12 @@ function openDialogue() {
             return;
         }
     }
+    // Disables dialogue
     dialogueOn = false;
 }
 
 /**
-* Controls the movements of the player
+* Handles player movement and menu controls
 * Determines which tiles are accessible or not
 * Determines the effect of some tiles when the player moves on them
 */
@@ -950,8 +958,4 @@ function keyPressed() {
     }
 
     return false;
-
-    // function newFunction() {
-    //     location.reload();
-    // }
 }
