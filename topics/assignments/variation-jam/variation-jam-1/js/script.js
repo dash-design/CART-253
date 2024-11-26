@@ -277,26 +277,18 @@ function startGame() {
     }
 }
 
-function timeFormatting(totalMillis) {
-    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
-    const ms = Math.floor(totalMillis % 1000 / 10);
-    const s = Math.floor(totalMillis / 1000) % 60;
-    const m = Math.floor(totalMillis / 1000 / 60) % 60;
-    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
-}
-
 /**
 Handles displaying the grid
 */
 function draw() {
     background(0);
 
-    let bestTimeFormat = "--:--.--";
+    // let bestTimeFormat = "--:--.--";
 
     // Set the best time if no prior score exists
-    if (bestTime !== null) {
-        bestTimeFormat = timeFormatting(bestTime);
-    }
+    // if (bestTime !== null) {
+    //     bestTimeFormat = timeFormatting(bestTime);
+    // }
 
     if (state === "start") {
 
@@ -334,6 +326,7 @@ To Try Again
     else if (state === "win") {
 
         let yourTimeFormat = timeFormatting(yourTime);
+        let bestTimeFormat = timeFormatting(bestTime);
 
         end.text = `
     Congratulations!
@@ -414,6 +407,12 @@ The Next Level!
     // }
     // // The game functions
     // game();
+
+    push();
+    textSize(24);
+    fill(255);
+    text(`FPS: ${floor(frameRate())}`, width / 2, height / 2);
+    pop();
 }
 
 /**
@@ -522,13 +521,22 @@ function game() {
     stopWatch();
 }
 
-function stopWatch() {
-
-    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+function timeFormatting(totalMillis) {
+    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
     const ms = Math.floor(totalMillis % 1000 / 10);
     const s = Math.floor(totalMillis / 1000) % 60;
     const m = Math.floor(totalMillis / 1000 / 60) % 60;
-    const string = `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+}
+
+function stopWatch() {
+
+    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    // const ms = Math.floor(totalMillis % 1000 / 10);
+    // const s = Math.floor(totalMillis / 1000) % 60;
+    // const m = Math.floor(totalMillis / 1000 / 60) % 60;
+    // const string = `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+    const string = timeFormatting(totalMillis);
 
     fill(255);
     textFont(pixelFont);
@@ -599,6 +607,11 @@ function drawGridItems(gridItemsToPlace, gridItem) {
 
 // Creates the enemies
 function setEnemies() {
+    // Checks frame rate and set it to 60 fps
+    let fps = frameRate() || 60;
+    // Creates moveInterval vaiable based on the frame rate
+    let adjustedMoveInterval = floor(fps / 4);
+
     let enemiesToPlace = enemiesTotal;
 
     enemies = [];
@@ -614,7 +627,7 @@ function setEnemies() {
                 c: c,
                 size: unit,
                 direction: 1,
-                moveInterval: 15,
+                moveInterval: adjustedMoveInterval,
                 moveTime: 0
             }
             enemies.push(newEnemy);
@@ -711,7 +724,13 @@ function drawNPCs() {
 
 // Moves the enemies
 function moveEnemies() {
+    // Checks frame rate and set it to 60 fps
+    let fps = frameRate() || 60;
+    // Creates moveInterval vaiable based on the frame rate
+    let adjustedMoveInterval = floor(fps / 4);
+
     for (let enemy of enemies) {
+        enemy.moveInterval = adjustedMoveInterval;
         enemy.moveTime++;
         if (enemy.moveTime >= enemy.moveInterval) {
             // Next col according to the enemy direction
@@ -882,7 +901,7 @@ function keyPressed() {
             state = "game";
             startGame();
 
-            timer = createElement("h1");
+
             if (stopWatch == null) {
                 stopWatch = Date.now();
             } else {
