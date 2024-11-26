@@ -191,52 +191,6 @@ function setup() {
     if (bestTime === null) {
         bestTime = 999999;
     }
-
-    /**
-     * Pre-refactored grid items
-     */
-    // // Number of walls to place
-    // // And place them
-    // let wallsToPlace = 12;
-    // while (wallsToPlace > 0) {
-    //     // Find position
-    //     let r = floor(random(0, rows));
-    //     let c = floor(random(0, cols));
-    //     // Place an item
-    //     if (grid[r][c] === " ") {
-    //         grid[r][c] = "W";
-    //         wallsToPlace = wallsToPlace - 1;
-    //     }
-    // }
-
-    // // Number of items to place
-    // // And place them
-    // let itemsToPlace = 3;
-    // while (itemsToPlace > 0) {
-    //     // Find position
-    //     let r = floor(random(0, rows));
-    //     let c = floor(random(0, cols));
-    //     // Place an item
-    //     if (grid[r][c] === " ") {
-    //         grid[r][c] = "k";
-    //         itemsToPlace = itemsToPlace - 1;
-    //     }
-    // }
-
-    // const wallsToPlace = 12;
-    // const itemsToPlace = 3;
-
-    // drawGridItems(wallsToPlace, "W");
-    // drawGridItems(itemsToPlace, "k");
-
-    // // Makes the position the player starts at empty!
-    // grid[player.r][player.c] = "N";
-
-    // // setCharacters();
-    // // Creates the enemies
-    // setEnemies();
-    // // Creates the NPCs
-    // setNPCs();
 }
 
 // function windowResized() {
@@ -314,76 +268,15 @@ The Next Level!
 
         start = null;
     }
-
-    /**
-    * Pre-refactored grid
-    */
-    // displayGrid();
-    // displayGridTiles();
-
-    // // Goes through all the rows and columns
-    // for (let r = 0; r < rows; r++) {
-    //     for (let c = 0; c < cols; c++) {
-    //         // Gets the item at this position
-    //         let item = grid[r][c];
-
-    //         // Draws the grid and uses the ground asset by default
-    //         push();
-    //         noFill();
-    //         noStroke();
-    //         imageMode(CENTER);
-    //         image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-    //         pop();
-
-    //         // Places the walls
-    //         if (item === "W") {
-    //             push();
-    //             noFill();
-    //             noStroke();
-    //             imageMode(CENTER);
-    //             image(wall, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-    //             pop();
-    //         }
-
-    //         // Places the keys
-    //         else if (item === "k") {
-    //             push();
-    //             noFill();
-    //             noStroke();
-    //             imageMode(CENTER);
-    //             image(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25)
-    //             pop();
-    //         }
-    //         // Places the door
-    //         else if (item === "D") {
-    //             push();
-    //             noFill();
-    //             noStroke();
-    //             imageMode(CENTER);
-
-    //             //  If the player has enough keys, the door is opened
-    //             if (keys.length >= maxKeys) {
-    //                 image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-    //             }
-    //             // If not, the door stays locked
-    //             else {
-    //                 image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-    //             }
-    //             pop();
-    //         }
-    //     }
-    // }
-    // // The game functions
-    // game();
 }
 
 // Sets game variables and functions when the game starts
 function startGame() {
-    const wallsToPlace = 12;
-    const itemsToPlace = 3;
+    const wallsToPlace = 12; // How many walls the createGridItems will draw
+    const keysToPlace = 3; // How many keys the createGridItems will draw
 
-    drawGridItems(wallsToPlace, "W"); // Handles drawing the walls
-    drawGridItems(itemsToPlace, "k"); // Handles drawing the keys
+    createGridItems(wallsToPlace, "W"); // Handles drawing the walls
+    createGridItems(keysToPlace, "k"); // Handles drawing the keys
 
     grid[player.r][player.c] = "N"; // Handles player initial position
 
@@ -399,6 +292,21 @@ function startGame() {
     }
 }
 
+// Creates items (walls and keys) on random positions
+function createGridItems(gridItemsToPlace, gridItem) {
+    while (gridItemsToPlace > 0) {
+        // Find position
+        let r = floor(random(0, rows));
+        let c = floor(random(0, cols));
+        // Place an item
+        if (grid[r][c] === " ") {
+            grid[r][c] = gridItem;
+            gridItemsToPlace = gridItemsToPlace - 1;
+        }
+    }
+}
+
+// Populates the grid with items
 function createGrid() {
     // Goes through all the rows and columns
     for (let r = 0; r < rows; r++) {
@@ -437,7 +345,7 @@ function createGrid() {
     }
 }
 
-// Draws the items (walls and keys) on the grid
+// Draws the items on the grid
 function drawTiles(asset, c, r, sizeC, sizeR) {
     push();
     noFill();
@@ -504,65 +412,6 @@ function stopWatch() {
     textSize(24);
     text(string, unit / 2, unit / 2);
 }
-
-// Draws the items (walls and keys) on the grid
-function drawGridItems(gridItemsToPlace, gridItem) {
-    while (gridItemsToPlace > 0) {
-        // Find position
-        let r = floor(random(0, rows));
-        let c = floor(random(0, cols));
-        // Place an item
-        if (grid[r][c] === " ") {
-            grid[r][c] = gridItem;
-            gridItemsToPlace = gridItemsToPlace - 1;
-        }
-    }
-}
-
-/**
- * Pre-refactoring inventory
- */
-// function displayGrid() {
-//     // Goes through all the rows and columns
-//     for (let r = 0; r < rows; r++) {
-//         for (let c = 0; c < cols; c++) {
-//             // Gets the item at this position
-//             const item = grid[r][c];
-//             displayGridTiles(tile)
-//         }
-//     }
-// }
-
-// function displayGridTiles(tile) {
-//     if (item === "W") {
-//         drawGridTiles(wall, c, r, unit)
-//     }
-//     // Places the keys
-//     else if (item === "k") {
-//         drawGridTiles(key, c, r, unit / 1.25)
-//     }
-//     // Places the door
-//     else if (item === "D") {
-//         //  If the player has enough keys, the door is opened
-//         if (keys.length >= maxKeys) {
-//             drawGridTiles(ground, c, r, unit)
-//         }
-//         // If not, the door stays locked
-//         else {
-//             drawGridTiles(door, c, r, unit)
-//         }
-//     }
-// }
-
-// // Draws the keys in the inventory
-// function drawGridTiles(tileAsset, c, r, size) {
-//     push();
-//     noFill();
-//     noStroke();
-//     imageMode(CENTER);
-//     image(tileAsset, c * unit + unit / 2, r * unit + unit / 2, size, size)
-//     pop();
-// }
 
 // Creates the enemies
 function setEnemies() {
