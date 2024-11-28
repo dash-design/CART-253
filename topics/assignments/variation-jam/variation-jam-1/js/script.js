@@ -238,8 +238,8 @@ Press [SPACE] To Play
 
 Best Time: ${bestTimeFormat}
         `;
-
-        drawMenu(mossyWall, home.textFill, home.textSize, home.text);
+        let textSize = unit / 2;
+        drawMenu(mossyWall, home.textFill, textSize, home.text);
     }
 
     // Active game state (no menu)
@@ -256,7 +256,8 @@ Best Time: ${bestTimeFormat}
 Press [SPACE]
 To Try Again
 `;
-        drawMenu(mossyWall, end.textFill, end.textSize, end.text);
+        let textSize = unit / 1.5;
+        drawMenu(mossyWall, end.textFill, textSize, end.text);
     }
     // Game won state and menu
     else if (state === "win") {
@@ -275,7 +276,8 @@ The Next Level!
 or
 Press [R] To Play Again
 `;
-        drawMenu(ground, end.textFill, end.textSize, end.text);
+        let textSize = unit / 2;
+        drawMenu(ground, end.textFill, textSize, end.text);
 
         start = null;
     }
@@ -381,7 +383,7 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     fill(255);
     stroke(0);
     strokeWeight(8);
-    textSize(68);
+    textSize(unit);
     textAlign(CENTER, CENTER);
     text("Goblin and Adventure", width / 2, height / 6);
     pop();
@@ -435,7 +437,7 @@ function stopWatch() {
     fill(255);
     textFont(pixelFont);
     textAlign(LEFT, CENTER);
-    textSize(24);
+    textSize(unit / 2.5);
     text(string, unit / 2, unit / 2);
 }
 
@@ -444,7 +446,6 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
     // npcName = random(npcNames.deities);
 
     // characters = [];
-    console.log(charactersToPlace);
     while (charactersToPlace > 0) {
 
         // Find position
@@ -458,7 +459,6 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
             charactersToPlace = charactersToPlace - 1;
         }
     }
-    console.log(characters);
 }
 
 function setNPCs() {
@@ -604,8 +604,30 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
     }
 }
 
+// // Draws the lives in the bottom right corner of the inventory
+// function drawLives() {
+//     for (let i = 0; i < maxLives; i++) {
+//         push();
+//         noStroke();
+//         noFill();
+//         imageMode(CENTER);
+//         const c = (11 - i) * (unit * 1.25) - unit * 1.75;
+//         const r = (inventoryLife.r * unit) + unit
+//         const size = inventoryLife.size;
+//         // Displays lives remaining
+//         if (i < lives) {
+//             image(heart, c, r, size, size);
+//         }
+//         // Displays lives missing as outline
+//         else {
+//             image(heartOutline, c, r, size, size);
+//         }
+//         pop();
+//     }
+// }
+
 function drawLives() {
-    drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
+    drawInventoryItems(maxLives, lives, inventoryLife, heartOutline, heart)
 }
 
 // Draws the keys in the inventory
@@ -635,12 +657,12 @@ function openDialogue() {
             fill(255); // White
             textFont(fantasyFont);
             textAlign(TOP, LEFT);
-            textSize(30);
+            textSize(unit / 2);
             text(npc.name + ":\n", 3.25 * unit, 8.625 * unit);
             // NPC dialogue
             textFont(gothicFont);
             textAlign(CENTER, LEFT);
-            textSize(22);
+            textSize(unit / 3);
             text(npc.speech, 3.125 * unit, 9.125 * unit, 6.625 * unit, 1.5 * unit);
             pop();
 
@@ -686,7 +708,7 @@ function keyPressed() {
         }
         else if (state === "game" && dialogueOn) {
             if (keys.length < maxKeys && lives > 1) {
-                lives = lives - 1;
+                lives = - 1;
                 keys.push(true);
             }
         }
