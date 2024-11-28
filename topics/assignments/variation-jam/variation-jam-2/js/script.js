@@ -20,33 +20,43 @@
 
 // The game grid
 let grid = [
-    ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
-    ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
-    ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
-    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", "W", " ", "W"],
+    ["W", " ", "W", "W", "W", " ", " ", "W", " ", "W", " ", "W", " ", "W"],
+    ["W", " ", "W", " ", "W", " ", " ", " ", " ", "W", " ", "W", " ", "W"],
+    ["W", " ", "W", " ", "W", "W", "W", "W", "W", "W", "W", "W", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", " ", " ", "W", " ", "W", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", "W", " ", "W"],
+    ["W", "W", "W", "W", " ", "W", "W", "W", " ", "W", " ", "W", " ", "W"],
+    ["W", " ", " ", " ", " ", "W", " ", " ", " ", "W", " ", " ", " ", "W"],
+    ["W", " ", " ", "W", "W", "W", " ", "W", " ", "W", " ", "W", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", " ", "W", " ", "W", " ", "W", " ", "W"],
+    ["W", "W", "W", "W", " ", "W", "W", "W", "W", "W", " ", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
 
 ];
 
-// How many rows and columns in the grid?
-const rows = 10;
-const cols = 13;
-// The unit size (how big a square for each tile)
-let unit = 64;
+// Number of rows and columns and standard unit size
+// Need to be adjusted according to the grid array
+const rows = 16; // Serves as the Y
+const cols = 14; // Serves as the X
+let unit = 64; // Grid tiles size
 
 // Game elements
 let pixelFont;
+
+let gothicFont;
+
+let fantasyFont;
 
 let goblin;
 
 let rabbit;
 
-let wall;
+let mossyWall;
 
 let ground;
 
@@ -74,75 +84,69 @@ let night;
 
 // Preload game assets
 function preload() {
-    pixelFont = loadFont('assets/font/slkscr.ttf');
-    goblin = loadImage('assets/images/goblin.png');
-    rabbit = loadImage('assets/images/rabbit.png');
-    wall = loadImage('assets/images/brick.png');
-    ground = loadImage('assets/images/ground.png');
-    coin = loadImage('assets/images/coin.png');
-    coinOutline = loadImage('assets/images/coinoutline.png');
-    door = loadImage('assets/images/door.png');
-    key = loadImage('assets/images/key.png');
-    keyOutline = loadImage('assets/images/keyoutline.png');
-    heart = loadImage('assets/images/heart.png');
-    heartOutline = loadImage('assets/images/heartoutline.png');
-    wizard = loadImage('assets/images/wizard.png');
-    npcNames = loadJSON('assets/data/lovecraft.json');
-    night = loadImage('assets/images/mask.png');
+    pixelFont = loadFont('assets/font/slkscr.ttf'); // Stop watch font
+    gothicFont = loadFont('assets/font/alagard.ttf'); // Menu and dialogue font
+    fantasyFont = loadFont('assets/font/Alkhemikal.ttf'); // Title and NPC name font
+    goblin = loadImage('assets/images/goblin.png'); // Player
+    rabbit = loadImage('assets/images/rabbit.png'); // Enemies
+    mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
+    ground = loadImage('assets/images/ground.png'); // Empty tiles
+    coin = loadImage('assets/images/coin.png'); // Coins
+    coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
+    door = loadImage('assets/images/door.png'); // Door tile
+    key = loadImage('assets/images/key.png'); // Keys
+    keyOutline = loadImage('assets/images/keyoutline.png'); // Keys outline (for the inventory)
+    heart = loadImage('assets/images/heart.png'); // Lives
+    heartOutline = loadImage('assets/images/heartoutline.png'); // Lives outline (for the inventory)
+    wizard = loadImage('assets/images/wizard.png'); // NPCs
+    npcNames = loadJSON('assets/data/lovecraft.json'); // Names of NPCs
+    night = loadImage('assets/images/mask.png'); // Mask
 }
 
-// The player starts at 0,0 on the grid
+// Player variables
 let player = {
     r: 0,
-    c: 6,
+    c: 1,
     size: unit
 }
 
-// Max number of lives
-const maxLives = 2;
-
-let lives = 2;
-
-// Max number of keys
-const maxKeys = 3;
-
-let keys = [];
-
-// Max number of coins
-const maxCoins = 3;
-
-let coins = [];
-
-// The lives in the inventory
+// Life variables in the inventory
 let inventoryLife = {
-    r: 8,
-    c: 12,
+    r: 14,
+    c: 15,
     size: unit * 1.75
 }
+const maxLives = 2; // Max number of lives
+let lives = 2; // Default number of lives
 
-// The key in the inventory
+// Key variables in the inventory
 let inventoryKey = {
-    r: 8,
+    r: 14,
     c: 0,
     size: unit * 1.25
 }
+const maxKeys = 3; // Max number of keys
+let keys = []; // Array of keys
 
-// The coins in the inventory
+// Coin variables in the inventory
 let inventoryCoin = {
-    r: 9,
+    r: 15,
     c: 0,
     size: unit * 1.5
 }
+const maxCoins = 3; // Max number of coins
+let coins = []; // Array of coins
 
-// Total amount of enemies
-let enemiesTotal = 5;
+// Enemies variables
+let enemiesTotal = 5; // Total amount of enemies
+let enemies = []; // Array of enemies
+// Variables used for dynamic enemies movement
+let fps; // Default frame rate
+let adjustedMoveInterval; // Default move interval 
 
-let enemies = [];
-
-// Total number of NPCs
-let npcTotal = 2;
-
-let npcs = [];
+// NPCs variables
+let npcTotal = 2; // Total number of NPCs
+let npcs = []; // Array of NPCs
 
 // The NPCs dialogues
 let npcSpeech = [
@@ -150,25 +154,24 @@ let npcSpeech = [
     "For 1 Life I'll give you 1 key\nPress [SPACE] To Get a Key"
 ];
 
-// let mask = {
-//     size: (cols * unit) * 3
-// };
-
+// NPCs dialogue box variables
 let dialogueBox = {
-    r: 8,
+    r: 15,
     c: 3,
     size: unit
 }
+let dialogueOn = false; // Off by default
 
-let dialogueOn = false;
-
+// let mask = {
+//     size: (cols * unit) * 3
+// };
 
 // The state
 let state = "start";
 
 // Start screen
 let home = {
-    rectFill: "green",
+    textFont: gothicFont,
     textFill: 255,
     textSize: 32,
     text: undefined
@@ -176,26 +179,16 @@ let home = {
 
 // End Screen
 let end = {
-    rectFill: 32,
+    textFont: gothicFont,
     textFill: 220,
     textSize: 32,
     text: undefined
-
 }
 
-// Stop Watch variables
-// Time it takes you to win
-let yourTime = 0;
+// Stop watch variables
+let yourTime = 0; // Time it takes you to win
 let start = null;
-// Fastest time it took to win
-let bestTime;
-
-// Default frame rate
-let fps = 60;
-// Default move interval 
-let adjustedMoveInterval = 15;
-
-
+let bestTime; // Fastest time it took to win
 
 /**
 Creates and populate the grid
@@ -203,118 +196,44 @@ Creates and populate the grid
 function setup() {
     createCanvas(cols * unit, rows * unit);
 
-    // Retrieve the last saved highscore
+    // Retrieves the last saved highscore
     bestTime = getItem('best time');
-
+    // Sets the default "best time" when none exists
     if (bestTime === null) {
         bestTime = 999999;
     }
-
-    // Set the best time if no prior score exists
-    // if (bestTime === null) {
-    //     bestTime = "--:--.--";
-    // }
-
-    /**
-     * Pre-refactored grid items
-     */
-    // // Number of walls to place
-    // // And place them
-    // let wallsToPlace = 12;
-    // while (wallsToPlace > 0) {
-    //     // Find position
-    //     let r = floor(random(0, rows));
-    //     let c = floor(random(0, cols));
-    //     // Place an item
-    //     if (grid[r][c] === " ") {
-    //         grid[r][c] = "W";
-    //         wallsToPlace = wallsToPlace - 1;
-    //     }
-    // }
-
-    // // Number of items to place
-    // // And place them
-    // let itemsToPlace = 3;
-    // while (itemsToPlace > 0) {
-    //     // Find position
-    //     let r = floor(random(0, rows));
-    //     let c = floor(random(0, cols));
-    //     // Place an item
-    //     if (grid[r][c] === " ") {
-    //         grid[r][c] = "c";
-    //         itemsToPlace = itemsToPlace - 1;
-    //     }
-    // }
-
-    // const wallsToPlace = 12;
-    // const itemsToPlace = 3;
-
-    // drawGridItems(wallsToPlace, "W");
-    // drawGridItems(itemsToPlace, "c");
-
-    // // Makes the position the player starts at empty!
-    // grid[player.r][player.c] = "N";
-
-    // // setCharacters();
-    // // Creates the enemies
-    // setEnemies();
-    // // Creates the NPCs
-    // setNPCs();
 }
 
 // function windowResized() {
-//     resizeCanvas(windowWidth, windowHeight);
+//     if (windowWidth < width || windowHeight < height) {
+//         resizeCanvas(windowWidth, windowHeight);
+//     }
 // }
 
-function startGame() {
-    const wallsToPlace = 12;
-    const itemsToPlace = 3;
-
-    drawGridItems(wallsToPlace, "W");
-    drawGridItems(itemsToPlace, "c");
-
-    // Makes the position the player starts at empty!
-    grid[player.r][player.c] = "N";
-
-    // Reset the lives
-    lives = maxLives;
-
-    // setCharacters();
-    // Creates the enemies
-    setEnemies();
-    // Creates the NPCs
-    setNPCs();
-
-    if (start == null) {
-        start = Date.now();
-    }
-}
-
 /**
-Handles displaying the grid
+* Handles displaying the grid, menus, and game states
 */
 function draw() {
-    background(0);
+    background(0); // Background is black by default
 
-    // Calculates the frame rate or set it to 60
-    fps = frameRate() || 60;
-    // Adjusts the move interval according to the FPS
-    adjustedMoveInterval = floor(fps / 4);
+    fps = frameRate() || 60; // Calculates the frame rate or set it to 60
+    adjustedMoveInterval = floor(fps / 4); // Adjusts the move interval according to the FPS
 
-    // let bestTimeFormat = "--:--.--";
-
-    // Set the best time if no prior score exists
-    // if (bestTime !== null) {
-    //     bestTimeFormat = timeFormatting(bestTime);
-    // }
-
+    // Game states
+    // Starting menu state
     if (state === "start") {
 
-        let bestTimeFormat = timeFormatting(bestTime);
+        // let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
+        let bestTimeFormat;
+        if (bestTime = 999999) {
+            bestTimeFormat = "None";
+        }
+        else {
+            bestTimeFormat = timeFormatting(bestTime);
+        }
 
+        // Starting menu
         home.text = `
-Goblin and Dungeon
-
 Explore, adventure, escape!
 
 Controls:
@@ -324,242 +243,74 @@ Controls:
 Press [SPACE] To Play
 
 Best Time: ${bestTimeFormat}
-`;
-        menu(home.rectFill, home.textFill, home.textSize, home.text);
+        `;
+
+        drawMenu(mossyWall, home.textFill, home.textSize, home.text);
     }
 
+    // Active game state (no menu)
     else if (state === "game") {
         createGrid();
         game();
     }
+    // Game lost state and menu
     else if (state === "lost") {
+        // Lost menu
         end.text = `
 :'(
 
 Press [SPACE]
 To Try Again
 `;
-        menu(end.rectFill, end.textFill, end.textSize, end.text);
+        drawMenu(mossyWall, end.textFill, end.textSize, end.text);
     }
+    // Game won state and menu
     else if (state === "win") {
 
         let yourTimeFormat = timeFormatting(yourTime);
         let bestTimeFormat = timeFormatting(bestTime);
 
         end.text = `
-    Congratulations!
+Congratulations!
     
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-    Press[SPACE] To Play
+Press[SPACE] To Play
 The Next Level!
-    or
-    Press [R] To Play Again
+or
+Press [R] To Play Again
 `;
-        menu(end.rectFill, end.textFill, end.textSize, end.text);
+        drawMenu(ground, end.textFill, end.textSize, end.text);
 
         start = null;
-
-        // Store the latest high score
-        // highScore = min(score, highScore);
-        // storeItem('high score', highScore);
-    }
-    /**
-    * Pre-refactored grid
-    */
-    // displayGrid();
-    // displayGridTiles();
-
-    // // Goes through all the rows and columns
-    // for (let r = 0; r < rows; r++) {
-    //     for (let c = 0; c < cols; c++) {
-    //         // Gets the item at this position
-    //         let item = grid[r][c];
-
-    //         // Draws the grid and uses the ground asset by default
-    //         push();
-    //         noFill();
-    //         noStroke();
-    //         imageMode(CENTER);
-    //         image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-    //         pop();
-
-    //         // Places the walls
-    //         if (item === "W") {
-    //             push();
-    //             noFill();
-    //             noStroke();
-    //             imageMode(CENTER);
-    //             image(wall, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-    //             pop();
-    //         }
-
-    //         // Places the keys
-    //         else if (item === "c") {
-    //             push();
-    //             noFill();
-    //             noStroke();
-    //             imageMode(CENTER);
-    //             image(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25)
-    //             pop();
-    //         }
-    //         // Places the door
-    //         else if (item === "D") {
-    //             push();
-    //             noFill();
-    //             noStroke();
-    //             imageMode(CENTER);
-
-    //             //  If the player has enough keys, the door is opened
-    //             if (keys.length >= maxKeys) {
-    //                 image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-    //             }
-    //             // If not, the door stays locked
-    //             else {
-    //                 image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-    //             }
-    //             pop();
-    //         }
-    //     }
-    // }
-    // // The game functions
-    // game();
-}
-
-/**
- * Might be refactored?
- */
-function createGrid() {
-    // Goes through all the rows and columns
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            // Gets the item at this position
-            let item = grid[r][c];
-
-            // Draws the grid and uses the ground asset by default
-            push();
-            noFill();
-            noStroke();
-            imageMode(CENTER);
-            image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-            pop();
-
-            // Places the walls
-            if (item === "W") {
-                push();
-                noFill();
-                noStroke();
-                imageMode(CENTER);
-                image(wall, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-                pop();
-            }
-
-            // Places the keys
-            else if (item === "c") {
-                push();
-                noFill();
-                noStroke();
-                imageMode(CENTER);
-                image(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25)
-                pop();
-            }
-            // Places the door
-            else if (item === "D") {
-                push();
-                noFill();
-                noStroke();
-                imageMode(CENTER);
-
-                //  If the player has enough keys, the door is opened
-                if (keys.length >= maxKeys) {
-                    image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-                }
-                // If not, the door stays locked
-                else {
-                    image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
-                }
-                pop();
-            }
-        }
     }
 }
 
-function menu(squareFill, textFill, fontSize, textContent) {
-    // Screen appearance
-    push();
-    noStroke();
-    fill(squareFill);
-    rectMode(CENTER);
-    rect(width / 2, height / 2, width - 50, height - 50);
-    pop();
-    // Text parameters
-    push();
-    textFont(pixelFont);
-    fill(textFill);
-    textSize(fontSize);
-    textAlign(CENTER, CENTER);
-    text(textContent, width / 2, height / 2);
-    pop();
+// Sets game variables and functions when the game starts
+function startGame() {
+    const wallsToPlace = 0; // How many walls the createGridItems will draw
+    const keysToPlace = 3; // How many keys the createGridItems will draw
+
+    createGridItems(wallsToPlace, "W"); // Handles drawing the walls
+    createGridItems(keysToPlace, "k"); // Handles drawing the keys
+
+    grid[player.r][player.c] = "N"; // Handles player initial position
+
+    lives = maxLives; // Reset the lives
+
+    // setCharacters();
+    setEnemies(); // Creates the enemies
+    setNPCs(); // Creates the NPCs
+
+    // Sets stop watch when game starts
+    if (start == null) {
+        start = Date.now();
+    }
 }
 
-function game() {
-    // Moves the enemies
-    moveEnemies();
-    // // Checks collision with the enemy
-    // checkDeath();
-
-    // Draws the NPC
-    drawNPCs();
-    // Draws the player
-    drawPlayer();
-    // Draws the enemy
-    drawEnemies();
-    // // Draws mask
-    // drawMask();
-
-    // Draws items in inventory
-    drawInventoryItems();
-    // Draws the player's life
-    drawLives();
-    // Draws the keys
-    drawKeys();
-    // Draws the coins
-    drawCoins();
-
-    // Shows the dialogue wih the NPCs
-    openDialogue();
-
-    stopWatch();
-}
-
-function timeFormatting(totalMillis) {
-    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
-    const ms = Math.floor(totalMillis % 1000 / 10);
-    const s = Math.floor(totalMillis / 1000) % 60;
-    const m = Math.floor(totalMillis / 1000 / 60) % 60;
-    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
-}
-
-function stopWatch() {
-
-    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
-    // const ms = Math.floor(totalMillis % 1000 / 10);
-    // const s = Math.floor(totalMillis / 1000) % 60;
-    // const m = Math.floor(totalMillis / 1000 / 60) % 60;
-    // const string = `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
-    const string = timeFormatting(totalMillis);
-
-    fill(255);
-    textFont(pixelFont);
-    textAlign(LEFT, CENTER);
-    textSize(24);
-    text(string, unit / 2, unit / 2);
-}
-
-function drawGridItems(gridItemsToPlace, gridItem) {
-    // const wallsToPlace = 12;
-    // const itemsToPlace = 3;
+// Creates items (walls and keys) on random positions
+function createGridItems(gridItemsToPlace, gridItem) {
     while (gridItemsToPlace > 0) {
         // Find position
         let r = floor(random(0, rows));
@@ -572,58 +323,128 @@ function drawGridItems(gridItemsToPlace, gridItem) {
     }
 }
 
-/**
- * Pre-refactoring inventory
- */
-// function displayGrid() {
-//     // Goes through all the rows and columns
-//     for (let r = 0; r < rows; r++) {
-//         for (let c = 0; c < cols; c++) {
-//             // Gets the item at this position
-//             const item = grid[r][c];
-//             displayGridTiles(tile)
-//         }
-//     }
-// }
+// Populates the grid with items
+function createGrid() {
+    // Goes through all the rows and columns
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            // Gets the item at this position
+            let item = grid[r][c];
 
-// function displayGridTiles(tile) {
-//     if (item === "W") {
-//         drawGridTiles(wall, c, r, unit)
-//     }
-//     // Places the keys
-//     else if (item === "c") {
-//         drawGridTiles(key, c, r, unit / 1.25)
-//     }
-//     // Places the door
-//     else if (item === "D") {
-//         //  If the player has enough keys, the door is opened
-//         if (keys.length >= maxKeys) {
-//             drawGridTiles(ground, c, r, unit)
-//         }
-//         // If not, the door stays locked
-//         else {
-//             drawGridTiles(door, c, r, unit)
-//         }
-//     }
-// }
+            // Draws the grid and uses the ground asset by default
+            drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
 
-// // Draws the keys in the inventory
-// function drawGridTiles(tileAsset, c, r, size) {
-//     push();
-//     noFill();
-//     noStroke();
-//     imageMode(CENTER);
-//     image(tileAsset, c * unit + unit / 2, r * unit + unit / 2, size, size)
-//     pop();
-// }
+            // Places the walls
+            if (item === "W") {
+                drawTiles(mossyWall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            }
+
+            // Places the keys
+            else if (item === "k") {
+                drawTiles(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25);
+            }
+
+            // Places the door
+            else if (item === "D") {
+                //  If the player has enough keys, the door is opened
+                if (keys.length >= maxKeys) {
+                    drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+
+                    // image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+                }
+                // If not, the door stays locked
+                else {
+                    drawTiles(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                    // image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
+                }
+            }
+        }
+    }
+}
+
+// Draws the items on the grid
+function drawTiles(asset, c, r, sizeC, sizeR) {
+    push();
+    noFill();
+    noStroke();
+    imageMode(CENTER);
+    image(asset, c, r, sizeC, sizeR)
+    pop();
+}
+
+// Draws the menu screens
+function drawMenu(background, contentFill, contentSize, contentText) {
+    // Screen appearance
+    push();
+    noStroke();
+    noFill();
+    imageMode(CENTER);
+    image(background, width / 2, height / 2, width, width)
+    pop();
+    // Title
+    push();
+    textFont(fantasyFont);
+    fill(255);
+    stroke(0);
+    strokeWeight(8);
+    textSize(68);
+    textAlign(CENTER, CENTER);
+    text("Goblin and Adventure", width / 2, height / 6);
+    pop();
+    // Menu content
+    push();
+    textFont(gothicFont);
+    fill(contentFill);
+    stroke(0);
+    strokeWeight(3);
+    textSize(contentSize);
+    textAlign(CENTER, TOP);
+    text(contentText, width / 2, height / 4);
+    pop();
+}
+
+
+// Handles game functions when entering game state
+function game() {
+    moveEnemies(); // Moves the enemies
+
+    drawNPCs(); // Draws the NPC
+    drawPlayer(); // Draws the player
+    drawEnemies(); // Draws the enemy
+    // drawMask(); // Draws mask
+    drawInventoryItems();    // Draws items in inventory
+    drawLives(); // Draws the player's life
+    drawKeys();  // Draws the keys
+    drawCoins();  // Draws the coins
+
+    openDialogue(); // Shows the dialogue wih the NPCs
+
+    stopWatch(); // Starts the stop watch
+}
+
+// Formats stop watch and score time
+function timeFormatting(totalMillis) {
+    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    const ms = Math.floor(totalMillis % 1000 / 10);
+    const s = Math.floor(totalMillis / 1000) % 60;
+    const m = Math.floor(totalMillis / 1000 / 60) % 60;
+    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+}
+
+// Draws the stop watch on the top left corner of the screen
+function stopWatch() {
+    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    const string = timeFormatting(totalMillis);
+
+    fill(255);
+    textFont(pixelFont);
+    textAlign(LEFT, CENTER);
+    textSize(24);
+    text(string, unit / 2, unit / 2);
+}
 
 // Creates the enemies
 function setEnemies() {
-    // // Checks frame rate and set it to 60 fps
-    // let fps = frameRate() || 60;
-    // // Creates moveInterval vaiable based on the frame rate
-    // let adjustedMoveInterval = floor(fps / 4);
-
     let enemiesToPlace = enemiesTotal;
 
     enemies = [];
@@ -639,7 +460,7 @@ function setEnemies() {
                 c: c,
                 size: unit,
                 direction: 1,
-                moveInterval: adjustedMoveInterval,
+                moveInterval: adjustedMoveInterval, // Adjusted in the draw function
                 moveTime: 0
             }
             enemies.push(newEnemy);
@@ -651,7 +472,6 @@ function setEnemies() {
 // Creates the NPCs
 function setNPCs() {
     let npcToPlace = npcTotal;
-    // npcName = random(npcNames.deities);
 
     npcs = [];
 
@@ -659,7 +479,7 @@ function setNPCs() {
         // Find position
         let r = floor(random(1, rows));
         let c = floor(random(0, cols));
-        // Place an enemy on an empty tile
+        // Place an NPC on an empty tile
         if (grid[r][c] === " ") {
             const newNpc = {
                 r: r,
@@ -746,7 +566,7 @@ function moveEnemies() {
             if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
                 // Lets the enemy move if it is valid
                 enemy.c += enemy.direction;
-                // Check collision with the player
+                // Checks collision with the player
                 checkDeath(enemy);
             }
             else {
@@ -759,12 +579,13 @@ function moveEnemies() {
     }
 }
 
-// Checks if the player get killed by an enemy
+// Checks and handles losing lives
 function checkDeath(enemy) {
+    // Player loses a life if collision with an enemy
     if (player.c === enemy.c && player.r === enemy.r) {
         lives = lives - 1;
     }
-
+    // Player loses the game if no lives left
     if (lives <= 0) {
         state = "lost";
     }
@@ -804,10 +625,11 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         const c = (inventoryItem.c + i) * (unit / 1.2) + unit / 1.5;
         const r = (inventoryItem.r * unit) + unit / 1.5;
         const size = inventoryItem.size;
-
+        // Displays items if collected
         if (i < items.length) {
             image(itemAsset, c, r, size, size);
         }
+        // Displays items outline if not collected
         else {
             image(itemAssetOutline, c, r, size, size);
         }
@@ -825,9 +647,11 @@ function drawLives() {
         const c = (11 - i) * (unit * 1.25) - unit * 1.75;
         const r = (inventoryLife.r * unit) + unit
         const size = inventoryLife.size;
+        // Displays lives remaining
         if (i < lives) {
             image(heart, c, r, size, size);
         }
+        // Displays lives missing as outline
         else {
             image(heartOutline, c, r, size, size);
         }
@@ -852,38 +676,45 @@ function drawCoins() {
     drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
 }
 
-// The dialogue and dialogue window when talking to the NPCs
+// Handles dialogue and dialogue window when talking to the NPCs
 function openDialogue() {
     for (let npc of npcs) {
+        // Draws dialogue if player on same tile as NPC
         if (player.c === npc.c && player.r === npc.r) {
+            // Dialogue window
             push();
-            stroke(255, 95);
+            stroke(255, 95); // White with slightly reduced opacity
             strokeWeight(2);
-            fill(0, 200);
-            rect(3 * unit, 8.125 * unit, 6.75 * unit, 1.75 * unit);
+            fill(0, 200); // Black with reduced opacity 
+            rect(3 * unit, 14.125 * unit, 6.75 * unit, 1.75 * unit);
+            pop();
 
-            fill(255);
-            // rectMode(CENTER);
-            textFont(pixelFont);
+            // Dialogue text
+            // NPC name
+            push();
+            fill(255); // White
+            noStroke();
+            textFont(fantasyFont);
             textAlign(TOP, LEFT);
-            textSize(24);
-            text(npc.name + ":\n", 3.125 * unit, 8.5 * unit);
-            // rectMode(CENTER);
-            textFont(pixelFont);
+            textSize(30);
+            text(npc.name + ":\n", 3.25 * unit, 14.5 * unit);
+            // NPC dialogue
+            textFont(gothicFont);
             textAlign(CENTER, LEFT);
-            textSize(20);
-            text(npc.speech, 3.125 * unit, 9 * unit, 6.625 * unit, 1.5 * unit);
+            textSize(22);
+            text(npc.speech, 3.125 * unit, 15 * unit, 6.625 * unit, 1.5 * unit);
             pop();
 
             dialogueOn = true;
             return;
         }
     }
+    // Disables dialogue
     dialogueOn = false;
 }
 
 /**
-* Controls the movements of the player
+* Handles player movement and menu controls
 * Determines which tiles are accessible or not
 * Determines the effect of some tiles when the player moves on them
 */
@@ -907,13 +738,12 @@ function keyPressed() {
             state = "game";
             startGame();
 
-
-            if (stopWatch == null) {
-                stopWatch = Date.now();
-            } else {
-                timeElapsed += Date.now() - timerStarted;
-                stopWatch = null;
-            }
+            // if (stopWatch == null) {
+            //     stopWatch = Date.now();
+            // } else {
+            //     yourTime += Date.now() - start;
+            //     stopWatch = null;
+            // }
         }
         else if (state === "game" && dialogueOn) {
             if (keys.length < maxKeys && lives > 1) {
@@ -963,7 +793,7 @@ function keyPressed() {
             player.c = newC;
             moved = true;
         }
-        else if (grid[newR][newC] === `c`) {
+        else if (grid[newR][newC] === `k`) {
             // If it's a collectible then empty that spot
             grid[newR][newC] = ` `;
             // Then the player moves there
@@ -1001,8 +831,4 @@ function keyPressed() {
     }
 
     return false;
-
-    // function newFunction() {
-    //     location.reload();
-    // }
 }

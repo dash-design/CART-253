@@ -50,7 +50,7 @@ let goblin;
 
 let rabbit;
 
-let wall;
+let mossyWall;
 
 let ground;
 
@@ -83,7 +83,7 @@ function preload() {
     fantasyFont = loadFont('assets/font/Alkhemikal.ttf'); // Title and NPC name font
     goblin = loadImage('assets/images/goblin.png'); // Player
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
-    wall = loadImage('assets/images/brick.png'); // Wall tiles
+    mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
     ground = loadImage('assets/images/ground.png'); // Empty tiles
     coin = loadImage('assets/images/coin.png'); // Coins
     coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
@@ -107,8 +107,8 @@ let player = {
 // Life variables in the inventory
 let inventoryLife = {
     r: 8,
-    c: 12,
-    size: unit * 1.75
+    c: 10,
+    size: unit * 1.5
 }
 const maxLives = 2; // Max number of lives
 let lives = 2; // Default number of lives
@@ -239,7 +239,7 @@ Press [SPACE] To Play
 Best Time: ${bestTimeFormat}
         `;
 
-        drawMenu(wall, home.textFill, home.textSize, home.text);
+        drawMenu(mossyWall, home.textFill, home.textSize, home.text);
     }
 
     // Active game state (no menu)
@@ -256,7 +256,7 @@ Best Time: ${bestTimeFormat}
 Press [SPACE]
 To Try Again
 `;
-        drawMenu(wall, end.textFill, end.textSize, end.text);
+        drawMenu(mossyWall, end.textFill, end.textSize, end.text);
     }
     // Game won state and menu
     else if (state === "win") {
@@ -293,9 +293,9 @@ function startGame() {
 
     lives = maxLives; // Reset the lives
 
-    // setCharacters();
-    setEnemies(); // Creates the enemies
-    setNPCs(); // Creates the NPCs
+    setCharacters();
+    // setEnemies(); // Creates the enemies
+    // setNPCs(); // Creates the NPCs
 
     // Sets stop watch when game starts
     if (start == null) {
@@ -330,7 +330,7 @@ function createGrid() {
 
             // Places the walls
             if (item === "W") {
-                drawTiles(wall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                drawTiles(mossyWall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
 
             // Places the keys
@@ -389,7 +389,8 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     push();
     textFont(gothicFont);
     fill(contentFill);
-    noStroke();
+    stroke(0);
+    strokeWeight(3);
     textSize(contentSize);
     textAlign(CENTER, TOP);
     text(contentText, width / 2, height / 4);
@@ -399,11 +400,13 @@ function drawMenu(background, contentFill, contentSize, contentText) {
 
 // Handles game functions when entering game state
 function game() {
+    drawCharacters();
+    // drawNPCs(); // Draws the NPC
+    // drawEnemies(); // Draws the enemy
+
     moveEnemies(); // Moves the enemies
 
-    drawNPCs(); // Draws the NPC
     drawPlayer(); // Draws the player
-    drawEnemies(); // Draws the enemy
     // drawMask(); // Draws mask
     drawInventoryItems();    // Draws items in inventory
     drawLives(); // Draws the player's life
@@ -436,93 +439,122 @@ function stopWatch() {
     text(string, unit / 2, unit / 2);
 }
 
-// Creates the enemies
-function setEnemies() {
-    let enemiesToPlace = enemiesTotal;
+// // Creates the enemies
+// function setEnemies() {
+//     let enemiesToPlace = enemiesTotal;
 
-    enemies = [];
+//     enemies = [];
 
-    while (enemiesToPlace > 0) {
-        // Find position
-        let r = floor(random(1, rows));
-        let c = floor(random(0, cols));
-        // Place an enemy on an empty tile
-        if (grid[r][c] === " ") {
-            const newEnemy = {
-                r: r,
-                c: c,
-                size: unit,
-                direction: 1,
-                moveInterval: adjustedMoveInterval, // Adjusted in the draw function
-                moveTime: 0
-            }
-            enemies.push(newEnemy);
-            enemiesToPlace = enemiesToPlace - 1;
-        }
-    }
-}
-
-// Creates the NPCs
-function setNPCs() {
-    let npcToPlace = npcTotal;
-
-    npcs = [];
-
-    while (npcToPlace > 0) {
-        // Find position
-        let r = floor(random(1, rows));
-        let c = floor(random(0, cols));
-        // Place an NPC on an empty tile
-        if (grid[r][c] === " ") {
-            const newNpc = {
-                r: r,
-                c: c,
-                size: unit,
-                name: random(npcNames.deities),
-                speech: npcSpeech[npcToPlace - 1]
-            }
-            npcs.push(newNpc);
-            npcToPlace = npcToPlace - 1;
-        }
-    }
-}
-
-/**
- * Tried to refactor!!!
- */
-// function setCharacters(charactersToPlace, characters, charactersTotal) {
-
-//     // let charactersToPlace = charactersTotal;
-//     // npcName = random(npcNames.deities);
-
-//     characters = [];
-
-//     while (charactersToPlace > 0) {
-
+//     while (enemiesToPlace > 0) {
 //         // Find position
 //         let r = floor(random(1, rows));
 //         let c = floor(random(0, cols));
 //         // Place an enemy on an empty tile
 //         if (grid[r][c] === " ") {
-//             const newCharacter = {
-
+//             const newEnemy = {
+//                 r: r,
+//                 c: c,
+//                 size: unit,
+//                 direction: 1,
+//                 moveInterval: adjustedMoveInterval, // Adjusted in the draw function
+//                 moveTime: 0
 //             }
-//             characters.push(newCharacter);
-//             charactersToPlace = charactersToPlace - 1;
+//             enemies.push(newEnemy);
+//             enemiesToPlace = enemiesToPlace - 1;
 //         }
 //     }
 // }
 
+// // Creates the NPCs
 // function setNPCs() {
-//     setCharacters(charactersToPlace, characters, charactersTotal)
+//     let npcToPlace = npcTotal;
+
+//     npcs = [];
+
+//     while (npcToPlace > 0) {
+//         // Find position
+//         let r = floor(random(1, rows));
+//         let c = floor(random(0, cols));
+//         // Place an NPC on an empty tile
+//         if (grid[r][c] === " ") {
+//             const newNpc = {
+//                 r: r,
+//                 c: c,
+//                 size: unit,
+//                 name: random(npcNames.deities),
+//                 speech: npcSpeech[npcToPlace - 1]
+//             }
+//             npcs.push(newNpc);
+//             npcToPlace = npcToPlace - 1;
+//         }
+//     }
 // }
 
-// function setEnemies() {
-//     setCharacters(charactersToPlace, characters, charactersTotal)
-// }
+function setCharacters(charactersToPlace, characters, createCharacter) {
+    // let charactersToPlace = charactersTotal;
+    // npcName = random(npcNames.deities);
+
+    characters = [];
+
+    while (charactersToPlace > 0) {
+
+        // Find position
+        let r = floor(random(1, rows));
+        let c = floor(random(0, cols));
+        // Place an enemy on an empty tile
+        if (grid[r][c] === " ") {
+            newCharacter = createCharacter;
+        }
+        characters.push(newCharacter);
+        charactersToPlace = charactersToPlace - 1;
+    }
+    console.log("Set characters");
+}
+
+function setNPCs() {
+    setCharacters(npcTotal, npcs, createNPC)
+    console.log("npcs are set");
+
+}
+
+function setEnemies() {
+    setCharacters(enemyTotal, enemies, createEnemy)
+    console.log("enemies are set");
+
+}
+
+// Creates the enemies
+function createEnemy(r, c) {
+    console.log("enemies are created");
+
+    const enemy = {
+        r: r,
+        c: c,
+        size: unit,
+        direction: 1,
+        moveInterval: adjustedMoveInterval, // Adjusted in the draw function
+        moveTime: 0
+    };
+    return enemy;
+}
+
+// Creates the NPCs
+function createNPC(r, c) {
+    console.log("Create npcs");
+    const npc = {
+        r: r,
+        c: c,
+        size: unit,
+        name: random(npcNames.deities),
+        speech: npcSpeech.pop()
+    };
+    return npc;
+}
 
 // Draws the characters (enemies, NPCs)
 function drawCharacters(characters, characterAsset) {
+    console.log("characters are drawn");
+
     for (let character of characters) {
         push();
         noStroke();
@@ -531,7 +563,6 @@ function drawCharacters(characters, characterAsset) {
         const c = character.c * unit + unit / 2;
         const r = character.r * unit + unit / 2;
         const size = character.size;
-
         image(characterAsset, c, r, size, size);
         pop();
     }
@@ -540,6 +571,7 @@ function drawCharacters(characters, characterAsset) {
 // Draws the enemies (rabbits)
 function drawEnemies() {
     drawCharacters(enemies, rabbit)
+    console.log("enemies are drawn");
 }
 
 // Draws the NPCs (wizards)
@@ -615,8 +647,10 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         noStroke();
         noFill();
         imageMode(CENTER);
-        const c = (inventoryItem.c + i) * (unit / 1.2) + unit / 1.5;
-        const r = (inventoryItem.r * unit) + unit / 1.5;
+        const c = (inventoryItem.c + i + 0.5) * unit;
+        // * (unit / 1.2) + unit / 1.5;
+        const r = (inventoryItem.r + 0.5) * unit;
+        // + unit / 1.5;
         const size = inventoryItem.size;
         // Displays items if collected
         if (i < items.length) {
@@ -630,34 +664,9 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
     }
 }
 
-// Draws the lives in the bottom right corner of the inventory
 function drawLives() {
-    for (let i = 0; i < maxLives; i++) {
-        push();
-        noStroke();
-        noFill();
-        imageMode(CENTER);
-        const c = (11 - i) * (unit * 1.25) - unit * 1.75;
-        const r = (inventoryLife.r * unit) + unit
-        const size = inventoryLife.size;
-        // Displays lives remaining
-        if (i < lives) {
-            image(heart, c, r, size, size);
-        }
-        // Displays lives missing as outline
-        else {
-            image(heartOutline, c, r, size, size);
-        }
-        pop();
-    }
+    drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
 }
-/**
- * Tried to refactor!!!
- */
-
-// function drawLives() {
-//     drawInventoryItems(maxLives, lives, inventoryLive, heart, heartOutline)
-// }
 
 // Draws the keys in the inventory
 function drawKeys() {
