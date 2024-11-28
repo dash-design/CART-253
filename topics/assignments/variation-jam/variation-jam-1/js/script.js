@@ -42,6 +42,8 @@ let unit = 64; // Grid tiles size
 // Game elements
 let pixelFont;
 
+let gothicFont;
+
 let goblin;
 
 let rabbit;
@@ -75,6 +77,7 @@ let night;
 // Preload game assets
 function preload() {
     pixelFont = loadFont('assets/font/slkscr.ttf'); // Font used
+    gothicFont = loadFont('assets/font/Alkhemikal.ttf'); // Font used
     goblin = loadImage('assets/images/goblin.png'); // Player
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
     wall = loadImage('assets/images/brick.png'); // Wall tiles
@@ -171,7 +174,6 @@ let end = {
     textFill: 220,
     textSize: 32,
     text: undefined
-
 }
 
 // Stop watch variables
@@ -373,7 +375,7 @@ function drawMenu(squareFill, textFill, fontSize, textContent) {
     pop();
     // Text parameters
     push();
-    textFont(pixelFont);
+    textFont(gothicFont);
     fill(textFill);
     textSize(fontSize);
     textAlign(CENTER, CENTER);
