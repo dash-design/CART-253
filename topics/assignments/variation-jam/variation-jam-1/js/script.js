@@ -188,6 +188,7 @@ let bestTime; // Fastest time it took to win
 Creates and populate the grid
 */
 function setup() {
+    unit = windowHeight / rows;
     createCanvas(cols * unit, rows * unit);
 
     // Retrieves the last saved highscore
@@ -198,11 +199,10 @@ function setup() {
     }
 }
 
-// function windowResized() {
-//     if (windowWidth < width || windowHeight < height) {
-//         resizeCanvas(windowWidth, windowHeight);
-//     }
-// }
+function windowResized() {
+    unit = windowHeight / rows;
+    resizeCanvas(cols * unit, rows * unit);
+}
 
 /**
 * Handles displaying the grid, menus, and game states
@@ -293,9 +293,9 @@ function startGame() {
 
     lives = maxLives; // Reset the lives
 
-    setCharacters();
-    // setEnemies(); // Creates the enemies
-    // setNPCs(); // Creates the NPCs
+    // setCharacters();
+    setEnemies(); // Creates the enemies
+    setNPCs(); // Creates the NPCs
 
     // Sets stop watch when game starts
     if (start == null) {
@@ -400,9 +400,9 @@ function drawMenu(background, contentFill, contentSize, contentText) {
 
 // Handles game functions when entering game state
 function game() {
-    drawCharacters();
-    // drawNPCs(); // Draws the NPC
-    // drawEnemies(); // Draws the enemy
+    // drawCharacters();
+    drawNPCs(); // Draws the NPC
+    drawEnemies(); // Draws the enemy
 
     moveEnemies(); // Moves the enemies
 
@@ -439,63 +439,12 @@ function stopWatch() {
     text(string, unit / 2, unit / 2);
 }
 
-// // Creates the enemies
-// function setEnemies() {
-//     let enemiesToPlace = enemiesTotal;
-
-//     enemies = [];
-
-//     while (enemiesToPlace > 0) {
-//         // Find position
-//         let r = floor(random(1, rows));
-//         let c = floor(random(0, cols));
-//         // Place an enemy on an empty tile
-//         if (grid[r][c] === " ") {
-//             const newEnemy = {
-//                 r: r,
-//                 c: c,
-//                 size: unit,
-//                 direction: 1,
-//                 moveInterval: adjustedMoveInterval, // Adjusted in the draw function
-//                 moveTime: 0
-//             }
-//             enemies.push(newEnemy);
-//             enemiesToPlace = enemiesToPlace - 1;
-//         }
-//     }
-// }
-
-// // Creates the NPCs
-// function setNPCs() {
-//     let npcToPlace = npcTotal;
-
-//     npcs = [];
-
-//     while (npcToPlace > 0) {
-//         // Find position
-//         let r = floor(random(1, rows));
-//         let c = floor(random(0, cols));
-//         // Place an NPC on an empty tile
-//         if (grid[r][c] === " ") {
-//             const newNpc = {
-//                 r: r,
-//                 c: c,
-//                 size: unit,
-//                 name: random(npcNames.deities),
-//                 speech: npcSpeech[npcToPlace - 1]
-//             }
-//             npcs.push(newNpc);
-//             npcToPlace = npcToPlace - 1;
-//         }
-//     }
-// }
-
 function setCharacters(charactersToPlace, characters, createCharacter) {
     // let charactersToPlace = charactersTotal;
     // npcName = random(npcNames.deities);
 
-    characters = [];
-
+    // characters = [];
+    console.log(charactersToPlace);
     while (charactersToPlace > 0) {
 
         // Find position
@@ -503,30 +452,25 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
         let c = floor(random(0, cols));
         // Place an enemy on an empty tile
         if (grid[r][c] === " ") {
-            newCharacter = createCharacter;
+            const newCharacter = createCharacter(r, c);
+
+            characters.push(newCharacter);
+            charactersToPlace = charactersToPlace - 1;
         }
-        characters.push(newCharacter);
-        charactersToPlace = charactersToPlace - 1;
     }
-    console.log("Set characters");
+    console.log(characters);
 }
 
 function setNPCs() {
     setCharacters(npcTotal, npcs, createNPC)
-    console.log("npcs are set");
-
 }
 
 function setEnemies() {
-    setCharacters(enemyTotal, enemies, createEnemy)
-    console.log("enemies are set");
-
+    setCharacters(enemiesTotal, enemies, createEnemy)
 }
 
 // Creates the enemies
 function createEnemy(r, c) {
-    console.log("enemies are created");
-
     const enemy = {
         r: r,
         c: c,
@@ -540,7 +484,6 @@ function createEnemy(r, c) {
 
 // Creates the NPCs
 function createNPC(r, c) {
-    console.log("Create npcs");
     const npc = {
         r: r,
         c: c,
@@ -553,8 +496,6 @@ function createNPC(r, c) {
 
 // Draws the characters (enemies, NPCs)
 function drawCharacters(characters, characterAsset) {
-    console.log("characters are drawn");
-
     for (let character of characters) {
         push();
         noStroke();
@@ -562,7 +503,7 @@ function drawCharacters(characters, characterAsset) {
         imageMode(CENTER);
         const c = character.c * unit + unit / 2;
         const r = character.r * unit + unit / 2;
-        const size = character.size;
+        const size = unit;
         image(characterAsset, c, r, size, size);
         pop();
     }
@@ -571,7 +512,6 @@ function drawCharacters(characters, characterAsset) {
 // Draws the enemies (rabbits)
 function drawEnemies() {
     drawCharacters(enemies, rabbit)
-    console.log("enemies are drawn");
 }
 
 // Draws the NPCs (wizards)
@@ -622,7 +562,7 @@ function drawPlayer() {
     noFill();
     noStroke();
     imageMode(CENTER);
-    image(goblin, player.c * unit + unit / 2, player.r * unit + unit / 2, player.size, player.size)
+    image(goblin, player.c * unit + unit / 2, player.r * unit + unit / 2, unit, unit)
     pop();
 }
 
@@ -651,7 +591,7 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         // * (unit / 1.2) + unit / 1.5;
         const r = (inventoryItem.r + 0.5) * unit;
         // + unit / 1.5;
-        const size = inventoryItem.size;
+        const size = unit;
         // Displays items if collected
         if (i < items.length) {
             image(itemAsset, c, r, size, size);
