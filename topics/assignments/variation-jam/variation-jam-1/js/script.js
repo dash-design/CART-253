@@ -761,7 +761,7 @@ function keyPressed() {
             player.c = newC;
             moved = true;
         }
-        else if (grid[newR][newC] === `c`) {
+        else if (grid[newR][newC] === `k`) {
             // If it's a collectible then empty that spot
             grid[newR][newC] = ` `;
             // Then the player moves there
