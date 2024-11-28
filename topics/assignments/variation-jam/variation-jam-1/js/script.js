@@ -111,7 +111,7 @@ let inventoryLife = {
     size: unit * 1.5
 }
 const maxLives = 2; // Max number of lives
-let lives = 2; // Default number of lives
+let lives = [true, true]; // Default number of lives
 
 // Key variables in the inventory
 let inventoryKey = {
@@ -132,7 +132,7 @@ const maxCoins = 3; // Max number of coins
 let coins = []; // Array of coins
 
 // Enemies variables
-let enemiesTotal = 5; // Total amount of enemies
+let enemiesTotal = 0; // Total amount of enemies
 let enemies = []; // Array of enemies
 // Variables used for dynamic enemies movement
 let fps; // Default frame rate
@@ -219,7 +219,7 @@ function draw() {
 
         // let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
         let bestTimeFormat;
-        if (bestTime = 999999) {
+        if (bestTime === 999999) {
             bestTimeFormat = "None";
         }
         else {
@@ -293,7 +293,7 @@ function startGame() {
 
     grid[player.r][player.c] = "N"; // Handles player initial position
 
-    lives = maxLives; // Reset the lives
+    lives = [true, true]; // Reset the lives
 
     // setCharacters();
     setEnemies(); // Creates the enemies
@@ -410,7 +410,7 @@ function game() {
 
     drawPlayer(); // Draws the player
     // drawMask(); // Draws mask
-    drawInventoryItems();    // Draws items in inventory
+    drawInventoryItems(); // Draws items in inventory
     drawLives(); // Draws the player's life
     drawKeys();  // Draws the keys
     drawCoins();  // Draws the coins
@@ -548,10 +548,10 @@ function moveEnemies() {
 function checkDeath(enemy) {
     // Player loses a life if collision with an enemy
     if (player.c === enemy.c && player.r === enemy.r) {
-        lives = lives - 1;
+        lives.pop();
     }
     // Player loses the game if no lives left
-    if (lives <= 0) {
+    if (lives.length <= 0) {
         state = "lost";
     }
 }
@@ -627,7 +627,7 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
 // }
 
 function drawLives() {
-    drawInventoryItems(maxLives, lives, inventoryLife, heartOutline, heart)
+    drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
 }
 
 // Draws the keys in the inventory
@@ -707,8 +707,8 @@ function keyPressed() {
             // }
         }
         else if (state === "game" && dialogueOn) {
-            if (keys.length < maxKeys && lives > 1) {
-                lives = - 1;
+            if (keys.length < maxKeys && lives.length > 1) {
+                lives.pop();
                 keys.push(true);
             }
         }
@@ -778,6 +778,12 @@ function keyPressed() {
 
                 // Calculate the time
                 yourTime = Date.now() - start;
+                // if (yourTime < bestTime) {
+                //     bestTime = yourTime;
+                // }
+                // else {
+                //     storeItem('best time', bestTime);
+                // }
                 bestTime = min(yourTime, bestTime);
                 storeItem('best time', bestTime);
             }
