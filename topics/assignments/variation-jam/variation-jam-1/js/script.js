@@ -44,6 +44,8 @@ let pixelFont;
 
 let gothicFont;
 
+let fantasyFont;
+
 let goblin;
 
 let rabbit;
@@ -76,8 +78,9 @@ let night;
 
 // Preload game assets
 function preload() {
-    pixelFont = loadFont('assets/font/slkscr.ttf'); // Font used
-    gothicFont = loadFont('assets/font/Alkhemikal.ttf'); // Font used
+    pixelFont = loadFont('assets/font/slkscr.ttf'); // Stop watch font
+    gothicFont = loadFont('assets/font/alagard.ttf'); // Menu and dialogue font
+    fantasyFont = loadFont('assets/font/Alkhemikal.ttf'); // Title and NPC name font
     goblin = loadImage('assets/images/goblin.png'); // Player
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
     wall = loadImage('assets/images/brick.png'); // Wall tiles
@@ -162,7 +165,7 @@ let state = "start";
 
 // Start screen
 let home = {
-    rectFill: "green",
+    textFont: gothicFont,
     textFill: 255,
     textSize: 32,
     text: undefined
@@ -170,7 +173,7 @@ let home = {
 
 // End Screen
 let end = {
-    rectFill: 32,
+    textFont: gothicFont,
     textFill: 220,
     textSize: 32,
     text: undefined
@@ -217,7 +220,7 @@ function draw() {
         // let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
         let bestTimeFormat;
         if (bestTime = 999999) {
-            bestTimeFormat = "N/A";
+            bestTimeFormat = "None";
         }
         else {
             bestTimeFormat = timeFormatting(bestTime);
@@ -225,8 +228,6 @@ function draw() {
 
         // Starting menu
         home.text = `
-Goblin and Dungeon
-
 Explore, adventure, escape!
 
 Controls:
@@ -236,8 +237,9 @@ Controls:
 Press [SPACE] To Play
 
 Best Time: ${bestTimeFormat}
-`;
-        drawMenu(home.rectFill, home.textFill, home.textSize, home.text);
+        `;
+
+        drawMenu(wall, home.textFill, home.textSize, home.text);
     }
 
     // Active game state (no menu)
@@ -254,7 +256,7 @@ Best Time: ${bestTimeFormat}
 Press [SPACE]
 To Try Again
 `;
-        drawMenu(end.rectFill, end.textFill, end.textSize, end.text);
+        drawMenu(wall, end.textFill, end.textSize, end.text);
     }
     // Game won state and menu
     else if (state === "win") {
@@ -263,17 +265,17 @@ To Try Again
         let bestTimeFormat = timeFormatting(bestTime);
 
         end.text = `
-    Congratulations!
+Congratulations!
     
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-    Press[SPACE] To Play
+Press[SPACE] To Play
 The Next Level!
-    or
-    Press [R] To Play Again
+or
+Press [R] To Play Again
 `;
-        drawMenu(end.rectFill, end.textFill, end.textSize, end.text);
+        drawMenu(ground, end.textFill, end.textSize, end.text);
 
         start = null;
     }
@@ -365,23 +367,35 @@ function drawTiles(asset, c, r, sizeC, sizeR) {
 }
 
 // Draws the menu screens
-function drawMenu(squareFill, textFill, fontSize, textContent) {
+function drawMenu(background, contentFill, contentSize, contentText) {
     // Screen appearance
     push();
     noStroke();
-    fill(squareFill);
-    rectMode(CENTER);
-    rect(width / 2, height / 2, width - 50, height - 50);
+    noFill();
+    imageMode(CENTER);
+    image(background, width / 2, height / 2, width, width)
     pop();
-    // Text parameters
+    // Title
+    push();
+    textFont(fantasyFont);
+    fill(255);
+    stroke(0);
+    strokeWeight(8);
+    textSize(68);
+    textAlign(CENTER, CENTER);
+    text("Goblin and Adventure", width / 2, height / 6);
+    pop();
+    // Menu content
     push();
     textFont(gothicFont);
-    fill(textFill);
-    textSize(fontSize);
-    textAlign(CENTER, CENTER);
-    text(textContent, width / 2, height / 2);
+    fill(contentFill);
+    noStroke();
+    textSize(contentSize);
+    textAlign(CENTER, TOP);
+    text(contentText, width / 2, height / 4);
     pop();
 }
+
 
 // Handles game functions when entering game state
 function game() {
@@ -670,15 +684,15 @@ function openDialogue() {
             // Dialogue text
             // NPC name
             fill(255); // White
-            textFont(pixelFont);
+            textFont(fantasyFont);
             textAlign(TOP, LEFT);
-            textSize(24);
-            text(npc.name + ":\n", 3.125 * unit, 8.5 * unit);
+            textSize(30);
+            text(npc.name + ":\n", 3.25 * unit, 8.625 * unit);
             // NPC dialogue
-            textFont(pixelFont);
+            textFont(gothicFont);
             textAlign(CENTER, LEFT);
-            textSize(20);
-            text(npc.speech, 3.125 * unit, 9 * unit, 6.625 * unit, 1.5 * unit);
+            textSize(22);
+            text(npc.speech, 3.125 * unit, 9.125 * unit, 6.625 * unit, 1.5 * unit);
             pop();
 
             dialogueOn = true;
@@ -714,13 +728,12 @@ function keyPressed() {
             state = "game";
             startGame();
 
-
-            if (stopWatch == null) {
-                stopWatch = Date.now();
-            } else {
-                timeElapsed += Date.now() - timerStarted;
-                stopWatch = null;
-            }
+            // if (stopWatch == null) {
+            //     stopWatch = Date.now();
+            // } else {
+            //     yourTime += Date.now() - start;
+            //     stopWatch = null;
+            // }
         }
         else if (state === "game" && dialogueOn) {
             if (keys.length < maxKeys && lives > 1) {
