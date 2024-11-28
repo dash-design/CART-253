@@ -212,7 +212,14 @@ function draw() {
     // Starting menu state
     if (state === "start") {
 
-        let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
+        // let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
+        let bestTimeFormat;
+        if (bestTime = 999999) {
+            bestTimeFormat = "N/A";
+        }
+        else {
+            bestTimeFormat = timeFormatting(bestTime);
+        }
 
         // Starting menu
         home.text = `
