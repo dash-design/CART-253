@@ -132,7 +132,7 @@ const maxCoins = 3; // Max number of coins
 let coins = []; // Array of coins
 
 // Enemies variables
-let enemiesTotal = 0; // Total amount of enemies
+let enemiesTotal = 5; // Total amount of enemies
 let enemies = []; // Array of enemies
 // Variables used for dynamic enemies movement
 let fps; // Default frame rate
@@ -188,7 +188,9 @@ let bestTime; // Fastest time it took to win
 Creates and populate the grid
 */
 function setup() {
-    unit = windowHeight / rows;
+    if (windowHeight < (rows * unit)) {
+        unit = windowHeight / rows;
+    }
     createCanvas(cols * unit, rows * unit);
 
     // Retrieves the last saved highscore
@@ -200,7 +202,13 @@ function setup() {
 }
 
 function windowResized() {
-    unit = windowHeight / rows;
+    if (windowHeight < (rows * unit)) {
+        unit = windowHeight / rows;
+    }
+    else {
+        unit = 64;
+    }
+    // unit = windowHeight / rows;
     resizeCanvas(cols * unit, rows * unit);
 }
 
