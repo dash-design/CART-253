@@ -1,16 +1,17 @@
 /**
- * Goblin and Dungeon
+ * Goblin and Dungeon: Adventure in Level 2
  * 
  * Ellie "DASH" Desjardins
  * 
- * Welcome to my grid-based top-down view kind of game!
- * You play as a Goblin adventuring through a dungeon, but beware the dangerous killer rabbits!
+ * Goblin and Dungeon is a retro-inspired 2D top-down action-adventure game with a roguelite-inspired map generation.
+ * Each play through features a unique dungeon layout with a grid-based movement, collectibles, NPCs, and obstacles.
+ * You play as the lone goblin exploring, adventuring, and escaping unknown environments, but beware the dangerous killer rabbits!
  * 
  * Use [A][W][S][D] keys to move around, collect keys and escape through the door.
  * 
- * Use [SPACE] to interact with the menus and the NPCs
+ * Use [SPACE] and [R] to interact with the menus and the NPCs
  * 
- * If needed, meet one of our friendly wizard NPCs, they might help you!
+ * If needed, talk to one of our friendly wizard NPCs, they might help you!
  * 
  * When you succesfully escape the dungeon, try the next level!
  *
@@ -19,29 +20,62 @@
 "use strict";
 
 // The game grid
-let grid = [
-    ["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", " ", "W", "W", "W", " ", " ", "W", " ", "W", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", " ", "W", " ", "W", " ", " ", " ", " ", "W", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", " ", "W", " ", "W", "W", "W", "W", "W", "W", "W", "W", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", "W", "W", "W", "W", "W", "W", " ", " ", "W", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", "W", "W", "W", " ", "W", "W", "W", " ", "W", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", "W", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", "W", "W", "W", " ", "W", " ", "W", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", "W", " ", " ", " ", "W", " ", "W", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", "W", " ", "W", " ", "W", " ", "W", " ", "W", " ", " ", " ", " ", "W"],
-    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
-    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
-
+let baseGrid = [
+    ["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
 ];
+
+let mazes = [
+    [["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", " ", " ", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", "W", "W", "W", "W", "W", "W", "W", " ", " ", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W", " ", " ", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],],
+
+    [["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["W", " ", " ", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],]
+];
+
+// The game grid
+let grid = undefined;
 
 // Number of rows and columns and standard unit size
 // Need to be adjusted according to the grid array
-const rows = 15; // Serves as the Y
-const cols = 17; // Serves as the X
+const rows = 14; // Serves as the Y
+const cols = 19; // Serves as the X
 let unit = 64; // Grid tiles size
 
 // Game elements
@@ -111,16 +145,16 @@ let player = {
 
 // Life variables in the inventory
 let inventoryLife = {
-    r: 13,
-    c: 14,
+    r: 12,
+    c: 18,
     size: unit * 1.5
 }
 const maxLives = 2; // Max number of lives
-let lives = 2; // Default number of lives
+let lives = [true, true]; // Default number of lives
 
 // Key variables in the inventory
 let inventoryKey = {
-    r: 13,
+    r: 12,
     c: 1,
     size: unit * 1.25
 }
@@ -129,7 +163,7 @@ let keys = []; // Array of keys
 
 // Coin variables in the inventory
 let inventoryCoin = {
-    r: 14,
+    r: 13,
     c: 1,
     size: unit * 1.5
 }
@@ -161,9 +195,9 @@ let dialogueBox = {
 }
 let dialogueOn = false; // Off by default
 
-// let mask = {
-//     size: (cols * unit) * 3
-// };
+let mask = {
+    size: (cols * unit) * 3
+};
 
 // The state
 let state = "start";
@@ -193,7 +227,9 @@ let bestTime; // Fastest time it took to win
 Creates and populate the grid
 */
 function setup() {
-    unit = windowHeight / rows;
+    if (windowHeight < (rows * unit)) {
+        unit = windowHeight / rows;
+    }
     createCanvas(cols * unit, rows * unit);
 
     // Retrieves the last saved highscore
@@ -202,10 +238,20 @@ function setup() {
     if (bestTime === null) {
         bestTime = 999999;
     }
+
+    // grid = random(mazes);
+
+    setGrids();
 }
 
 function windowResized() {
-    unit = windowHeight / rows;
+    if (windowHeight < (rows * unit)) {
+        unit = windowHeight / rows;
+    }
+    else {
+        unit = 64;
+    }
+    // unit = windowHeight / rows;
     resizeCanvas(cols * unit, rows * unit);
 }
 
@@ -249,7 +295,9 @@ Best Time: ${bestTimeFormat}
 
     // Active game state (no menu)
     else if (state === "game") {
-        createGrid();
+        createGrid(grid);
+        // drawMask(); // Draws mask
+        // createGrid(baseGrid);
         game();
     }
     // Game lost state and menu
@@ -288,52 +336,50 @@ Press [R] To Play Again
     }
 }
 
-// Sets game variables and functions when the game starts
-function startGame() {
-    // const wallsToPlace = 12; // How many walls the createGridItems will draw
-    const keysToPlace = 3; // How many keys the createGridItems will draw
-
-    // createGridItems(wallsToPlace, "W"); // Handles drawing the walls
-    createGridItems(keysToPlace, "k"); // Handles drawing the keys
-
-    grid[player.r][player.c] = "N"; // Handles player initial position
-
-    lives = maxLives; // Reset the lives
-
-    // setCharacters();
-    setEnemies(); // Creates the enemies
-    setNPCs(); // Creates the NPCs
-
-    // Sets stop watch when game starts
-    if (start == null) {
-        start = Date.now();
-    }
-}
-
-// Creates items (keys) on random positions
-function createGridItems(gridItemsToPlace, gridItem) {
-    while (gridItemsToPlace > 0) {
-        // Find position
-        let r = floor(random(0, rows));
-        let c = floor(random(0, cols));
-        // Place an item
-        if (grid[r][c] === " ") {
-            grid[r][c] = gridItem;
-            gridItemsToPlace = gridItemsToPlace - 1;
+function resetGame() {
+    console.log("reset game");
+    start = null;
+    yourTime = 0;
+    enemies = [];
+    npcs = [];
+    keys = [];
+    lives = [true, true];
+    player = {
+        r: 0,
+        c: 1
+    };
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            // Removes the item at this position
+            // grid[r][c] = " ";
         }
     }
+    setGrids();
+    state = "game";
+    startGame();
+}
+
+function setGrids() {
+    // for (let r = 0; r < rows; r++) {
+    //     for (let c = 0; c < cols; c++) {
+    //         grid[r][c] = baseGrid[r][c];
+    //     }
+    // }
+    grid = random(mazes);
 }
 
 // Populates the grid with items
-function createGrid() {
+function createGrid(gridToCreate) {
     // Goes through all the rows and columns
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             // Gets the item at this position
-            let item = grid[r][c];
+            let item = gridToCreate[r][c];
 
-            // Draws the grid and uses the ground asset by default
-            drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            if (gridToCreate === grid) {
+                // Draws the grid and uses the ground asset by default
+                drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            }
 
             // Places the walls
             if (item === "W") {
@@ -363,6 +409,63 @@ function createGrid() {
     }
 }
 
+// Sets game variables and functions when the game starts
+function startGame() {
+    // const wallsToPlace = 12; // How many walls the createGridItems will draw
+    const keysToPlace = 3; // How many keys the createGridItems will draw
+
+    // createGridItems(wallsToPlace, "W"); // Handles drawing the walls
+    createGridItems(keysToPlace, "k"); // Handles drawing the keys
+
+    grid[player.r][player.c] = "N"; // Handles player initial position
+
+    lives = [true, true]; // Reset the lives
+
+    // setCharacters();
+    setEnemies(); // Creates the enemies
+    setNPCs(); // Creates the NPCs
+
+    // Sets stop watch when game starts
+    if (start == null) {
+        start = Date.now();
+    }
+}
+
+// Creates items (keys) on random positions
+function createGridItems(gridItemsToPlace, gridItem) {
+    while (gridItemsToPlace > 0) {
+        // Find position
+        let r = floor(random(0, rows));
+        let c = floor(random(0, cols));
+        // Place an item
+        if (grid[r][c] === " ") {
+            grid[r][c] = gridItem;
+            gridItemsToPlace = gridItemsToPlace - 1;
+        }
+    }
+}
+
+// Handles game functions when entering game state
+function game() {
+    // drawCharacters();
+    drawNPCs(); // Draws the NPC
+    drawEnemies(); // Draws the enemy
+
+    moveEnemies(); // Moves the enemies
+
+    drawPlayer(); // Draws the player
+    // drawMask(); // Draws mask
+    // createGrid(baseGrid);
+    drawInventoryItems();    // Draws items in inventory
+    drawLives(); // Draws the player's life
+    drawKeys();  // Draws the keys
+    drawCoins();  // Draws the coins
+
+    openDialogue(); // Shows the dialogue wih the NPCs
+
+    stopWatch(); // Starts the stop watch
+}
+
 // Draws the items on the grid
 function drawTiles(asset, c, r, sizeC, sizeR) {
     push();
@@ -387,70 +490,27 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     textFont(fantasyFont);
     fill(255);
     stroke(0);
-    strokeWeight(8);
+    strokeWeight(unit / 8);
     textSize(unit);
     textAlign(CENTER, CENTER);
-    text("Goblin and Adventure", width / 2, height / 6);
+    text("Goblin and Dungeon:", width / 2, height / 6);
+    textSize(unit / 1.35);
+    text("Escape the Last Level", width / 2, height / 4);
+
     pop();
     // Menu content
     push();
     textFont(gothicFont);
     fill(contentFill);
     stroke(0);
-    strokeWeight(3);
+    strokeWeight(unit / 21);
     textSize(contentSize);
     textAlign(CENTER, TOP);
-    text(contentText, width / 2, height / 4);
+    text(contentText, width / 2, height / 3.5);
     pop();
 }
 
-
-// Handles game functions when entering game state
-function game() {
-    // drawCharacters();
-    drawNPCs(); // Draws the NPC
-    drawEnemies(); // Draws the enemy
-
-    moveEnemies(); // Moves the enemies
-
-    drawPlayer(); // Draws the player
-    // drawMask(); // Draws mask
-    drawInventoryItems();    // Draws items in inventory
-    drawLives(); // Draws the player's life
-    drawKeys();  // Draws the keys
-    drawCoins();  // Draws the coins
-
-    openDialogue(); // Shows the dialogue wih the NPCs
-
-    stopWatch(); // Starts the stop watch
-}
-
-// Formats stop watch and score time
-function timeFormatting(totalMillis) {
-    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
-    const ms = Math.floor(totalMillis % 1000 / 10);
-    const s = Math.floor(totalMillis / 1000) % 60;
-    const m = Math.floor(totalMillis / 1000 / 60) % 60;
-    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
-}
-
-// Draws the stop watch on the top left corner of the screen
-function stopWatch() {
-    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
-    const string = timeFormatting(totalMillis);
-
-    fill(255);
-    textFont(pixelFont);
-    textAlign(LEFT, CENTER);
-    textSize(unit / 2.5);
-    text(string, unit / 2, unit / 2);
-}
-
 function setCharacters(charactersToPlace, characters, createCharacter) {
-    // let charactersToPlace = charactersTotal;
-    // npcName = random(npcNames.deities);
-
-    // characters = [];
     while (charactersToPlace > 0) {
 
         // Find position
@@ -514,14 +574,68 @@ function drawCharacters(characters, characterAsset) {
     }
 }
 
+// Draws the NPCs (wizards)
+function drawNPCs() {
+    drawCharacters(npcs, wizard)
+}
+
 // Draws the enemies (rabbits)
 function drawEnemies() {
     drawCharacters(enemies, rabbit)
 }
 
-// Draws the NPCs (wizards)
-function drawNPCs() {
-    drawCharacters(npcs, wizard)
+// Draws the player
+function drawPlayer() {
+    push();
+    noFill();
+    noStroke();
+    imageMode(CENTER);
+    image(goblin, player.c * unit + unit / 2, player.r * unit + unit / 2, unit, unit)
+    pop();
+}
+
+// Draws the items (keys, coins) in the inventory
+function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAssetOutline) {
+    for (let i = 0; i < maxItems; i++) {
+        push();
+        noStroke();
+        noFill();
+        imageMode(CENTER);
+        let c;
+        if (inventoryItem === inventoryLife) {
+            c = (inventoryItem.c - i - 0.5) * unit;
+        }
+        else {
+            c = (inventoryItem.c + i + 0.5) * unit;
+        }
+        // * (unit / 1.2) + unit / 1.5;
+        const r = (inventoryItem.r + 0.5) * unit;
+        // + unit / 1.5;
+        const size = unit;
+        // Displays items if collected
+        if (i < items.length) {
+            image(itemAsset, c, r, size, size);
+        }
+        // Displays items outline if not collected
+        else {
+            image(itemAssetOutline, c, r, size, size);
+        }
+        pop();
+    }
+}
+
+function drawLives() {
+    drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
+}
+
+// Draws the keys in the inventory
+function drawKeys() {
+    drawInventoryItems(maxKeys, keys, inventoryKey, key, keyOutline)
+}
+
+// Draws the coins in the inventory
+function drawCoins() {
+    drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
 }
 
 // Moves the enemies
@@ -547,102 +661,6 @@ function moveEnemies() {
             enemy.moveTime = 0;
         }
     }
-}
-
-// Checks and handles losing lives
-function checkDeath(enemy) {
-    // Player loses a life if collision with an enemy
-    if (player.c === enemy.c && player.r === enemy.r) {
-        lives = lives - 1;
-    }
-    // Player loses the game if no lives left
-    if (lives <= 0) {
-        state = "lost";
-    }
-}
-
-// Draws the player
-function drawPlayer() {
-    push();
-    noFill();
-    noStroke();
-    imageMode(CENTER);
-    image(goblin, player.c * unit + unit / 2, player.r * unit + unit / 2, unit, unit)
-    pop();
-}
-
-/**
- * Mask not needed right now
- */
-
-// // Draws the mask that hide the grid
-// function drawMask() {
-//     push();
-//     noFill();
-//     noStroke();
-//     imageMode(CENTER);
-//     image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
-//     pop();
-// }
-
-// Draws the items (keys, coins) in the inventory
-function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAssetOutline) {
-    for (let i = 0; i < maxItems; i++) {
-        push();
-        noStroke();
-        noFill();
-        imageMode(CENTER);
-        const c = (inventoryItem.c + i + 0.5) * unit;
-        // * (unit / 1.2) + unit / 1.5;
-        const r = (inventoryItem.r + 0.5) * unit;
-        // + unit / 1.5;
-        const size = unit;
-        // Displays items if collected
-        if (i < items.length) {
-            image(itemAsset, c, r, size, size);
-        }
-        // Displays items outline if not collected
-        else {
-            image(itemAssetOutline, c, r, size, size);
-        }
-        pop();
-    }
-}
-
-// // Draws the lives in the bottom right corner of the inventory
-// function drawLives() {
-//     for (let i = 0; i < maxLives; i++) {
-//         push();
-//         noStroke();
-//         noFill();
-//         imageMode(CENTER);
-//         const c = (11 - i) * (unit * 1.25) - unit * 1.75;
-//         const r = (inventoryLife.r * unit) + unit
-//         const size = inventoryLife.size;
-//         // Displays lives remaining
-//         if (i < lives) {
-//             image(heart, c, r, size, size);
-//         }
-//         // Displays lives missing as outline
-//         else {
-//             image(heartOutline, c, r, size, size);
-//         }
-//         pop();
-//     }
-// }
-
-function drawLives() {
-    drawInventoryItems(maxLives, lives, inventoryLife, heartOutline, heart)
-}
-
-// Draws the keys in the inventory
-function drawKeys() {
-    drawInventoryItems(maxKeys, keys, inventoryKey, key, keyOutline)
-}
-
-// Draws the coins in the inventory
-function drawCoins() {
-    drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
 }
 
 // Handles dialogue and dialogue window when talking to the NPCs
@@ -679,6 +697,49 @@ function openDialogue() {
     dialogueOn = false;
 }
 
+// Formats stop watch and score time
+function timeFormatting(totalMillis) {
+    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    const ms = Math.floor(totalMillis % 1000 / 10);
+    const s = Math.floor(totalMillis / 1000) % 60;
+    const m = Math.floor(totalMillis / 1000 / 60) % 60;
+    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+}
+
+// Draws the stop watch on the top left corner of the screen
+function stopWatch() {
+    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    const string = timeFormatting(totalMillis);
+
+    fill(255);
+    textFont(pixelFont);
+    textAlign(LEFT, CENTER);
+    textSize(unit / 2.5);
+    text(string, unit / 2, unit / 2);
+}
+
+// Checks and handles losing lives
+function checkDeath(enemy) {
+    // Player loses a life if collision with an enemy
+    if (player.c === enemy.c && player.r === enemy.r) {
+        lives.pop();
+    }
+    // Player loses the game if no lives left
+    if (lives.length <= 0) {
+        state = "lost";
+    }
+}
+
+// Draws the mask that hide the grid
+function drawMask() {
+    push();
+    noFill();
+    noStroke();
+    imageMode(CENTER);
+    image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
+    pop();
+}
+
 /**
 * Handles player movement and menu controls
 * Determines which tiles are accessible or not
@@ -694,7 +755,8 @@ function keyPressed() {
     // R
     if (keyCode === 82) {
         if (state === "win") {
-            location.reload();
+            // location.reload();
+            resetGame();
         }
     }
 
@@ -703,27 +765,17 @@ function keyPressed() {
         if (state === "start") {
             state = "game";
             startGame();
-
-            // if (stopWatch == null) {
-            //     stopWatch = Date.now();
-            // } else {
-            //     yourTime += Date.now() - start;
-            //     stopWatch = null;
-            // }
         }
         else if (state === "game" && dialogueOn) {
-            if (keys.length < maxKeys && lives > 1) {
-                lives = - 1;
+            if (keys.length < maxKeys && lives.length > 1) {
+                lives.pop();
                 keys.push(true);
             }
         }
         else if (state === "lost") {
-            location.reload();
+            resetGame();
         }
         else if (state === "win") {
-            // newFunction();
-            // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // window.location.href = "../variation-jam-2/index.html";
             window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
         }
     }

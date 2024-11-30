@@ -1,5 +1,5 @@
 /**
- * Goblin and Dungeon: Explore Level 1
+ * Goblin and Dungeon: Adventure in Level 2
  * 
  * Ellie "DASH" Desjardins
  * 
@@ -459,9 +459,9 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     strokeWeight(unit / 8);
     textSize(unit);
     textAlign(CENTER, CENTER);
-    text("Goblin and Adventure:", width / 2, height / 6);
+    text("Goblin and Dungeon:", width / 2, height / 6);
     textSize(unit / 1.35);
-    text("Explore Level 1", width / 2, height / 4);
+    text("Adventure in Level 2", width / 2, height / 4);
 
     pop();
     // Menu content
@@ -719,7 +719,6 @@ function keyPressed() {
     // R
     if (keyCode === 82) {
         if (state === "win") {
-            // location.reload();
             resetGame();
         }
     }
@@ -729,13 +728,6 @@ function keyPressed() {
         if (state === "start") {
             state = "game";
             startGame();
-
-            // if (stopWatch == null) {
-            //     stopWatch = Date.now();rrr
-            // } else {
-            //     yourTime += Date.now() - start;
-            //     stopWatch = null;
-            // }
         }
         else if (state === "game" && dialogueOn) {
             if (keys.length < maxKeys && lives.length > 1) {
@@ -744,7 +736,6 @@ function keyPressed() {
             }
         }
         else if (state === "lost") {
-            // location.reload();
             resetGame();
         }
         else if (state === "win") {
@@ -807,12 +798,6 @@ function keyPressed() {
 
                 // Calculate the time
                 yourTime = Date.now() - start;
-                // if (yourTime < bestTime) {
-                //     bestTime = yourTime;
-                // }
-                // else {
-                //     storeItem('best time', bestTime);
-                // }
                 bestTime = min(yourTime, bestTime);
                 storeItem('best time', bestTime);
             }

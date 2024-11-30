@@ -1,25 +1,41 @@
 # Template p5 Project
 
-Author Name
-
-[View this project online](URL_FOR_THE_RUNNING_PROJECT)
+Ellie "DASH" Desjardins
 
 ## Description
 
-This description should help the reader understand what the program is, what any controls do, and perhaps what the desired experience it.
+Goblin and Dungeon is a retro-inspired 2D top-down action-adventure game with a roguelite-inspired map generation. Each play through features a unique dungeon layout with a grid-based movement, collectibles, NPCs, and obstacles.
+
+It is a collection of 3 levels built as variations with the same premise. You play as the lone goblin exploring, adventuring, and escaping unknown environments. Tackle the first level and complete all threes consecutively, or play each level as a standalone game.
+
+Movements: [A] [W] [S] [D]
+
+In-Game and Menu interactions: [SPACE] and [R]
+
+Here is the first level.
+
+[Goblin and Dungeon: Escape the Last Level](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/)
+Escape the dark halls of an underground maze-like dungeon, and complete the Goblin and Dungeon trilogy.
+
+When you succesfully escape the dungeon, it means you completed Goblin and Dungeon!
 
 ## Credits
 
-This bit should describe what tools were used. For example:
-
 This project uses [p5.js](https://p5js.org).
 
-## Attribution
+This project assets were made using [pixilart.com](https://www.pixilart.com/dash-design/gallery)
 
-This bit should attribute any assets or other elements used taken from other sources. For example:
+## Attribution
 
 The base code on which the project was builded was taken from [Pippin Barr's "Random tile-based "maze" with collection" example](https://editor.p5js.org/pippinbarr/sketches/Xq3qsbQWA)
 
 The lovecraft.json data asset was taken from [Darius Kazemi's data library on Github](https://github.com/dariusk/corpora/blob/master/data/mythology/lovecraft.json)
 
-The fish images were sourced from the [Creative Commons image "Georgia Aquarium Fish"](https://search.creativecommons.org/photos/96f6f770-eac1-488c-8abb-16bee7bcc874) by Mike Johnston which is licensed with CC BY 2.0. To view a copy of this license, visit https://creativecommons.org/licenses/by/2.0/.
+The pixel font was sourced from [Font Squirrel by Jason Kottke](https://www.fontsquirrel.com/fonts/silkscreen)
+
+The gothic font (alagard.ttf) was sourced from [Dafont.com and made by Hewett Tsoi](https://www.dafont.com/alagard.font?back=bitmap)
+
+The fantasy font (Alkhemikal.ttf) was sourced from [Dafont.com and made by jeti](https://www.dafont.com/alkhemikal.font)
+
+The stopWatch and timeFormatting functions were developped from [Stopwatch by CarolinaPhoenix on p5js.org](https://editor.p5js.org/CarolinaPhoenix/sketches/kmqlmWhwh)
+
