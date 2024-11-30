@@ -329,42 +329,6 @@ function resetGame() {
     startGame();
 }
 
-// Sets game variables and functions when the game starts
-function startGame() {
-    const wallsToPlace = 12; // How many walls the createGridItems will draw
-    const keysToPlace = 3; // How many keys the createGridItems will draw
-
-    createGridItems(wallsToPlace, "W"); // Handles drawing the walls
-    createGridItems(keysToPlace, "k"); // Handles drawing the keys
-
-    grid[player.r][player.c] = "N"; // Handles player initial position
-
-    lives = [true, true]; // Reset the lives
-
-    // setCharacters();
-    setEnemies(); // Creates the enemies
-    setNPCs(); // Creates the NPCs
-
-    // Sets stop watch when game starts
-    if (start == null) {
-        start = Date.now();
-    }
-}
-
-// Creates items (walls and keys) on random positions
-function createGridItems(gridItemsToPlace, gridItem) {
-    while (gridItemsToPlace > 0) {
-        // Find position
-        let r = floor(random(0, rows));
-        let c = floor(random(0, cols));
-        // Place an item
-        if (grid[r][c] === " ") {
-            grid[r][c] = gridItem;
-            gridItemsToPlace = gridItemsToPlace - 1;
-        }
-    }
-}
-
 function setGrids() {
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -412,6 +376,62 @@ function createGrid(gridToCreate) {
     }
 }
 
+// Sets game variables and functions when the game starts
+function startGame() {
+    const wallsToPlace = 12; // How many walls the createGridItems will draw
+    const keysToPlace = 3; // How many keys the createGridItems will draw
+
+    createGridItems(wallsToPlace, "W"); // Handles drawing the walls
+    createGridItems(keysToPlace, "k"); // Handles drawing the keys
+
+    grid[player.r][player.c] = "N"; // Handles player initial position
+
+    lives = [true, true]; // Reset the lives
+
+    // setCharacters();
+    setEnemies(); // Creates the enemies
+    setNPCs(); // Creates the NPCs
+
+    // Sets stop watch when game starts
+    if (start == null) {
+        start = Date.now();
+    }
+}
+
+// Creates items (walls and keys) on random positions
+function createGridItems(gridItemsToPlace, gridItem) {
+    while (gridItemsToPlace > 0) {
+        // Find position
+        let r = floor(random(1, rows - 2));
+        let c = floor(random(1, cols - 1));
+        // Place an item
+        if (grid[r][c] === " ") {
+            grid[r][c] = gridItem;
+            gridItemsToPlace = gridItemsToPlace - 1;
+        }
+    }
+}
+
+// Handles game functions when entering game state
+function game() {
+    // drawCharacters();
+    drawNPCs(); // Draws the NPC
+    drawEnemies(); // Draws the enemy
+
+    moveEnemies(); // Moves the enemies
+
+    drawPlayer(); // Draws the player
+    // drawMask(); // Draws mask
+    drawInventoryItems(); // Draws items in inventory
+    drawLives(); // Draws the player's life
+    drawKeys();  // Draws the keys
+    drawCoins();  // Draws the coins
+
+    openDialogue(); // Shows the dialogue wih the NPCs
+
+    stopWatch(); // Starts the stop watch
+}
+
 // Draws the items on the grid
 function drawTiles(asset, c, r, sizeC, sizeR) {
     push();
@@ -454,48 +474,6 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     textAlign(CENTER, TOP);
     text(contentText, width / 2, height / 3.5);
     pop();
-}
-
-
-// Handles game functions when entering game state
-function game() {
-    // drawCharacters();
-    drawNPCs(); // Draws the NPC
-    drawEnemies(); // Draws the enemy
-
-    moveEnemies(); // Moves the enemies
-
-    drawPlayer(); // Draws the player
-    // drawMask(); // Draws mask
-    drawInventoryItems(); // Draws items in inventory
-    drawLives(); // Draws the player's life
-    drawKeys();  // Draws the keys
-    drawCoins();  // Draws the coins
-
-    openDialogue(); // Shows the dialogue wih the NPCs
-
-    stopWatch(); // Starts the stop watch
-}
-
-// Formats stop watch and score time
-function timeFormatting(totalMillis) {
-    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
-    const ms = Math.floor(totalMillis % 1000 / 10);
-    const s = Math.floor(totalMillis / 1000) % 60;
-    const m = Math.floor(totalMillis / 1000 / 60) % 60;
-    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
-}
-
-// Draws the stop watch on the top left corner of the screen
-function stopWatch() {
-    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
-    const string = timeFormatting(totalMillis);
-
-    fill(255);
-    textFont(pixelFont);
-    textAlign(LEFT, CENTER);
-    textSize(unit / 2.5);
-    text(string, unit / 2, unit / 2);
 }
 
 function setCharacters(charactersToPlace, characters, createCharacter) {
@@ -562,51 +540,14 @@ function drawCharacters(characters, characterAsset) {
     }
 }
 
-// Draws the enemies (rabbits)
-function drawEnemies() {
-    drawCharacters(enemies, rabbit)
-}
-
 // Draws the NPCs (wizards)
 function drawNPCs() {
     drawCharacters(npcs, wizard)
 }
 
-// Moves the enemies
-function moveEnemies() {
-    for (let enemy of enemies) {
-        enemy.moveTime++;
-        if (enemy.moveTime >= enemy.moveInterval) {
-            // Next col according to the enemy direction
-            let nextCol = enemy.c + enemy.direction;
-
-            // Checks if next col is valid
-            if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
-                // Lets the enemy move if it is valid
-                enemy.c += enemy.direction;
-                // Checks collision with the player
-                checkDeath(enemy);
-            }
-            else {
-                // Makes the enemy change direction 
-                enemy.direction *= -1;
-            }
-            // Resets enemy movement
-            enemy.moveTime = 0;
-        }
-    }
-}
-
-// Checks and handles losing lives
-function checkDeath(enemy) {
-    // Player loses a life if collision with an enemy
-    if (player.c === enemy.c && player.r === enemy.r) {
-        lives.pop();
-    }
-    // Player loses the game if no lives left
-    if (lives.length <= 0) {
-        state = "lost";
-    }
+// Draws the enemies (rabbits)
+function drawEnemies() {
+    drawCharacters(enemies, rabbit)
 }
 
 // Draws the player
@@ -618,20 +559,6 @@ function drawPlayer() {
     image(goblin, player.c * unit + unit / 2, player.r * unit + unit / 2, unit, unit)
     pop();
 }
-
-/**
- * Mask not needed right now
- */
-
-// // Draws the mask that hide the grid
-// function drawMask() {
-//     push();
-//     noFill();
-//     noStroke();
-//     imageMode(CENTER);
-//     image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
-//     pop();
-// }
 
 // Draws the items (keys, coins) in the inventory
 function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAssetOutline) {
@@ -671,6 +598,31 @@ function drawCoins() {
     drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
 }
 
+// Moves the enemies
+function moveEnemies() {
+    for (let enemy of enemies) {
+        enemy.moveTime++;
+        if (enemy.moveTime >= enemy.moveInterval) {
+            // Next col according to the enemy direction
+            let nextCol = enemy.c + enemy.direction;
+
+            // Checks if next col is valid
+            if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
+                // Lets the enemy move if it is valid
+                enemy.c += enemy.direction;
+                // Checks collision with the player
+                checkDeath(enemy);
+            }
+            else {
+                // Makes the enemy change direction 
+                enemy.direction *= -1;
+            }
+            // Resets enemy movement
+            enemy.moveTime = 0;
+        }
+    }
+}
+
 // Handles dialogue and dialogue window when talking to the NPCs
 function openDialogue() {
     for (let npc of npcs) {
@@ -704,6 +656,53 @@ function openDialogue() {
     // Disables dialogue
     dialogueOn = false;
 }
+
+// Formats stop watch and score time
+function timeFormatting(totalMillis) {
+    // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    const ms = Math.floor(totalMillis % 1000 / 10);
+    const s = Math.floor(totalMillis / 1000) % 60;
+    const m = Math.floor(totalMillis / 1000 / 60) % 60;
+    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+}
+
+// Draws the stop watch on the top left corner of the screen
+function stopWatch() {
+    const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
+    const string = timeFormatting(totalMillis);
+
+    fill(255);
+    textFont(pixelFont);
+    textAlign(LEFT, CENTER);
+    textSize(unit / 2.5);
+    text(string, unit / 2, unit / 2);
+}
+
+// Checks and handles losing lives
+function checkDeath(enemy) {
+    // Player loses a life if collision with an enemy
+    if (player.c === enemy.c && player.r === enemy.r) {
+        lives.pop();
+    }
+    // Player loses the game if no lives left
+    if (lives.length <= 0) {
+        state = "lost";
+    }
+}
+
+/**
+ * Mask not needed right now
+ */
+
+// // Draws the mask that hide the grid
+// function drawMask() {
+//     push();
+//     noFill();
+//     noStroke();
+//     imageMode(CENTER);
+//     image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
+//     pop();
+// }
 
 /**
 * Handles player movement and menu controls
