@@ -1,16 +1,17 @@
 /**
- * Goblin and Dungeon
+ * Goblin and Dungeon: Explore Level 1
  * 
  * Ellie "DASH" Desjardins
  * 
- * Welcome to my grid-based top-down view kind of game!
- * You play as a Goblin adventuring through a dungeon, but beware the dangerous killer rabbits!
+ * Goblin and Dungeon is a retro-inspired 2D top-down action-adventure game with a roguelite-inspired map generation.
+ * Each play through features a unique dungeon layout with a grid-based movement, collectibles, NPCs, and obstacles.
+ * You play as the lone goblin exploring, adventuring, and escaping unknown environments, but beware the dangerous killer rabbits!
  * 
  * Use [A][W][S][D] keys to move around, collect keys and escape through the door.
  * 
- * Use [SPACE] to interact with the menus and the NPCs
+ * Use [SPACE] and [R] to interact with the menus and the NPCs
  * 
- * If needed, meet one of our friendly wizard NPCs, they might help you!
+ * If needed, talk to one of our friendly wizard NPCs, they might help you!
  * 
  * When you succesfully escape the dungeon, try the next level!
  *
@@ -19,6 +20,19 @@
 "use strict";
 
 // The game grid
+let baseGrid = [
+    ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+];
+
 let grid = [
     ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
     ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
@@ -30,7 +44,6 @@ let grid = [
     ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
     ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
-
 ];
 
 // Number of rows and columns and standard unit size
@@ -199,6 +212,8 @@ function setup() {
     if (bestTime === null) {
         bestTime = 999999;
     }
+
+    setGrids();
 }
 
 function windowResized() {
@@ -252,7 +267,7 @@ Best Time: ${bestTimeFormat}
 
     // Active game state (no menu)
     else if (state === "game") {
-        createGrid();
+        createGrid(grid);
         game();
     }
     // Game lost state and menu
@@ -274,12 +289,12 @@ To Try Again
         let bestTimeFormat = timeFormatting(bestTime);
 
         end.text = `
-Congratulations!
+Congratulations, you escaped!
     
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-Press[SPACE] To Play
+Press [SPACE] To Play
 The Next Level!
 or
 Press [R] To Play Again
@@ -289,6 +304,29 @@ Press [R] To Play Again
 
         start = null;
     }
+}
+
+function resetGame() {
+    console.log("reset game");
+    start = null;
+    yourTime = 0;
+    enemies = [];
+    npcs = [];
+    keys = [];
+    lives = [true, true];
+    player = {
+        r: 0,
+        c: 6
+    };
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            // Removes the item at this position
+            grid[r][c] = " ";
+        }
+    }
+    setGrids();
+    state = "game";
+    startGame();
 }
 
 // Sets game variables and functions when the game starts
@@ -327,13 +365,21 @@ function createGridItems(gridItemsToPlace, gridItem) {
     }
 }
 
+function setGrids() {
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            grid[r][c] = baseGrid[r][c];
+        }
+    }
+}
+
 // Populates the grid with items
-function createGrid() {
+function createGrid(gridToCreate) {
     // Goes through all the rows and columns
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             // Gets the item at this position
-            let item = grid[r][c];
+            let item = gridToCreate[r][c];
 
             // Draws the grid and uses the ground asset by default
             drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
@@ -390,20 +436,23 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     textFont(fantasyFont);
     fill(255);
     stroke(0);
-    strokeWeight(8);
+    strokeWeight(unit / 8);
     textSize(unit);
     textAlign(CENTER, CENTER);
-    text("Goblin and Adventure", width / 2, height / 6);
+    text("Goblin and Adventure:", width / 2, height / 6);
+    textSize(unit / 1.35);
+    text("Explore Level 1", width / 2, height / 4);
+
     pop();
     // Menu content
     push();
     textFont(gothicFont);
     fill(contentFill);
     stroke(0);
-    strokeWeight(3);
+    strokeWeight(unit / 21);
     textSize(contentSize);
     textAlign(CENTER, TOP);
-    text(contentText, width / 2, height / 4);
+    text(contentText, width / 2, height / 3.5);
     pop();
 }
 
@@ -450,10 +499,6 @@ function stopWatch() {
 }
 
 function setCharacters(charactersToPlace, characters, createCharacter) {
-    // let charactersToPlace = charactersTotal;
-    // npcName = random(npcNames.deities);
-
-    // characters = [];
     while (charactersToPlace > 0) {
 
         // Find position
@@ -612,28 +657,6 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
     }
 }
 
-// // Draws the lives in the bottom right corner of the inventory
-// function drawLives() {
-//     for (let i = 0; i < maxLives; i++) {
-//         push();
-//         noStroke();
-//         noFill();
-//         imageMode(CENTER);
-//         const c = (11 - i) * (unit * 1.25) - unit * 1.75;
-//         const r = (inventoryLife.r * unit) + unit
-//         const size = inventoryLife.size;
-//         // Displays lives remaining
-//         if (i < lives) {
-//             image(heart, c, r, size, size);
-//         }
-//         // Displays lives missing as outline
-//         else {
-//             image(heartOutline, c, r, size, size);
-//         }
-//         pop();
-//     }
-// }
-
 function drawLives() {
     drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
 }
@@ -697,7 +720,8 @@ function keyPressed() {
     // R
     if (keyCode === 82) {
         if (state === "win") {
-            location.reload();
+            // location.reload();
+            resetGame();
         }
     }
 
@@ -708,7 +732,7 @@ function keyPressed() {
             startGame();
 
             // if (stopWatch == null) {
-            //     stopWatch = Date.now();
+            //     stopWatch = Date.now();rrr
             // } else {
             //     yourTime += Date.now() - start;
             //     stopWatch = null;
@@ -721,12 +745,10 @@ function keyPressed() {
             }
         }
         else if (state === "lost") {
-            location.reload();
+            // location.reload();
+            resetGame();
         }
         else if (state === "win") {
-            // newFunction();
-            // Path to be added!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // window.location.href = "../variation-jam-2/index.html";
             window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
         }
     }

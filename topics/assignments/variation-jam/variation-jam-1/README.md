@@ -2,25 +2,26 @@
 
 Ellie "DASH" Desjardins
 
-[View this project online](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-1/)
-
 ## Description
 
-Welcome to my grid-based top-down view kind of game!
+Goblin and Dungeon is a retro-inspired 2D top-down action-adventure game with a roguelite-inspired map generation. Each play through features a unique dungeon layout with a grid-based movement, collectibles, NPCs, and obstacles.
 
-You play as a Goblin adventuring through a dungeon, but beware the dangerous killer rabbits!
+It is a collection of 3 levels built as variations with the same premise. You play as the lone goblin exploring, adventuring, and escaping unknown environments. Tackle the first level and complete all threes consecutively, or play each level as a standalone game.
 
-Use [A][W][S][D] keys to move around, collect keys and escape through the door.
+Movements: [A][W][S][D]
 
-Use [SPACE] to interact with the menus and the NPCs
+In-Game and Menu interactions: [SPACE] and [R]
+
+Here is the first level.
+
+[Goblin and Dungeon: Explore Level 1](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-1/)
+Explore the small world of Goblin and Dungeon through a cozy stroll in the woods.
 
 If needed, meet one of our friendly wizard NPCs, they might help you!
 
 When you succesfully escape the dungeon, try the next level!
 
 ## Credits
-
-This bit should describe what tools were used. For example:
 
 This project uses [p5.js](https://p5js.org).
 
