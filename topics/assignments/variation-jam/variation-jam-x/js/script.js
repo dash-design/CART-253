@@ -21,35 +21,86 @@
 
 // The game grid
 let baseGrid = [
-    ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
-    ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
-    ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
-    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"]
 ];
 
-let grid = [
-    ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
-    ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
-    ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
-    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
-];
+// let mazes = [
+//     [["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", "W", "W", "W", " ", " ", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", "W", "W", "W", "W", "W", "W", "W", " ", " ", "W", "W", "W", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", "W"],
+//     ["W", "W", "W", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W", " ", " ", "W", "W", "W", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W", "W", "W"],
+//     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"]],
+
+//     [["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+//     ["W", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W"],
+//     ["W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+//     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W", "W", "W"],
+//     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"]],
+
+//     [["W", "N", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", "W", "W", "W", "w", " ", " ", "w", " ", " ", "W", "W", "W", "W", "W", "W", "W"],
+//     ["W", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", "W", " ", " ", " ", " ", " ", "W", " ", " ", "W", " ", " ", "W"],
+//     ["W", "W", "W", "W", " ", " ", "W", "W", "W", "W", " ", " ", "W", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", "W", "W", "W", "W", "W", "W", "W", " ", " ", "W", " ", " ", "W", " ", " ", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+//     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W", "W", "W"]
+//     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"]],
+//     [],
+//     [],
+//     [],
+//     [],
+//     [],
+//     [],
+//     []
+// ];
+
+
+let maze = [];
+
+// The game grid
+let grid = undefined;
 
 // Number of rows and columns and standard unit size
 // Need to be adjusted according to the grid array
-const rows = 10; // Serves as the Y
-const cols = 13; // Serves as the X
+const rows = 14; // Serves as the Y
+const cols = 19; // Serves as the X
 let unit = 64; // Grid tiles size
 
 // Game elements
@@ -113,14 +164,14 @@ function preload() {
 // Player variables
 let player = {
     r: 0,
-    c: 6,
+    c: 1,
     size: unit
 }
 
 // Life variables in the inventory
 let inventoryLife = {
-    r: 8,
-    c: 10,
+    r: 12,
+    c: 18,
     size: unit * 1.5
 }
 const maxLives = 2; // Max number of lives
@@ -128,8 +179,8 @@ let lives = [true, true]; // Default number of lives
 
 // Key variables in the inventory
 let inventoryKey = {
-    r: 8,
-    c: 0,
+    r: 12,
+    c: 1,
     size: unit * 1.25
 }
 const maxKeys = 3; // Max number of keys
@@ -137,8 +188,8 @@ let keys = []; // Array of keys
 
 // Coin variables in the inventory
 let inventoryCoin = {
-    r: 9,
-    c: 0,
+    r: 13,
+    c: 1,
     size: unit * 1.5
 }
 const maxCoins = 3; // Max number of coins
@@ -169,9 +220,9 @@ let dialogueBox = {
 }
 let dialogueOn = false; // Off by default
 
-// let mask = {
-//     size: (cols * unit) * 3
-// };
+let mask = {
+    size: (cols * unit) * 3
+};
 
 // The state
 let state = "start";
@@ -213,7 +264,9 @@ function setup() {
         bestTime = 999999;
     }
 
-    setGrids();
+    // grid = random(mazes);
+
+    setGrid();
 }
 
 function windowResized() {
@@ -242,7 +295,7 @@ function draw() {
 
         // let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
         let bestTimeFormat;
-        if (bestTime === 999999) {
+        if (bestTime = 999999) {
             bestTimeFormat = "None";
         }
         else {
@@ -268,6 +321,8 @@ Best Time: ${bestTimeFormat}
     // Active game state (no menu)
     else if (state === "game") {
         createGrid(grid);
+        // drawMask(); // Draws mask
+        // createGrid(baseGrid);
         game();
     }
     // Game lost state and menu
@@ -289,12 +344,12 @@ To Try Again
         let bestTimeFormat = timeFormatting(bestTime);
 
         end.text = `
-Congratulations, you escaped!
+Congratulations!
     
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-Press [SPACE] To Play
+Press[SPACE] To Play
 The Next Level!
 or
 Press [R] To Play Again
@@ -316,25 +371,93 @@ function resetGame() {
     lives = [true, true];
     player = {
         r: 0,
-        c: 6
+        c: 1
     };
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             // Removes the item at this position
-            grid[r][c] = " ";
+            // grid[r][c] = " ";
         }
     }
-    setGrids();
+    setGrid();
     state = "game";
     startGame();
 }
 
-function setGrids() {
+function setGrid() {
+    grid = generateMaze(rows, cols);
+}
+
+function generateMaze(rows, cols) {
+    let maze = [];
+    // let seen = [];
+
+    // Populates the grid of walls
     for (let r = 0; r < rows; r++) {
+        maze[r] = [];
         for (let c = 0; c < cols; c++) {
-            grid[r][c] = baseGrid[r][c];
+            maze[r][c] = "W";
         }
     }
+
+    // Sets the tiles as unseen
+    let seen = [];
+    for (let r = 0; r < rows; r++) {
+        seen[r] = [];
+        for (let c = 0; c < cols; c++) {
+            seen[r][c] = false;
+        }
+    }
+
+    let startR = 1;
+    let startC = 1;
+
+    checkRemoval(startR, startC, seen, maze);
+
+    removeWall(startR, startC, seen, maze);
+
+    removeWall(player.r, player.c, seen, maze);
+
+    maze[player.r][player.c] = "N";
+    maze[rows - 2][9] = "D";
+
+    return maze;
+}
+
+function removeWall(r, c, seen, maze) {
+    seen[r][c] = true;
+    maze[r][c] = " ";
+
+
+    let sides = [[0, -2], [0, 2], [-2, 0], [2, 0]];
+
+    sides.sort(() => Math.random() - 0.5);
+
+    for (let i = 0; i < sides.length; i++) {
+        let sR = sides[i][0];
+        let sC = sides[i][1];
+
+        let nR = r + sR; // Neighbouring R
+        let nC = c + sC; // Neighbouring C
+
+        if (checkRemoval(nR, nC, seen, maze)) {
+            maze[r + sR / 2][c + sC / 2] = " ";
+            removeWall(nR, nC, seen, maze);
+        }
+    }
+}
+
+function checkRemoval(r, c, seen, maze) {
+    // let wallsToRemove = [];
+    if (r <= 0 || c <= 0 || r >= rows - 1 || c >= cols - 1) {
+        return false;
+    }
+
+    if (seen[r][c] || maze[r][c] != "W") {
+        return false;
+    }
+
+    return true;
 }
 
 // Populates the grid with items
@@ -345,8 +468,10 @@ function createGrid(gridToCreate) {
             // Gets the item at this position
             let item = gridToCreate[r][c];
 
-            // Draws the grid and uses the ground asset by default
-            drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            if (gridToCreate === grid) {
+                // Draws the grid and uses the ground asset by default
+                drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            }
 
             // Places the walls
             if (item === "W") {
@@ -378,10 +503,10 @@ function createGrid(gridToCreate) {
 
 // Sets game variables and functions when the game starts
 function startGame() {
-    const wallsToPlace = 12; // How many walls the createGridItems will draw
+    // const wallsToPlace = 12; // How many walls the createGridItems will draw
     const keysToPlace = 3; // How many keys the createGridItems will draw
 
-    createGridItems(wallsToPlace, "W"); // Handles drawing the walls
+    // createGridItems(wallsToPlace, "W"); // Handles drawing the walls
     createGridItems(keysToPlace, "k"); // Handles drawing the keys
 
     grid[player.r][player.c] = "N"; // Handles player initial position
@@ -398,12 +523,12 @@ function startGame() {
     }
 }
 
-// Creates items (walls and keys) on random positions
+// Creates items (keys) on random positions
 function createGridItems(gridItemsToPlace, gridItem) {
     while (gridItemsToPlace > 0) {
         // Find position
-        let r = floor(random(1, rows - 2));
-        let c = floor(random(1, cols - 1));
+        let r = floor(random(0, rows));
+        let c = floor(random(0, cols));
         // Place an item
         if (grid[r][c] === " ") {
             grid[r][c] = gridItem;
@@ -422,7 +547,8 @@ function game() {
 
     drawPlayer(); // Draws the player
     // drawMask(); // Draws mask
-    drawInventoryItems(); // Draws items in inventory
+    // createGrid(baseGrid);
+    drawInventoryItems();    // Draws items in inventory
     drawLives(); // Draws the player's life
     drawKeys();  // Draws the keys
     drawCoins();  // Draws the coins
@@ -461,7 +587,7 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     textAlign(CENTER, CENTER);
     text("Goblin and Dungeon:", width / 2, height / 6);
     textSize(unit / 1.35);
-    text("Adventure in Level 2", width / 2, height / 4);
+    text("Escape the Last Level", width / 2, height / 4);
 
     pop();
     // Menu content
@@ -567,7 +693,13 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         noStroke();
         noFill();
         imageMode(CENTER);
-        const c = (inventoryItem.c + i + 0.5) * unit;
+        let c;
+        if (inventoryItem === inventoryLife) {
+            c = (inventoryItem.c - i - 0.5) * unit;
+        }
+        else {
+            c = (inventoryItem.c + i + 0.5) * unit;
+        }
         // * (unit / 1.2) + unit / 1.5;
         const r = (inventoryItem.r + 0.5) * unit;
         // + unit / 1.5;
@@ -690,19 +822,15 @@ function checkDeath(enemy) {
     }
 }
 
-/**
- * Mask not needed right now
- */
-
-// // Draws the mask that hide the grid
-// function drawMask() {
-//     push();
-//     noFill();
-//     noStroke();
-//     imageMode(CENTER);
-//     image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
-//     pop();
-// }
+// Draws the mask that hide the grid
+function drawMask() {
+    push();
+    noFill();
+    noStroke();
+    imageMode(CENTER);
+    image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
+    pop();
+}
 
 /**
 * Handles player movement and menu controls
@@ -719,6 +847,7 @@ function keyPressed() {
     // R
     if (keyCode === 82) {
         if (state === "win") {
+            // location.reload();
             resetGame();
         }
     }

@@ -14,12 +14,10 @@ In-Game and Menu interactions: [SPACE] and [R]
 
 Here is the first level.
 
-[Goblin and Dungeon: Adventure in Level 2](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-1/)
-Adventure within a fast-paced above-ground dungeon where dangers and friends await.
+[Goblin and Dungeon: Escape the Last Level](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/)
+Escape the dark halls of an underground maze-like dungeon, and complete the Goblin and Dungeon trilogy.
 
-If needed, meet one of our friendly wizard NPCs, they might help you!
-
-When you succesfully escape the dungeon, try the next level!
+When you succesfully escape the dungeon, it means you completed Goblin and Dungeon!
 
 ## Credits
 
