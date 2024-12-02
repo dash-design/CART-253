@@ -560,12 +560,12 @@ Press [R] To Play Again
 }
 
 function resetGame() {
-    console.log("reset game");
     start = null;
     yourTime = 0;
     enemies = [];
     npcs = [];
     keys = [];
+    coins = [];
     lives = [true, true];
     // player = {
     //     r: 0,
@@ -752,7 +752,7 @@ function setPlayer() {
     let playerPlaced = false;
     while (playerPlaced === false) {
         let r = 1;
-        let c = floor(random(0, rows));
+        let c = floor(random(0, cols));
         // Place an enemy on an empty tile
         if (grid[r][c] === " ") {
 
@@ -945,6 +945,7 @@ function openDialogue() {
             pop();
 
             dialogueOn = true;
+
             return;
         }
     }
@@ -1022,13 +1023,21 @@ function keyPressed() {
             startGame();
         }
         else if (state === "game" && dialogueOn) {
-            if (keys.length < maxKeys && lives.length > 1) {
-                lives.pop();
-                keys.push(true);
+
+            // let speechIndex = npcSpeech.indexOf(currentNPC.speech);
+
+            if (npcSpeech.indexOf("For a Life I'll give you a key\nPress [SPACE] To Get a Key")) {
+                if (keys.length < maxKeys && lives.length > 1) {
+                    lives.pop();
+                    keys.push(true);
+                }
             }
-            else if (lives.length < maxLives && keys.length >= maxKeys) {
-                coins.pop();
-                lives.push(true);
+            else if (npcSpeech.indexOf("For three Coins I'll give you a life\nPress [SPACE] To Get a Life")) {
+                if (lives.length < maxLives && coins.length >= maxCoins) {
+                    coins.pop();
+                    lives.push(true);
+                }
+
             }
         }
         else if (state === "lost") {
@@ -1079,6 +1088,19 @@ function keyPressed() {
             if (keys.length < maxKeys) {
                 // Increase the number of keys that the player has
                 keys.push(true);
+            }
+            moved = true;
+
+        }
+        else if (grid[newR][newC] === `c`) {
+            // If it's a collectible then empty that spot
+            grid[newR][newC] = ` `;
+            // Then the player moves there
+            player.r = newR;
+            player.c = newC;
+            if (coins.length < maxKeys) {
+                // Increase the number of keys that the player has
+                coins.push(true);
             }
             moved = true;
 
