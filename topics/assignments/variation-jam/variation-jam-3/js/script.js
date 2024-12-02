@@ -372,7 +372,7 @@ let inventoryLife = {
     c: 18,
     size: unit * 1.5
 }
-const maxLives = 2; // Max number of lives
+const maxLives = 3; // Max number of lives
 let lives = [true, true]; // Default number of lives
 
 // Key variables in the inventory
@@ -406,8 +406,8 @@ let npcs = []; // Array of NPCs
 
 // The NPCs dialogues
 let npcSpeech = [
-    "For one Life I'll give you a key\nPress [SPACE] To Get a Key",
-    "For 1 Life I'll give you 1 key\nPress [SPACE] To Get a Key"
+    "For a Life I'll give you a key\nPress [SPACE] To Get a Key",
+    "For three Coins I'll give you a life\nPress [SPACE] To Get a Life"
 ];
 
 // NPCs dialogue box variables
@@ -606,7 +606,12 @@ function createGrid(gridToCreate) {
 
             // Places the keys
             else if (item === "k") {
-                drawTiles(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25);
+                drawTiles(key, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            }
+
+            // Places the coins
+            else if (item === "c") {
+                drawTiles(coin, c * unit + unit / 2, r * unit + unit / 2, unit * 1.25, unit * 1.25);
             }
 
             // Places the door
@@ -633,6 +638,8 @@ function startGame() {
 
     setPlayer();
 
+    const coinsToPlace = 3; // How many keys the createGridItems will draw
+    createGridItems(coinsToPlace, "c"); // Handles drawing the keys
     const keysToPlace = 3; // How many keys the createGridItems will draw
     createGridItems(keysToPlace, "k"); // Handles drawing the keys
     const doorsToPlace = 1; // How many keys the createGridItems will draw
@@ -650,7 +657,7 @@ function startGame() {
     }
 }
 
-// Creates items (keys) on random positions
+// Creates items (keys, coins) on random positions
 function createGridItems(gridItemsToPlace, gridItem) {
     while (gridItemsToPlace > 0) {
 
@@ -675,22 +682,6 @@ function createGridItems(gridItemsToPlace, gridItem) {
         }
     }
 }
-
-// function createDoors(gridItemsToPlace, gridItem) {
-//     // let doorPlaced = false;
-//     while (gridItemsToPlace > 0) {
-//         let r = 13;
-//         let c = floor(random(0, cols));
-//         // Place an enemy on an empty tile
-//         if (grid[r - 1][c] === " ") {
-
-//             grid[r][c] = gridItem;
-//             gridItemsToPlace = gridItemsToPlace - 1;
-//         }
-
-//         // doorPlaced = true;
-//     }
-// }
 
 // Handles game functions when entering game state
 function game() {
@@ -761,7 +752,7 @@ function setPlayer() {
     let playerPlaced = false;
     while (playerPlaced === false) {
         let r = 1;
-        let c = Math.floor(Math.random() * cols);
+        let c = floor(random(0, rows));
         // Place an enemy on an empty tile
         if (grid[r][c] === " ") {
 
@@ -858,7 +849,7 @@ function drawPlayer() {
     pop();
 }
 
-// Draws the items (keys, coins) in the inventory
+// Draws the items (keys, coins, lives) in the inventory
 function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAssetOutline) {
     for (let i = 0; i < maxItems; i++) {
         push();
@@ -875,7 +866,7 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         // * (unit / 1.2) + unit / 1.5;
         const r = (inventoryItem.r + 0.5) * unit;
         // + unit / 1.5;
-        const size = unit;
+        const size = unit * 1.25;
         // Displays items if collected
         if (i < items.length) {
             image(itemAsset, c, r, size, size);
@@ -937,7 +928,7 @@ function openDialogue() {
             stroke(255, 95); // White with slightly reduced opacity
             strokeWeight(2);
             fill(0, 200); // Black with reduced opacity 
-            rect(3 * unit, 8.125 * unit, 6.75 * unit, 1.75 * unit);
+            rect(5 * unit, 12.125 * unit, 9.75 * unit, 1.75 * unit);
 
             // Dialogue text
             // NPC name
@@ -945,12 +936,12 @@ function openDialogue() {
             textFont(fantasyFont);
             textAlign(TOP, LEFT);
             textSize(unit / 2);
-            text(npc.name + ":\n", 3.25 * unit, 8.625 * unit);
+            text(npc.name + ":\n", 5.25 * unit, 12.625 * unit);
             // NPC dialogue
             textFont(gothicFont);
             textAlign(CENTER, LEFT);
             textSize(unit / 3);
-            text(npc.speech, 3.125 * unit, 9.125 * unit, 6.625 * unit, 1.5 * unit);
+            text(npc.speech, 5.125 * unit, 13.125 * unit, 9.625 * unit, 1.5 * unit);
             pop();
 
             dialogueOn = true;
@@ -979,7 +970,7 @@ function stopWatch() {
     textFont(pixelFont);
     textAlign(LEFT, CENTER);
     textSize(unit / 2.5);
-    text(string, unit / 2, unit / 2);
+    text(string, 16 * unit, 13.5 * unit);
 }
 
 // Checks and handles losing lives
@@ -1034,6 +1025,10 @@ function keyPressed() {
             if (keys.length < maxKeys && lives.length > 1) {
                 lives.pop();
                 keys.push(true);
+            }
+            else if (lives.length < maxLives && keys.length >= maxKeys) {
+                coins.pop();
+                lives.push(true);
             }
         }
         else if (state === "lost") {
