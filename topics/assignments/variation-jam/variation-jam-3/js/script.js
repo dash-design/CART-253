@@ -373,7 +373,7 @@ let inventoryLife = {
     size: unit * 1.5
 }
 const maxLives = 3; // Max number of lives
-let lives = [true, true]; // Default number of lives
+let lives = [true, true, true]; // Default number of lives
 
 // Key variables in the inventory
 let inventoryKey = {
@@ -394,7 +394,7 @@ const maxCoins = 3; // Max number of coins
 let coins = []; // Array of coins
 
 // Enemies variables
-let enemiesTotal = 5; // Total amount of enemies
+let enemiesTotal = 8; // Total amount of enemies
 let enemies = []; // Array of enemies
 // Variables used for dynamic enemies movement
 let fps; // Default frame rate
@@ -404,11 +404,24 @@ let adjustedMoveInterval; // Default move interval
 let npcTotal = 2; // Total number of NPCs
 let npcs = []; // Array of NPCs
 
+
 // The NPCs dialogues
 let npcSpeech = [
     "For a Life I'll give you a key\nPress [SPACE] To Get a Key",
     "For three Coins I'll give you a life\nPress [SPACE] To Get a Life"
 ];
+
+// // The NPCs dialogues
+// let keysNpcSpeech = [
+//     "For a Life I'll give you a key\nPress [SPACE] To Get a Key",
+//     "Oh no. It would kill you... sorry."
+// ];
+
+// // The NPCs dialogues
+// let coinsNpcSpeech = [
+//     "For three Coins I'll give you a life\nPress [SPACE] To Get a Life",
+//     "Pfff, come back when you have enough coins!"
+// ];
 
 // NPCs dialogue box variables
 let dialogueBox = {
@@ -566,7 +579,7 @@ function resetGame() {
     npcs = [];
     keys = [];
     coins = [];
-    lives = [true, true];
+    lives = [true, true, true];
     // player = {
     //     r: 0,
     //     c: 1
@@ -640,12 +653,12 @@ function startGame() {
 
     const coinsToPlace = 3; // How many keys the createGridItems will draw
     createGridItems(coinsToPlace, "c"); // Handles drawing the keys
-    const keysToPlace = 3; // How many keys the createGridItems will draw
+    const keysToPlace = 2; // How many keys the createGridItems will draw
     createGridItems(keysToPlace, "k"); // Handles drawing the keys
     const doorsToPlace = 1; // How many keys the createGridItems will draw
     createGridItems(doorsToPlace, "D"); // Handles drawing the keys
 
-    lives = [true, true]; // Reset the lives
+    lives = [true, true, true]; // Reset the lives
 
     // setCharacters();
     setEnemies(); // Creates the enemies
