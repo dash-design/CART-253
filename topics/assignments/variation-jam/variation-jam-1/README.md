@@ -12,9 +12,10 @@ Movements: [A] [W] [S] [D]
 
 In-Game and Menu interactions: [SPACE] and [R]
 
-Here is the first level.
+Here is the second level!
 
-[Goblin and Dungeon: Adventure in Level 2](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-1/)
+[Goblin and Dungeon: Adventure in Level 2](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/)
+
 Adventure within a fast-paced above-ground dungeon where dangers and friends await.
 
 If needed, meet one of our friendly wizard NPCs, they might help you!

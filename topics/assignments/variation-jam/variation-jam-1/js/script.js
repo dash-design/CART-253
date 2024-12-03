@@ -67,9 +67,9 @@ let mossyWall;
 
 let ground;
 
-let coin;
+// let coin;
 
-let coinOutline;
+// let coinOutline;
 
 let door;
 
@@ -98,8 +98,8 @@ function preload() {
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
     mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
     ground = loadImage('assets/images/ground.png'); // Empty tiles
-    coin = loadImage('assets/images/coin.png'); // Coins
-    coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
+    // coin = loadImage('assets/images/coin.png'); // Coins
+    // coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
     door = loadImage('assets/images/door.png'); // Door tile
     key = loadImage('assets/images/key.png'); // Keys
     keyOutline = loadImage('assets/images/keyoutline.png'); // Keys outline (for the inventory)
@@ -119,8 +119,8 @@ let player = {
 
 // Life variables in the inventory
 let inventoryLife = {
-    r: 8,
-    c: 10,
+    r: 8.5,
+    c: 9.5,
     size: unit * 1.5
 }
 const maxLives = 2; // Max number of lives
@@ -128,21 +128,21 @@ let lives = [true, true]; // Default number of lives
 
 // Key variables in the inventory
 let inventoryKey = {
-    r: 8,
+    r: 8.5,
     c: 0,
     size: unit * 1.25
 }
 const maxKeys = 3; // Max number of keys
 let keys = []; // Array of keys
 
-// Coin variables in the inventory
-let inventoryCoin = {
-    r: 9,
-    c: 0,
-    size: unit * 1.5
-}
-const maxCoins = 3; // Max number of coins
-let coins = []; // Array of coins
+// // Coin variables in the inventory
+// let inventoryCoin = {
+//     r: 9,
+//     c: 0,
+//     size: unit * 1.5
+// }
+// const maxCoins = 3; // Max number of coins
+// let coins = []; // Array of coins
 
 // Enemies variables
 let enemiesTotal = 5; // Total amount of enemies
@@ -425,7 +425,7 @@ function game() {
     drawInventoryItems(); // Draws items in inventory
     drawLives(); // Draws the player's life
     drawKeys();  // Draws the keys
-    drawCoins();  // Draws the coins
+    // drawCoins();  // Draws the coins
 
     openDialogue(); // Shows the dialogue wih the NPCs
 
@@ -560,18 +560,25 @@ function drawPlayer() {
     pop();
 }
 
-// Draws the items (keys, coins) in the inventory
+// Draws the items (keys, lives) in the inventory
 function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAssetOutline) {
     for (let i = 0; i < maxItems; i++) {
         push();
         noStroke();
         noFill();
         imageMode(CENTER);
-        const c = (inventoryItem.c + i + 0.5) * unit;
-        // * (unit / 1.2) + unit / 1.5;
+        let c;
+        if (inventoryItem === inventoryLife) {
+            c = (inventoryItem.c - i) * (unit * 1.25);
+            // * (unit / 1.2) + unit / 1.5;
+        }
+        else {
+            c = (inventoryItem.c + i + 1) * (unit * 0.75);
+            // * (unit / 1.2) + unit / 1.5;
+        }
         const r = (inventoryItem.r + 0.5) * unit;
         // + unit / 1.5;
-        const size = unit;
+        const size = inventoryItem.size;
         // Displays items if collected
         if (i < items.length) {
             image(itemAsset, c, r, size, size);
@@ -593,10 +600,10 @@ function drawKeys() {
     drawInventoryItems(maxKeys, keys, inventoryKey, key, keyOutline)
 }
 
-// Draws the coins in the inventory
-function drawCoins() {
-    drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
-}
+// // Draws the coins in the inventory
+// function drawCoins() {
+//     drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
+// }
 
 // Moves the enemies
 function moveEnemies() {

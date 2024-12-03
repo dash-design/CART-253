@@ -67,10 +67,6 @@ let mossyWall;
 
 let ground;
 
-let coin;
-
-let coinOutline;
-
 let door;
 
 let key;
@@ -98,8 +94,6 @@ function preload() {
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
     mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
     ground = loadImage('assets/images/ground.png'); // Empty tiles
-    coin = loadImage('assets/images/coin.png'); // Coins
-    coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
     door = loadImage('assets/images/door.png'); // Door tile
     key = loadImage('assets/images/key.png'); // Keys
     keyOutline = loadImage('assets/images/keyoutline.png'); // Keys outline (for the inventory)
@@ -119,8 +113,8 @@ let player = {
 
 // Life variables in the inventory
 let inventoryLife = {
-    r: 8,
-    c: 10,
+    r: 8.5,
+    c: 9.5,
     size: unit * 1.5
 }
 const maxLives = 2; // Max number of lives
@@ -128,21 +122,12 @@ let lives = [true, true]; // Default number of lives
 
 // Key variables in the inventory
 let inventoryKey = {
-    r: 8,
+    r: 8.5,
     c: 0,
     size: unit * 1.25
 }
 const maxKeys = 3; // Max number of keys
 let keys = []; // Array of keys
-
-// Coin variables in the inventory
-let inventoryCoin = {
-    r: 9,
-    c: 0,
-    size: unit * 1.5
-}
-const maxCoins = 3; // Max number of coins
-let coins = []; // Array of coins
 
 // Enemies variables
 let enemiesTotal = 5; // Total amount of enemies
@@ -168,10 +153,6 @@ let dialogueBox = {
     size: unit
 }
 let dialogueOn = false; // Off by default
-
-// let mask = {
-//     size: (cols * unit) * 3
-// };
 
 // The state
 let state = "start";
@@ -201,9 +182,11 @@ let bestTime; // Fastest time it took to win
 Creates and populate the grid
 */
 function setup() {
+    // Keeps proportions if the window is smaller
     if (windowHeight < (rows * unit)) {
         unit = windowHeight / rows;
     }
+    // Canvas size according to num of columns and rows and tile size
     createCanvas(cols * unit, rows * unit);
 
     // Retrieves the last saved highscore
@@ -213,9 +196,11 @@ function setup() {
         bestTime = 999999;
     }
 
+    // Sets the starting grid
     setGrids();
 }
 
+// Resizes the canvas if the window get smaller
 function windowResized() {
     if (windowHeight < (rows * unit)) {
         unit = windowHeight / rows;
@@ -223,7 +208,6 @@ function windowResized() {
     else {
         unit = 64;
     }
-    // unit = windowHeight / rows;
     resizeCanvas(cols * unit, rows * unit);
 }
 
@@ -240,7 +224,7 @@ function draw() {
     // Starting menu state
     if (state === "start") {
 
-        // let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
+        // Displays the best time as "None" if there is no previous time saved
         let bestTimeFormat;
         if (bestTime === 999999) {
             bestTimeFormat = "None";
@@ -307,7 +291,7 @@ Press [R] To Play Again
 }
 
 function resetGame() {
-    console.log("reset game");
+    // Resets game elements
     start = null;
     yourTime = 0;
     enemies = [];
@@ -318,20 +302,23 @@ function resetGame() {
         r: 0,
         c: 6
     };
+    // Empties the previous grid
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             // Removes the item at this position
             grid[r][c] = " ";
         }
     }
-    setGrids();
-    state = "game";
-    startGame();
+    setGrids(); // Sets the starting grid
+    state = "game"; // Switches to the game state
+    startGame(); // Calls the startGame function
 }
 
+// Sets the starting grid
 function setGrids() {
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
+            // Each game use a new grid leaving the base grid intact
             grid[r][c] = baseGrid[r][c];
         }
     }
@@ -381,10 +368,10 @@ function startGame() {
     const wallsToPlace = 12; // How many walls the createGridItems will draw
     const keysToPlace = 3; // How many keys the createGridItems will draw
 
-    createGridItems(wallsToPlace, "W"); // Handles drawing the walls
-    createGridItems(keysToPlace, "k"); // Handles drawing the keys
+    createGridItems(wallsToPlace, "W"); // Handles creating the random walls
+    createGridItems(keysToPlace, "k"); // Handles creating the keys
 
-    grid[player.r][player.c] = "N"; // Handles player initial position
+    grid[player.r][player.c] = "N"; // Sets the player starting position empty
 
     lives = [true, true]; // Reset the lives
 
@@ -421,18 +408,16 @@ function game() {
     moveEnemies(); // Moves the enemies
 
     drawPlayer(); // Draws the player
-    // drawMask(); // Draws mask
     drawInventoryItems(); // Draws items in inventory
     drawLives(); // Draws the player's life
     drawKeys();  // Draws the keys
-    drawCoins();  // Draws the coins
 
     openDialogue(); // Shows the dialogue wih the NPCs
 
     stopWatch(); // Starts the stop watch
 }
 
-// Draws the items on the grid
+// Draws the tiles on the grid
 function drawTiles(asset, c, r, sizeC, sizeR) {
     push();
     noFill();
@@ -462,7 +447,6 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     text("Goblin and Dungeon:", width / 2, height / 6);
     textSize(unit / 1.35);
     text("Adventure in Level 2", width / 2, height / 4);
-
     pop();
     // Menu content
     push();
@@ -476,6 +460,7 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     pop();
 }
 
+// Sets the NPCs and enemies randomly on the map
 function setCharacters(charactersToPlace, characters, createCharacter) {
     while (charactersToPlace > 0) {
 
@@ -560,18 +545,24 @@ function drawPlayer() {
     pop();
 }
 
-// Draws the items (keys, coins) in the inventory
+// Draws the items (keys, lives) in the inventory
 function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAssetOutline) {
     for (let i = 0; i < maxItems; i++) {
         push();
         noStroke();
         noFill();
         imageMode(CENTER);
-        const c = (inventoryItem.c + i + 0.5) * unit;
-        // * (unit / 1.2) + unit / 1.5;
+        let c;
+        // Column position of the lives
+        if (inventoryItem === inventoryLife) {
+            c = (inventoryItem.c - i) * (unit * 1.25);
+        }
+        // Column position of other items (keys)
+        else {
+            c = (inventoryItem.c + i + 1) * (unit * 0.75);
+        }
         const r = (inventoryItem.r + 0.5) * unit;
-        // + unit / 1.5;
-        const size = unit;
+        const size = inventoryItem.size;
         // Displays items if collected
         if (i < items.length) {
             image(itemAsset, c, r, size, size);
@@ -584,6 +575,7 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
     }
 }
 
+// Draws the lives in the inventory
 function drawLives() {
     drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
 }
@@ -591,11 +583,6 @@ function drawLives() {
 // Draws the keys in the inventory
 function drawKeys() {
     drawInventoryItems(maxKeys, keys, inventoryKey, key, keyOutline)
-}
-
-// Draws the coins in the inventory
-function drawCoins() {
-    drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
 }
 
 // Moves the enemies
@@ -691,20 +678,6 @@ function checkDeath(enemy) {
 }
 
 /**
- * Mask not needed right now
- */
-
-// // Draws the mask that hide the grid
-// function drawMask() {
-//     push();
-//     noFill();
-//     noStroke();
-//     imageMode(CENTER);
-//     image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
-//     pop();
-// }
-
-/**
 * Handles player movement and menu controls
 * Determines which tiles are accessible or not
 * Determines the effect of some tiles when the player moves on them
@@ -718,6 +691,7 @@ function keyPressed() {
 
     // R
     if (keyCode === 82) {
+        // Lets you replay the game after winning
         if (state === "win") {
             resetGame();
         }
@@ -725,23 +699,28 @@ function keyPressed() {
 
     // Space
     if (keyCode === 32) {
+        // Starts the game from start menu
         if (state === "start") {
             state = "game";
             startGame();
         }
+        // Lets you interact with NPCs during the game
         else if (state === "game" && dialogueOn) {
             if (keys.length < maxKeys && lives.length > 1) {
                 lives.pop();
                 keys.push(true);
             }
         }
+        // Lets you replay the game after losing
         else if (state === "lost") {
             resetGame();
         }
+        // Opens the next level after winning
         else if (state === "win") {
-            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
+            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-3/");
         }
     }
+    // Movements
     else if (state === "game") {
         // Adjusts the row and column position based on the arrow key
         // A
