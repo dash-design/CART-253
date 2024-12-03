@@ -1,5 +1,5 @@
 /**
- * Goblin and Dungeon: Adventure in Level 2
+ * Goblin and Dungeon: Explore Level 1
  * 
  * Ellie "DASH" Desjardins
  * 
@@ -11,9 +11,9 @@
  * 
  * Use [SPACE] and [R] to interact with the menus and the NPCs
  * 
- * If needed, talk to one of our friendly wizard NPCs, they might help you!
+ * Explore the small world of Goblin and Dungeon through a cozy stroll in the woods.
  * 
- * When you succesfully escape the dungeon, try the next level!
+ * Meet our friendly NPCs, collect cool things, and cross to the next level!
  *
  */
 
@@ -21,35 +21,41 @@
 
 // The game grid
 let baseGrid = [
-    ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
-    ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
-    ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
-    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["P", "W", "W", "R", " ", "N", " ", "R", "W", "R", " ", " ", " ", "N", "R", "W", "R", "W", "W", "W"],
+    ["P", " ", " ", "R", " ", " ", " ", "R", " ", "R", " ", " ", " ", " ", "R", " ", "R", "d", "d", "W"],
+    ["P", " ", " ", "R", " ", " ", " ", "R", " ", "R", " ", " ", " ", " ", "R", " ", "R", "d", "d", "W"],
+    ["P", " ", " ", "R", "R", "R", "R", "R", " ", "R", "R", "R", "R", "R", "R", " ", "R", "d", "d", "W"],
+    ["P", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", "R", "d", "d", "W"],
+    ["P", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", "R", "d", "d", "W"],
+    ["P", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", "R", "d", "d", "D"],
+    ["P", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", "R", "d", "d", "W"],
+    ["R", "R", "R", "R", "R", "R", "R", " ", " ", "R", " ", "R", "R", "R", "R", "R", "R", "d", "d", "W"],
+    [" ", " ", " ", " ", " ", " ", "R", " ", " ", "R", " ", "R", " ", " ", " ", " ", "W", "d", "d", "W"],
+    [" ", " ", " ", "N", " ", " ", "R", " ", " ", "R", " ", "R", "N", " ", " ", " ", "W", "d", "d", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
 ];
 
 let grid = [
-    ["W", "W", "W", "W", "W", "W", "N", "W", "W", "W", "W", "W", "W"],
-    ["W", " ", " ", " ", " ", "N", "N", "N", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
-    ["W", " ", " ", " ", " ", " ", "N", " ", " ", " ", " ", " ", "W"],
-    ["W", "W", "W", "W", "W", "W", "D", "W", "W", "W", "W", "W", "W"],
-    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
+    ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
 ];
 
 // Number of rows and columns and standard unit size
 // Need to be adjusted according to the grid array
-const rows = 10; // Serves as the Y
-const cols = 13; // Serves as the X
+const rows = 13; // Serves as the Y
+const cols = 20; // Serves as the X
 let unit = 64; // Grid tiles size
 
 // Game elements
@@ -67,9 +73,13 @@ let mossyWall;
 
 let ground;
 
-// let coin;
+let darkGround;
 
-// let coinOutline;
+let water;
+
+let coin;
+
+let coinOutline;
 
 let door;
 
@@ -97,9 +107,11 @@ function preload() {
     goblin = loadImage('assets/images/goblin.png'); // Player
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
     mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
-    ground = loadImage('assets/images/ground.png'); // Empty tiles
-    // coin = loadImage('assets/images/coin.png'); // Coins
-    // coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
+    ground = loadImage('assets/images/grass.png'); // Empty tiles
+    darkGround = loadImage('assets/images/ground.png'); // Empty tiles
+    water = loadImage('assets/images/water.png'); // Empty tiles
+    coin = loadImage('assets/images/coin.png'); // Coins
+    coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
     door = loadImage('assets/images/door.png'); // Door tile
     key = loadImage('assets/images/key.png'); // Keys
     keyOutline = loadImage('assets/images/keyoutline.png'); // Keys outline (for the inventory)
@@ -112,40 +124,49 @@ function preload() {
 
 // Player variables
 let player = {
-    r: 0,
-    c: 6,
+    r: 6,
+    c: 0,
     size: unit
 }
 
 // Life variables in the inventory
 let inventoryLife = {
-    r: 8.5,
-    c: 9.5,
-    size: unit * 1.5
+    r: 11,
+    c: 19,
+    size: unit * 1.125
 }
-const maxLives = 2; // Max number of lives
-let lives = [true, true]; // Default number of lives
+const maxLives = 3; // Max number of lives
+let lives = [true, true, true]; // Default number of lives
 
 // Key variables in the inventory
 let inventoryKey = {
-    r: 8.5,
-    c: 0,
-    size: unit * 1.25
+    r: 12,
+    c: 19,
+    size: unit
 }
 const maxKeys = 3; // Max number of keys
 let keys = []; // Array of keys
 
-// // Coin variables in the inventory
-// let inventoryCoin = {
-//     r: 9,
-//     c: 0,
-//     size: unit * 1.5
-// }
-// const maxCoins = 3; // Max number of coins
-// let coins = []; // Array of coins
+// Coin variables in the inventory
+let inventoryCoin = {
+    r: 11,
+    c: 0,
+    size: unit * 1.25
+}
+const maxCoins = 3; // Max number of coins
+let coins = []; // Array of coins
+
+// Paper variables in the inventory
+let inventoryPaper = {
+    r: 12,
+    c: 0,
+    size: unit * 1.25
+}
+const maxPapers = 3; // Max number of coins
+let papers = []; // Array of coins
 
 // Enemies variables
-let enemiesTotal = 5; // Total amount of enemies
+let enemiesTotal = 3; // Total amount of enemies
 let enemies = []; // Array of enemies
 // Variables used for dynamic enemies movement
 let fps; // Default frame rate
@@ -313,7 +334,9 @@ function resetGame() {
     enemies = [];
     npcs = [];
     keys = [];
-    lives = [true, true];
+    coins = [];
+    papers = [];
+    lives = [true, true, true];
     player = {
         r: 0,
         c: 6
@@ -353,9 +376,29 @@ function createGrid(gridToCreate) {
                 drawTiles(mossyWall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
 
+            // Places the water
+            if (item === "R") {
+                drawTiles(water, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            }
+
+            // Places the dark ground
+            if (item === "d") {
+                drawTiles(darkGround, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            }
+
             // Places the keys
             else if (item === "k") {
-                drawTiles(key, c * unit + unit / 2, r * unit + unit / 2, unit / 1.25, unit / 1.25);
+                drawTiles(key, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            }
+
+            // Places the coins
+            else if (item === "c") {
+                drawTiles(coin, c * unit + unit / 2, r * unit + unit / 2, unit * 1.25, unit * 1.25);
+            }
+
+            // Places the papers
+            else if (item === "p") {
+                drawTiles(coin, c * unit + unit / 2, r * unit + unit / 2, unit * 1.25, unit * 1.25);
             }
 
             // Places the door
@@ -380,13 +423,18 @@ function createGrid(gridToCreate) {
 function startGame() {
     const wallsToPlace = 12; // How many walls the createGridItems will draw
     const keysToPlace = 3; // How many keys the createGridItems will draw
+    const coinsToPlace = 3; // How many keys the createGridItems will draw
+    const papersToPlace = 3; // How many keys the createGridItems will draw
 
     createGridItems(wallsToPlace, "W"); // Handles drawing the walls
     createGridItems(keysToPlace, "k"); // Handles drawing the keys
+    createGridItems(coinsToPlace, "c"); // Handles drawing the coins
+    createGridItems(papersToPlace, "p"); // Handles drawing the coins
 
-    grid[player.r][player.c] = "N"; // Handles player initial position
 
-    lives = [true, true]; // Reset the lives
+    grid[player.r][player.c] = "P"; // Handles player initial position
+
+    lives = [true, true, true]; // Reset the lives
 
     // setCharacters();
     setEnemies(); // Creates the enemies
@@ -405,7 +453,7 @@ function createGridItems(gridItemsToPlace, gridItem) {
         let r = floor(random(1, rows - 2));
         let c = floor(random(1, cols - 1));
         // Place an item
-        if (grid[r][c] === " ") {
+        if (grid[r][c] === " " && grid[r][c] !== "N") {
             grid[r][c] = gridItem;
             gridItemsToPlace = gridItemsToPlace - 1;
         }
@@ -425,7 +473,8 @@ function game() {
     drawInventoryItems(); // Draws items in inventory
     drawLives(); // Draws the player's life
     drawKeys();  // Draws the keys
-    // drawCoins();  // Draws the coins
+    drawCoins();  // Draws the coins
+    drawPapers();  // Draws the coins
 
     openDialogue(); // Shows the dialogue wih the NPCs
 
@@ -461,7 +510,7 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     textAlign(CENTER, CENTER);
     text("Goblin and Dungeon:", width / 2, height / 6);
     textSize(unit / 1.35);
-    text("Adventure in Level 2", width / 2, height / 4);
+    text("Explore Level 1", width / 2, height / 4);
 
     pop();
     // Menu content
@@ -483,11 +532,21 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
         let r = floor(random(1, rows));
         let c = floor(random(0, cols));
         // Place an enemy on an empty tile
-        if (grid[r][c] === " ") {
-            const newCharacter = createCharacter(r, c);
+        if (characters === npcs) {
+            if (grid[r][c] === "N") {
+                const newCharacter = createCharacter(r, c);
 
-            characters.push(newCharacter);
-            charactersToPlace = charactersToPlace - 1;
+                characters.push(newCharacter);
+                charactersToPlace = charactersToPlace - 1;
+            }
+        }
+        else if (characters === enemies) {
+            if (grid[r][c] === " ") {
+                const newCharacter = createCharacter(r, c);
+
+                characters.push(newCharacter);
+                charactersToPlace = charactersToPlace - 1;
+            }
         }
     }
 }
@@ -568,8 +627,8 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         noFill();
         imageMode(CENTER);
         let c;
-        if (inventoryItem === inventoryLife) {
-            c = (inventoryItem.c - i) * (unit * 1.25);
+        if (inventoryItem === inventoryLife || inventoryItem === inventoryKey) {
+            c = (inventoryItem.c - i) * (unit);
             // * (unit / 1.2) + unit / 1.5;
         }
         else {
@@ -600,10 +659,15 @@ function drawKeys() {
     drawInventoryItems(maxKeys, keys, inventoryKey, key, keyOutline)
 }
 
-// // Draws the coins in the inventory
-// function drawCoins() {
-//     drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
-// }
+// Draws the coins in the inventory
+function drawCoins() {
+    drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
+}
+
+// Draws the coins in the inventory
+function drawPapers() {
+    drawInventoryItems(maxPapers, papers, inventoryPaper, coin, coinOutline)
+}
 
 // Moves the enemies
 function moveEnemies() {
@@ -611,12 +675,12 @@ function moveEnemies() {
         enemy.moveTime++;
         if (enemy.moveTime >= enemy.moveInterval) {
             // Next col according to the enemy direction
-            let nextCol = enemy.c + enemy.direction;
+            let nextRow = enemy.r + enemy.direction;
 
             // Checks if next col is valid
-            if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W") {
+            if (nextRow >= 0 && nextRow < cols - 2 && grid[nextRow][enemy.c] !== "W" && grid[nextRow][enemy.c] !== "R") {
                 // Lets the enemy move if it is valid
-                enemy.c += enemy.direction;
+                enemy.r += enemy.direction;
                 // Checks collision with the player
                 checkDeath(enemy);
             }
@@ -775,7 +839,7 @@ function keyPressed() {
         let moved = false;
 
         // Checks what is at the position the player tried to move to
-        if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
+        if (grid[newR][newC] === ` ` || grid[newR][newC] === `N` || grid[newR][newC] === `P`) {
             // If nothing, the player moves there
             player.r = newR;
             player.c = newC;
@@ -793,6 +857,30 @@ function keyPressed() {
             }
             moved = true;
 
+        }
+        else if (grid[newR][newC] === `c`) {
+            // If it's a collectible then empty that spot
+            grid[newR][newC] = ` `;
+            // Then the player moves there
+            player.r = newR;
+            player.c = newC;
+            if (coins.length < maxCoins) {
+                // Increase the number of keys that the player has
+                coins.push(true);
+            }
+            moved = true;
+        }
+        else if (grid[newR][newC] === `p`) {
+            // If it's a collectible then empty that spot
+            grid[newR][newC] = ` `;
+            // Then the player moves there
+            player.r = newR;
+            player.c = newC;
+            if (papers.length < maxPapers) {
+                // Increase the number of keys that the player has
+                papers.push(true);
+            }
+            moved = true;
         }
         // Checks if it is a door tile
         else if (grid[newR][newC] === `D`) {

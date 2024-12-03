@@ -12,15 +12,13 @@ Movements: [A] [W] [S] [D]
 
 In-Game and Menu interactions: [SPACE] and [R]
 
-Here is the second level!
+Here is the first level!
 
-[Goblin and Dungeon: Adventure in Level 2](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/)
+[Goblin and Dungeon: Explore Level 1](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-1/)
 
-Adventure within a fast-paced above-ground dungeon where dangers and friends await.
+Explore the small world of Goblin and Dungeon through a cozy stroll in the woods.
 
-If needed, meet one of our friendly wizard NPCs, they might help you!
-
-When you succesfully escape the dungeon, try the next level!
+Meet our friendly NPCs, collect cool things, and cross to the next level!
 
 ## Credits
 
