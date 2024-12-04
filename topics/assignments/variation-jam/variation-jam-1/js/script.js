@@ -464,8 +464,21 @@ function startGame() {
 function createGridItems(gridItemsToPlace, gridItem) {
     while (gridItemsToPlace > 0) {
         // Find position
-        let r = floor(random(1, rows - 2));
-        let c = floor(random(1, cols - 3));
+        // let r = floor(random(0, rows - 2));
+        // let c = floor(random(1, cols-3));
+        // Find position
+
+        let r;
+        let c;
+        if (gridItem === "w") {
+            r = floor(random(0, rows - 2));
+            c = floor(random(1, 6));
+        }
+        else {
+            r = floor(random(1, rows - 2));
+            c = floor(random(1, cols - 3));
+        }
+
         // Place an item
         if (grid[r][c] === " " && grid[r][c] !== "N") {
             grid[r][c] = gridItem;
@@ -689,7 +702,7 @@ function moveEnemies() {
         enemy.moveTime++;
         if (enemy.moveTime >= enemy.moveInterval) {
 
-            if (enemy.r <= 2 || enemy.r >= 9 && enemy.c !== cols - 3) {
+            if ((enemy.r <= 2 || enemy.r >= 9) && enemy.c !== cols - 3) {
                 // Next col according to the enemy direction
                 let nextCol = enemy.c + enemy.direction;
 
