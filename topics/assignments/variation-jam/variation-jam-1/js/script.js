@@ -21,17 +21,17 @@
 
 // The game grid
 let baseGrid = [
-    ["P", "W", "W", "R", " ", "N", " ", "R", "W", "R", " ", " ", " ", "N", "R", "W", "R", "W", "W", "W"],
-    ["P", " ", " ", "R", " ", " ", " ", "R", " ", "R", " ", " ", " ", " ", "R", " ", "R", "d", "d", "W"],
-    ["P", " ", " ", "R", " ", " ", " ", "R", " ", "R", " ", " ", " ", " ", "R", " ", "R", "d", "d", "W"],
-    ["P", " ", " ", "R", "R", "R", "R", "R", " ", "R", "R", "R", "R", "R", "R", " ", "R", "d", "d", "W"],
-    ["P", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", "R", "d", "d", "W"],
-    ["P", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", "R", "d", "d", "W"],
-    ["P", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", "R", "d", "d", "D"],
-    ["P", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", "R", "d", "d", "W"],
-    ["R", "R", "R", "R", "R", "R", "R", " ", " ", "R", " ", "R", "R", "R", "R", "R", "R", "d", "d", "W"],
-    [" ", " ", " ", " ", " ", " ", "R", " ", " ", "R", " ", "R", " ", " ", " ", " ", "W", "d", "d", "W"],
-    [" ", " ", " ", "N", " ", " ", "R", " ", " ", "R", " ", "R", "N", " ", " ", " ", "W", "d", "d", "W"],
+    ["R", " ", " ", "N", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", "W", "W", "W"],
+    ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["R", "R", "R", "R", "R", "R", "R", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
+    ["P", " ", " ", " ", " ", " ", " ", "R", "R", "R", "R", "R", "R", "R", "R", "R", "R", " ", " ", "W"],
+    ["P", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
+    ["P", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", "B", " ", "k", "D"],
+    ["P", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
+    ["P", " ", " ", " ", " ", " ", " ", "R", "R", "R", "R", "R", "R", "R", "R", "R", "R", " ", " ", "W"],
+    ["R", "R", "R", "R", "R", "R", "R", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
+    ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["R", " ", " ", "N", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
 ];
@@ -93,6 +93,12 @@ let heartOutline;
 
 let wizard;
 
+let note;
+
+let noteOutline;
+
+let brickObject;
+
 let npcNames;
 
 let npcName;
@@ -107,11 +113,14 @@ function preload() {
     goblin = loadImage('assets/images/goblin.png'); // Player
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
     mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
+    brickObject = loadImage('assets/images/brickblock.png'); // Wall tiles
     ground = loadImage('assets/images/grass.png'); // Empty tiles
     darkGround = loadImage('assets/images/ground.png'); // Empty tiles
     water = loadImage('assets/images/water.png'); // Empty tiles
     coin = loadImage('assets/images/coin.png'); // Coins
     coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
+    note = loadImage('assets/images/paper.png'); // Coins
+    noteOutline = loadImage('assets/images/paperoutline.png'); // Coins outline (for the inventory)
     door = loadImage('assets/images/door.png'); // Door tile
     key = loadImage('assets/images/key.png'); // Keys
     keyOutline = loadImage('assets/images/keyoutline.png'); // Keys outline (for the inventory)
@@ -124,7 +133,7 @@ function preload() {
 
 // Player variables
 let player = {
-    r: 6,
+    r: 5,
     c: 0,
     size: unit
 }
@@ -160,7 +169,7 @@ let coins = []; // Array of coins
 let inventoryPaper = {
     r: 12,
     c: 0,
-    size: unit * 1.25
+    size: unit * .75
 }
 const maxPapers = 3; // Max number of coins
 let papers = []; // Array of coins
@@ -381,6 +390,11 @@ function createGrid(gridToCreate) {
                 drawTiles(water, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
 
+            // Places the movable walls
+            if (item === "w") {
+                drawTiles(brickObject, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            }
+
             // Places the dark ground
             if (item === "d") {
                 drawTiles(darkGround, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
@@ -398,7 +412,7 @@ function createGrid(gridToCreate) {
 
             // Places the papers
             else if (item === "p") {
-                drawTiles(coin, c * unit + unit / 2, r * unit + unit / 2, unit * 1.25, unit * 1.25);
+                drawTiles(note, c * unit + unit / 2, r * unit + unit / 2, unit / 1.5, unit / 1.5);
             }
 
             // Places the door
@@ -422,11 +436,11 @@ function createGrid(gridToCreate) {
 // Sets game variables and functions when the game starts
 function startGame() {
     const wallsToPlace = 12; // How many walls the createGridItems will draw
-    const keysToPlace = 3; // How many keys the createGridItems will draw
+    const keysToPlace = 2; // How many keys the createGridItems will draw
     const coinsToPlace = 3; // How many keys the createGridItems will draw
     const papersToPlace = 3; // How many keys the createGridItems will draw
 
-    createGridItems(wallsToPlace, "W"); // Handles drawing the walls
+    createGridItems(wallsToPlace, "w"); // Handles drawing the walls
     createGridItems(keysToPlace, "k"); // Handles drawing the keys
     createGridItems(coinsToPlace, "c"); // Handles drawing the coins
     createGridItems(papersToPlace, "p"); // Handles drawing the coins
@@ -451,7 +465,7 @@ function createGridItems(gridItemsToPlace, gridItem) {
     while (gridItemsToPlace > 0) {
         // Find position
         let r = floor(random(1, rows - 2));
-        let c = floor(random(1, cols - 1));
+        let c = floor(random(1, cols - 3));
         // Place an item
         if (grid[r][c] === " " && grid[r][c] !== "N") {
             grid[r][c] = gridItem;
@@ -666,7 +680,7 @@ function drawCoins() {
 
 // Draws the coins in the inventory
 function drawPapers() {
-    drawInventoryItems(maxPapers, papers, inventoryPaper, coin, coinOutline)
+    drawInventoryItems(maxPapers, papers, inventoryPaper, note, noteOutline)
 }
 
 // Moves the enemies
@@ -674,19 +688,38 @@ function moveEnemies() {
     for (let enemy of enemies) {
         enemy.moveTime++;
         if (enemy.moveTime >= enemy.moveInterval) {
-            // Next col according to the enemy direction
-            let nextRow = enemy.r + enemy.direction;
 
-            // Checks if next col is valid
-            if (nextRow >= 0 && nextRow < cols - 2 && grid[nextRow][enemy.c] !== "W" && grid[nextRow][enemy.c] !== "R") {
-                // Lets the enemy move if it is valid
-                enemy.r += enemy.direction;
-                // Checks collision with the player
-                checkDeath(enemy);
+            if (enemy.r <= 2 || enemy.r >= 9 && enemy.c !== cols - 3) {
+                // Next col according to the enemy direction
+                let nextCol = enemy.c + enemy.direction;
+
+                // Checks if next col is valid
+                if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W" && grid[enemy.r][nextCol] !== "R" && grid[enemy.r][nextCol] !== "w") {
+                    // Lets the enemy move if it is valid
+                    enemy.c += enemy.direction;
+                    // Checks collision with the player
+                    checkDeath(enemy);
+                }
+                else {
+                    // Makes the enemy change direction 
+                    enemy.direction *= -1;
+                }
             }
             else {
-                // Makes the enemy change direction 
-                enemy.direction *= -1;
+                // Next col according to the enemy direction
+                let nextRow = enemy.r + enemy.direction;
+
+                // Checks if next col is valid
+                if (nextRow >= 0 && nextRow < rows - 2 && grid[nextRow][enemy.c] !== "W" && grid[nextRow][enemy.c] !== "R" && grid[nextRow][enemy.c] !== "w") {
+                    // Lets the enemy move if it is valid
+                    enemy.r += enemy.direction;
+                    // Checks collision with the player
+                    checkDeath(enemy);
+                }
+                else {
+                    // Makes the enemy change direction 
+                    enemy.direction *= -1;
+                }
             }
             // Resets enemy movement
             enemy.moveTime = 0;
@@ -744,9 +777,9 @@ function stopWatch() {
 
     fill(255);
     textFont(pixelFont);
-    textAlign(LEFT, CENTER);
+    textAlign(RIGHT, CENTER);
     textSize(unit / 2.5);
-    text(string, unit / 2, unit / 2);
+    text(string, unit * 19, unit / 2);
 }
 
 // Checks and handles losing lives
@@ -844,6 +877,37 @@ function keyPressed() {
             player.r = newR;
             player.c = newC;
             moved = true;
+        }
+        else if (grid[newR][newC] === `w`) {
+
+            let playerDirR = newR - player.r;
+            let playerDirC = newC - player.c;
+
+            let newBlockR = newR + playerDirR;
+            let newBlockC = newC + playerDirC;
+
+            if (newBlockR >= 0 && newBlockR < rows && newBlockC >= 0 && newBlockC < cols && grid[newBlockR][newBlockC] === ` ` || grid[newBlockR][newBlockC] === `R`) {
+                if (grid[newBlockR][newBlockC] === `R`) {
+                    grid[newR][newC] = ` `;
+                    grid[newBlockR][newBlockC] = ` `;
+                }
+                else {
+                    grid[newR][newC] = ` `;
+                    grid[newBlockR][newBlockC] = `w`;
+                }
+
+                // Then the player moves there
+                player.r = newR;
+                player.c = newC;
+
+                moved = true;
+            }
+            else {
+
+                moved = false;
+
+            }
+
         }
         else if (grid[newR][newC] === `k`) {
             // If it's a collectible then empty that spot
