@@ -175,7 +175,6 @@ const maxPapers = 3; // Max number of coins
 let papers = []; // Array of coins
 
 // Enemies variables
-let enemies = [];
 let rabbitsTotal = 3; // Total amount of enemies
 let rabbits = []; // Array of enemies
 // Variables used for dynamic enemies movement
@@ -344,7 +343,6 @@ function resetGame() {
     console.log("reset game");
     start = null;
     yourTime = 0;
-    enemies = [];
     rabbits = [];
     crushers = [];
     npcs = [];
@@ -441,7 +439,7 @@ function createGrid(gridToCreate) {
 
 // Sets game variables and functions when the game starts
 function startGame() {
-    const wallsToPlace = 12; // How many walls the createGridItems will draw
+    const wallsToPlace = 0; // How many walls the createGridItems will draw
     const keysToPlace = 2; // How many keys the createGridItems will draw
     const coinsToPlace = 3; // How many keys the createGridItems will draw
     const papersToPlace = 3; // How many keys the createGridItems will draw
@@ -563,9 +561,24 @@ function drawMenu(background, contentFill, contentSize, contentText) {
 function setCharacters(charactersToPlace, characters, createCharacter) {
     while (charactersToPlace > 0) {
 
-        // Find position
-        let r = floor(random(1, rows));
-        let c = floor(random(0, cols));
+        let r;
+        let c;
+
+        if (characters === crushers) {
+            const openRows = [4, 5, 6];
+            r = random(openRows);
+            c = floor(random(8, 15));
+        }
+        else if (characters === rabbits) {
+            // Find position
+            r = floor(random(1, rows));
+            c = floor(random(0, cols));
+        }
+        else {
+            // Find position
+            r = floor(random(1, rows));
+            c = floor(random(0, cols));
+        }
         // Place an enemy on an empty tile
         if (characters === npcs) {
             if (grid[r][c] === "N") {
@@ -727,44 +740,65 @@ function drawPapers() {
 // Moves the enemies
 function moveEnemies() {
 
-    for (let enemy of enemies) {
-        enemy.moveTime++;
-        if (enemy.moveTime >= enemy.moveInterval) {
+    for (let rabbit of rabbits) {
+        rabbit.moveTime++;
+        if (rabbit.moveTime >= rabbit.moveInterval) {
 
-            if ((enemy.r <= 2 || enemy.r >= 9) && enemy.c !== cols - 3) {
+            if ((rabbit.r <= 2 || rabbit.r >= 9) && rabbit.c !== cols - 3) {
                 // Next col according to the enemy direction
-                let nextCol = enemy.c + enemy.direction;
+                let nextCol = rabbit.c + rabbit.direction;
 
                 // Checks if next col is valid
-                if (nextCol >= 0 && nextCol < cols && grid[enemy.r][nextCol] !== "W" && grid[enemy.r][nextCol] !== "R" && grid[enemy.r][nextCol] !== "w") {
+                if (nextCol >= 0 && nextCol < cols && grid[rabbit.r][nextCol] !== "W" && grid[rabbit.r][nextCol] !== "R" && grid[rabbit.r][nextCol] !== "w") {
                     // Lets the enemy move if it is valid
-                    enemy.c += enemy.direction;
+                    rabbit.c += rabbit.direction;
                     // Checks collision with the player
-                    checkDeath(enemy);
+                    checkDeath(rabbit);
                 }
                 else {
                     // Makes the enemy change direction 
-                    enemy.direction *= -1;
+                    rabbit.direction *= -1;
                 }
             }
             else {
                 // Next col according to the enemy direction
-                let nextRow = enemy.r + enemy.direction;
+                let nextRow = rabbit.r + rabbit.direction;
 
                 // Checks if next col is valid
-                if (nextRow >= 0 && nextRow < rows - 2 && grid[nextRow][enemy.c] !== "W" && grid[nextRow][enemy.c] !== "R" && grid[nextRow][enemy.c] !== "w") {
+                if (nextRow >= 0 && nextRow < rows - 2 && grid[nextRow][rabbit.c] !== "W" && grid[nextRow][rabbit.c] !== "R" && grid[nextRow][rabbit.c] !== "w") {
                     // Lets the enemy move if it is valid
-                    enemy.r += enemy.direction;
+                    rabbit.r += rabbit.direction;
                     // Checks collision with the player
-                    checkDeath(enemy);
+                    checkDeath(rabbit);
                 }
                 else {
                     // Makes the enemy change direction 
-                    enemy.direction *= -1;
+                    rabbit.direction *= -1;
                 }
             }
             // Resets enemy movement
-            enemy.moveTime = 0;
+            rabbit.moveTime = 0;
+        }
+    }
+    for (let crusher of crushers) {
+        crusher.moveTime++;
+        if (crusher.moveTime >= crusher.moveInterval) {
+            // Next col according to the enemy direction
+            let nextRow = crusher.r + crusher.direction;
+
+            // Checks if next col is valid
+            if (nextRow >= 0 && nextRow < rows - 2 && grid[nextRow][crusher.c] !== "W" && grid[nextRow][crusher.c] !== "R" && grid[nextRow][crusher.c] !== "w") {
+                // Lets the enemy move if it is valid
+                crusher.r += crusher.direction;
+                // Checks collision with the player
+                checkDeath(crusher);
+            }
+            else {
+                // Makes the enemy change direction 
+                crusher.direction *= -1;
+            }
+            // Resets enemy movement
+            crusher.moveTime = 0;
         }
     }
 }
