@@ -175,11 +175,15 @@ const maxPapers = 3; // Max number of coins
 let papers = []; // Array of coins
 
 // Enemies variables
-let enemiesTotal = 3; // Total amount of enemies
-let enemies = []; // Array of enemies
+let enemies = [];
+let rabbitsTotal = 3; // Total amount of enemies
+let rabbits = []; // Array of enemies
 // Variables used for dynamic enemies movement
 let fps; // Default frame rate
-let adjustedMoveInterval; // Default move interval 
+let adjustedMoveInterval; // Default move interval
+
+let crushersTotal = 3; // Total amount of enemies
+let crushers = []; // Array of enemies
 
 // NPCs variables
 let npcTotal = 2; // Total number of NPCs
@@ -341,6 +345,8 @@ function resetGame() {
     start = null;
     yourTime = 0;
     enemies = [];
+    rabbits = [];
+    crushers = [];
     npcs = [];
     keys = [];
     coins = [];
@@ -451,7 +457,8 @@ function startGame() {
     lives = [true, true, true]; // Reset the lives
 
     // setCharacters();
-    setEnemies(); // Creates the enemies
+    setRabbits(); // Creates the enemies
+    setCrushers();
     setNPCs(); // Creates the NPCs
 
     // Sets stop watch when game starts
@@ -491,7 +498,8 @@ function createGridItems(gridItemsToPlace, gridItem) {
 function game() {
     // drawCharacters();
     drawNPCs(); // Draws the NPC
-    drawEnemies(); // Draws the enemy
+    drawRabbits(); // Draws the enemy
+    drawCrushers();
 
     moveEnemies(); // Moves the enemies
 
@@ -567,7 +575,7 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
                 charactersToPlace = charactersToPlace - 1;
             }
         }
-        else if (characters === enemies) {
+        else if (characters === rabbits || characters === crushers) {
             if (grid[r][c] === " ") {
                 const newCharacter = createCharacter(r, c);
 
@@ -582,13 +590,17 @@ function setNPCs() {
     setCharacters(npcTotal, npcs, createNPC)
 }
 
-function setEnemies() {
-    setCharacters(enemiesTotal, enemies, createEnemy)
+function setRabbits() {
+    setCharacters(rabbitsTotal, rabbits, createRabbits)
+}
+
+function setCrushers() {
+    setCharacters(crushersTotal, crushers, createCrushers)
 }
 
 // Creates the enemies
-function createEnemy(r, c) {
-    const enemy = {
+function createRabbits(r, c) {
+    const rabbit = {
         r: r,
         c: c,
         size: unit,
@@ -596,7 +608,19 @@ function createEnemy(r, c) {
         moveInterval: adjustedMoveInterval, // Adjusted in the draw function
         moveTime: 0
     };
-    return enemy;
+    return rabbit;
+}
+
+function createCrushers(r, c) {
+    const crusher = {
+        r: r,
+        c: c,
+        size: unit,
+        direction: 1,
+        moveInterval: adjustedMoveInterval, // Adjusted in the draw function
+        moveTime: 0
+    };
+    return crusher;
 }
 
 // Creates the NPCs
@@ -632,8 +656,12 @@ function drawNPCs() {
 }
 
 // Draws the enemies (rabbits)
-function drawEnemies() {
-    drawCharacters(enemies, rabbit)
+function drawRabbits() {
+    drawCharacters(rabbits, rabbit)
+}
+
+function drawCrushers() {
+    drawCharacters(crushers, brickObject)
 }
 
 // Draws the player
@@ -698,6 +726,7 @@ function drawPapers() {
 
 // Moves the enemies
 function moveEnemies() {
+
     for (let enemy of enemies) {
         enemy.moveTime++;
         if (enemy.moveTime >= enemy.moveInterval) {
