@@ -110,7 +110,7 @@ function preload() {
 // Player variables
 let player = {
     r: 0,
-    c: undefined,
+    c: 0,
     size: unit
 }
 
@@ -160,11 +160,12 @@ let adjustedMoveInterval; // Default move interval
 let npcTotal = 2; // Total number of NPCs
 let npcs = []; // Array of NPCs
 
+let currentNPC = undefined;
 
 // The NPCs dialogues
 let npcSpeech = [
-    "For a Life I'll give you a key\nPress [SPACE] To Get a Key",
-    "For three Coins I'll give you a life\nPress [SPACE] To Get a Life"
+    "For a life I'll give you a key\nPress [SPACE] To Get a Key",
+    "For three coins I'll give you a life\nPress [SPACE] To Get a Life"
 ];
 
 // // The NPCs dialogues
@@ -329,6 +330,15 @@ Press [R] To Play Again
 }
 
 function resetGame() {
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+        }
+    }
+    setGrids();
+    if (grid !== undefined) {
+        state = "game";
+        startGame();
+    }
     start = null;
     yourTime = 0;
     enemies = [];
@@ -340,14 +350,6 @@ function resetGame() {
     //     r: 0,
     //     c: 1
     // };
-
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-        }
-    }
-    setGrids();
-    state = "game";
-    startGame();
 }
 
 function setGrids() {
@@ -521,7 +523,7 @@ function setPlayer() {
     let playerPlaced = false;
     while (playerPlaced === false) {
         let r = 1;
-        let c = floor(random(0, cols));
+        let c = floor(random(1, cols));
         // Place an enemy on an empty tile
         if (grid[r][c] === " ") {
 
@@ -714,12 +716,14 @@ function openDialogue() {
             pop();
 
             dialogueOn = true;
+            currentNPC = npc;
 
             return;
         }
     }
     // Disables dialogue
     dialogueOn = false;
+    currentNPC = undefined;
 }
 
 // Formats stop watch and score time
@@ -787,7 +791,7 @@ function keyPressed() {
 
     // Space
     if (keyCode === 32) {
-        if (state === "start") {
+        if (state === "start" && grid !== undefined) {
             state = "game";
             startGame();
         }
@@ -795,15 +799,15 @@ function keyPressed() {
 
             // let speechIndex = npcSpeech.indexOf(currentNPC.speech);
 
-            if (npcSpeech.indexOf("For a Life I'll give you a key\nPress [SPACE] To Get a Key")) {
+            if (currentNPC && currentNPC.speech.indexOf("key") !== -1) {
                 if (keys.length < maxKeys && lives.length > 1) {
                     lives.pop();
                     keys.push(true);
                 }
             }
-            else if (npcSpeech.indexOf("For three Coins I'll give you a life\nPress [SPACE] To Get a Life")) {
+            else if (currentNPC && currentNPC.speech.indexOf("coins") !== -1) {
                 if (lives.length < maxLives && coins.length >= maxCoins) {
-                    coins.pop();
+                    coins = [];
                     lives.push(true);
                 }
 
