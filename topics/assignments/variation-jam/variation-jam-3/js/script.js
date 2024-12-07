@@ -180,7 +180,7 @@ let dialogueOn = false; // Off by default
 
 // Mask that hides the map from the player
 let mask = {
-    size: (cols * unit) * 3
+    size: undefined
 };
 
 // The state
@@ -776,11 +776,12 @@ function checkDeath(enemy) {
 
 // Draws the mask that hide the grid
 function drawMask() {
+    let size = night.height * (unit / 2);
     push();
     noFill();
     noStroke();
     imageMode(CENTER);
-    image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
+    image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, size, size)
     pop();
 }
 
