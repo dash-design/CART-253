@@ -3,7 +3,7 @@
  * 
  * Ellie "DASH" Desjardins
  * 
- * Goblin and Dungeon is a retro-inspired 2D top-down action-adventure game with a roguelite-inspired map generation.
+ * Goblin and Dungeon is a retro-inspired 2D top-down action-adventure game with a roguelite-inspired map generation feel.
  * Each play through features a unique dungeon layout with a grid-based movement, collectibles, NPCs, and obstacles.
  * You play as the lone goblin exploring, adventuring, and escaping unknown environments, but beware the dangerous killer rabbits!
  * 
@@ -13,7 +13,7 @@
  * 
  * If needed, talk to one of our friendly wizard NPCs, they might help you!
  * 
- * When you succesfully escape the dungeon, try the next level!
+ * When you succesfully escape the dungeon, try the first level again!
  *
  */
 
@@ -59,7 +59,7 @@ let goblin;
 
 let rabbit;
 
-let mossyWall;
+let bloodyWall;
 
 let ground;
 
@@ -93,8 +93,8 @@ function preload() {
     fantasyFont = loadFont('assets/font/Alkhemikal.ttf'); // Title and NPC name font
     goblin = loadImage('assets/images/goblin.png'); // Player
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
-    mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
-    ground = loadImage('assets/images/ground.png'); // Empty tiles
+    bloodyWall = loadImage('assets/images/bloodybrick.png'); // Wall tiles
+    ground = loadImage('assets/images/dirt.png'); // Empty tiles
     coin = loadImage('assets/images/coin.png'); // Coins
     coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
     door = loadImage('assets/images/door.png'); // Door tile
@@ -168,17 +168,7 @@ let npcSpeech = [
     "For three coins I'll give you a life\nPress [SPACE] To Get a Life"
 ];
 
-// // The NPCs dialogues
-// let keysNpcSpeech = [
-//     "For a Life I'll give you a key\nPress [SPACE] To Get a Key",
-//     "Oh no. It would kill you... sorry."
-// ];
-
-// // The NPCs dialogues
-// let coinsNpcSpeech = [
-//     "For three Coins I'll give you a life\nPress [SPACE] To Get a Life",
-//     "Pfff, come back when you have enough coins!"
-// ];
+let npcSpeechIndex = 0;
 
 // NPCs dialogue box variables
 let dialogueBox = {
@@ -188,6 +178,7 @@ let dialogueBox = {
 }
 let dialogueOn = false; // Off by default
 
+// Mask that hides the map from the player
 let mask = {
     size: (cols * unit) * 3
 };
@@ -200,6 +191,7 @@ let home = {
     textFont: gothicFont,
     textFill: 255,
     textSize: 32,
+    message: undefined,
     text: undefined
 }
 
@@ -208,6 +200,7 @@ let end = {
     textFont: gothicFont,
     textFill: 220,
     textSize: 32,
+    message: undefined,
     text: undefined
 }
 
@@ -232,8 +225,9 @@ function setup() {
         bestTime = 999999;
     }
 
-    // grid = random(mazesLibrary.mazes);
-
+    fps = frameRate() || 60; // Calculates the frame rate or set it to 60
+    adjustedMoveInterval = floor(fps / 4); // Adjusts the move interval according to the FPS
+    // Sets the grid as the game is setup
     setGrids();
 }
 
@@ -254,9 +248,6 @@ function windowResized() {
 function draw() {
     background(0); // Background is black by default
 
-    fps = frameRate() || 60; // Calculates the frame rate or set it to 60
-    adjustedMoveInterval = floor(fps / 4); // Adjusts the move interval according to the FPS
-
     // Game states
     // Starting menu state
     if (state === "start") {
@@ -270,10 +261,12 @@ function draw() {
             bestTimeFormat = timeFormatting(bestTime);
         }
 
-        // Starting menu
-        home.text = `
-Explore, adventure, escape!
+        // Starting menu content
+        home.message = `
+Explore, adventure, escape!`
 
+        home.text = `
+        
 Controls:
 [W]
 [A][S][D]
@@ -282,76 +275,82 @@ Press [SPACE] To Play
 
 Best Time: ${bestTimeFormat}
         `;
-        let textSize = unit / 2;
-        drawMenu(mossyWall, home.textFill, textSize, home.text);
+        let textSize = unit / 1.25;
+        drawMenu(bloodyWall, home.textFill, textSize, home.message, home.text);
     }
 
     // Active game state (no menu)
     else if (state === "game") {
         createGrid(grid);
-        // drawMask(); // Draws mask
-        // createGrid(baseGrid);
         game();
     }
-    // Game lost state and menu
+    // Game lost state
     else if (state === "lost") {
-        // Lost menu
+        // Game lost menu content
+        end.message = `
+        
+YOU DIED`
+
         end.text = `
-:'(
+
+        
+        
 
 Press [SPACE]
 To Try Again
 `;
-        let textSize = unit / 1.5;
-        drawMenu(mossyWall, end.textFill, textSize, end.text);
+        let textSize = unit;
+        drawMenu(bloodyWall, end.textFill, textSize, end.message, end.text);
     }
-    // Game won state and menu
+    // Game won state
     else if (state === "win") {
 
         let yourTimeFormat = timeFormatting(yourTime);
         let bestTimeFormat = timeFormatting(bestTime);
-
+        // Game won menu content
+        end.message = `
+You Escaped, Congratulations!`
         end.text = `
-Congratulations!
+        
     
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-Press[SPACE] To Play
-The Next Level!
-or
+Press[SPACE] To Play The First Level!
+
 Press [R] To Play Again
 `;
-        let textSize = unit / 2;
-        drawMenu(ground, end.textFill, textSize, end.text);
+        let textSize = unit;
+        drawMenu(ground, end.textFill, textSize, end.message, end.text);
 
         start = null;
     }
 }
 
+// Resets the game when replaying
 function resetGame() {
+    // Clears the previous grid
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
         }
     }
+    // Resets game elements
+    keys = [];
+    coins = [];
+    enemies = [];
+    npcs = [];
+    yourTime = 0;
+    start = null;
+    // Sets new grid
     setGrids();
+    // Starts the game when the grid is defined
     if (grid !== undefined) {
         state = "game";
         startGame();
     }
-    start = null;
-    yourTime = 0;
-    enemies = [];
-    npcs = [];
-    keys = [];
-    coins = [];
-    lives = [true, true, true];
-    // player = {
-    //     r: 0,
-    //     c: 1
-    // };
 }
 
+// Sets the current grid
 function setGrids() {
     // grid = random(mazes);
     grid = random(mazesLibrary.mazes);
@@ -372,7 +371,7 @@ function createGrid(gridToCreate) {
 
             // Places the walls
             if (item === "W") {
-                drawTiles(mossyWall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                drawTiles(bloodyWall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
 
             // Places the keys
@@ -390,13 +389,10 @@ function createGrid(gridToCreate) {
                 //  If the player has enough keys, the door is opened
                 if (keys.length >= maxKeys) {
                     drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
-
-                    // image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
                 // If not, the door stays locked
                 else {
                     drawTiles(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
-                    // image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
             }
         }
@@ -406,9 +402,11 @@ function createGrid(gridToCreate) {
 
 // Sets game variables and functions when the game starts
 function startGame() {
-
+    // Sets the player initial position
     setPlayer();
 
+    // Numbers of items to place
+    // Creates the items on the grid
     const coinsToPlace = 3; // How many keys the createGridItems will draw
     createGridItems(coinsToPlace, "c"); // Handles drawing the keys
     const keysToPlace = 2; // How many keys the createGridItems will draw
@@ -416,9 +414,10 @@ function startGame() {
     const doorsToPlace = 1; // How many keys the createGridItems will draw
     createGridItems(doorsToPlace, "D"); // Handles drawing the keys
 
+    // Resets player's lives
     lives = [true, true, true]; // Reset the lives
 
-    // setCharacters();
+    // Sets characters
     setEnemies(); // Creates the enemies
     setNPCs(); // Creates the NPCs
 
@@ -428,24 +427,26 @@ function startGame() {
     }
 }
 
-// Creates items (keys, coins) on random positions
+// Creates items (keys, coins, door) on random positions
 function createGridItems(gridItemsToPlace, gridItem) {
     while (gridItemsToPlace > 0) {
 
+        // Randomly places the door on its row
         if (gridItem === "D") {
             let r = 12;
             let c = floor(random(4, cols - 4));
-            // Place an item
+            // Places the item
             if (grid[r][c] === "W" && grid[r - 1][c] === " ") {
                 grid[r][c] = gridItem;
                 gridItemsToPlace = gridItemsToPlace - 1;
             }
         }
+        // Randomly places everything else
         else {
-            // Find position
+            // Finds position
             let r = floor(random(0, rows));
             let c = floor(random(0, cols));
-            // Place an item
+            // Places an item
             if (grid[r][c] === " ") {
                 grid[r][c] = gridItem;
                 gridItemsToPlace = gridItemsToPlace - 1;
@@ -456,15 +457,13 @@ function createGridItems(gridItemsToPlace, gridItem) {
 
 // Handles game functions when entering game state
 function game() {
-    // drawCharacters();
     drawNPCs(); // Draws the NPC
     drawEnemies(); // Draws the enemy
 
     moveEnemies(); // Moves the enemies
 
     drawPlayer(); // Draws the player
-    // drawMask(); // Draws mask
-    // createGrid(baseGrid);
+    drawMask(); // Draws the mask
     drawInventoryItems();    // Draws items in inventory
     drawLives(); // Draws the player's life
     drawKeys();  // Draws the keys
@@ -486,7 +485,7 @@ function drawTiles(asset, c, r, sizeC, sizeR) {
 }
 
 // Draws the menu screens
-function drawMenu(background, contentFill, contentSize, contentText) {
+function drawMenu(background, contentFill, messageSize, menuMessage, contentText) {
     // Screen appearance
     push();
     noStroke();
@@ -503,46 +502,59 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     textSize(unit);
     textAlign(CENTER, CENTER);
     text("Goblin and Dungeon:", width / 2, height / 6);
+    strokeWeight(unit / 10);
     textSize(unit / 1.35);
     text("Escape the Last Level", width / 2, height / 4);
-
     pop();
     // Menu content
+    // Menu message
     push();
     textFont(gothicFont);
     fill(contentFill);
     stroke(0);
-    strokeWeight(unit / 21);
-    textSize(contentSize);
+    strokeWeight(unit / 10);
+    textSize(messageSize);
     textAlign(CENTER, TOP);
-    text(contentText, width / 2, height / 3.5);
+    text(menuMessage, width / 2, height / 3.5);
+    pop();
+    // Menu infos
+    pop();
+    push();
+    textFont(gothicFont);
+    fill(contentFill);
+    stroke(0);
+    strokeWeight(unit / 18);
+    textSize(unit / 1.5);
+    textAlign(CENTER, TOP);
+    text(contentText, width / 2, height / 2.75);
     pop();
 }
 
+// Sets the player at its initial position
 function setPlayer() {
     let playerPlaced = false;
     while (playerPlaced === false) {
         let r = 1;
-        let c = floor(random(1, cols));
+        let c = floor(random(1, cols - 1));
         // Place an enemy on an empty tile
         if (grid[r][c] === " ") {
 
             player.r = 0;
             player.c = c;
             grid[player.r][player.c] = "N";
+            playerPlaced = true;
         }
-
-        playerPlaced = true;
     }
 }
 
+// Sets the characters (NPCS, enemies) on the grid
 function setCharacters(charactersToPlace, characters, createCharacter) {
     while (charactersToPlace > 0) {
 
-        // Find position
+        // Finds position
         let r = floor(random(1, rows));
         let c = floor(random(0, cols));
-        // Place an enemy on an empty tile
+        // Places an enemy on an empty tile
         if (grid[r][c] === " ") {
             const newCharacter = createCharacter(r, c);
 
@@ -553,6 +565,7 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
 }
 
 function setNPCs() {
+    npcSpeechIndex = 0;
     setCharacters(npcTotal, npcs, createNPC);
 }
 
@@ -567,7 +580,7 @@ function createEnemy(r, c) {
         c: c,
         size: unit,
         direction: 1,
-        moveInterval: adjustedMoveInterval, // Adjusted in the draw function
+        moveInterval: adjustedMoveInterval, // Adjusted in setup
         moveTime: 0
     };
     return enemy;
@@ -580,8 +593,9 @@ function createNPC(r, c) {
         c: c,
         size: unit,
         name: random(npcNames.deities),
-        speech: npcSpeech.pop()
+        speech: npcSpeech[npcSpeechIndex]
     };
+    npcSpeechIndex++;
     return npc;
 }
 
@@ -650,6 +664,7 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
     }
 }
 
+// Draws the lives in the inventory
 function drawLives() {
     drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
 }
@@ -714,7 +729,7 @@ function openDialogue() {
             textSize(unit / 3);
             text(npc.speech, 5.125 * unit, 13.125 * unit, 9.625 * unit, 1.5 * unit);
             pop();
-
+            console.log(npc.speech);
             dialogueOn = true;
             currentNPC = npc;
 
@@ -795,17 +810,19 @@ function keyPressed() {
             state = "game";
             startGame();
         }
+        // Handles dialogue interactions with NPCs
         else if (state === "game" && dialogueOn) {
-
-            // let speechIndex = npcSpeech.indexOf(currentNPC.speech);
-
-            if (currentNPC && currentNPC.speech.indexOf("key") !== -1) {
+            // Lets you get a key for a life
+            if (currentNPC && currentNPC.speech && currentNPC.speech.indexOf("key") !== -1) {
+                console.log("Accepted key offer");
                 if (keys.length < maxKeys && lives.length > 1) {
                     lives.pop();
                     keys.push(true);
                 }
             }
-            else if (currentNPC && currentNPC.speech.indexOf("coins") !== -1) {
+            // Lets you get a life for three coins
+            else if (currentNPC && currentNPC.speech && currentNPC.speech.indexOf("coins") !== -1) {
+                console.log("Accepted coin offer");
                 if (lives.length < maxLives && coins.length >= maxCoins) {
                     coins = [];
                     lives.push(true);
@@ -813,11 +830,13 @@ function keyPressed() {
 
             }
         }
+        // Space lets you replay if game lost
         else if (state === "lost") {
             resetGame();
         }
+        // Space lets you play the first level if game won
         else if (state === "win") {
-            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
+            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-1/");
         }
     }
     else if (state === "game") {
@@ -853,7 +872,7 @@ function keyPressed() {
             moved = true;
         }
         else if (grid[newR][newC] === `k`) {
-            // If it's a collectible then empty that spot
+            // If it's a key then empty that spot
             grid[newR][newC] = ` `;
             // Then the player moves there
             player.r = newR;
@@ -866,13 +885,13 @@ function keyPressed() {
 
         }
         else if (grid[newR][newC] === `c`) {
-            // If it's a collectible then empty that spot
+            // If it's a coin then empty that spot
             grid[newR][newC] = ` `;
             // Then the player moves there
             player.r = newR;
             player.c = newC;
-            if (coins.length < maxKeys) {
-                // Increase the number of keys that the player has
+            if (coins.length < maxCoins) {
+                // Increase the number of coins that the player has
                 coins.push(true);
             }
             moved = true;
