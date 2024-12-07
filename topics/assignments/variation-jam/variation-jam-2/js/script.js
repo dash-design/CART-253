@@ -293,8 +293,8 @@ You Escaped, Congratulations!`
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-Press [SPACE] To Play The Next Level!
-Press [R] To Play Again
+Press [R] To Play The Next Level!
+Press [SPACE] To Play Again
 `;
         let textSize = unit / 1.5;
         drawMenu(ground, end.textFill, textSize, end.message, end.text);
@@ -726,7 +726,7 @@ function keyPressed() {
     if (keyCode === 82) {
         // Lets you replay the game after winning
         if (state === "win") {
-            resetGame();
+            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-3/");
         }
     }
 
@@ -747,13 +747,9 @@ function keyPressed() {
                 }
             }
         }
-        // Lets you replay the game after losing
-        else if (state === "lost") {
+        // Lets you replay the game after losing or winning
+        else if (state === "lost" || state === "win") {
             resetGame();
-        }
-        // Opens the next level after winning
-        else if (state === "win") {
-            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-3/");
         }
     }
     // Movements
