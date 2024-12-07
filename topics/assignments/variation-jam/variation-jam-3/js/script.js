@@ -768,7 +768,7 @@ function checkDeath(enemy) {
     if (player.c === enemy.c && player.r === enemy.r) {
         lives.pop();
     }
-    // Player loses the game if no lives left
+    // Player loses the game if no lives left 
     if (lives.length <= 0) {
         state = "lost";
     }

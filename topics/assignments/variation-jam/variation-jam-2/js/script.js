@@ -140,11 +140,15 @@ let adjustedMoveInterval; // Default move interval
 let npcTotal = 2; // Total number of NPCs
 let npcs = []; // Array of NPCs
 
+let currentNPC = undefined;
+
 // The NPCs dialogues
 let npcSpeech = [
     "For one Life I'll give you a key\nPress [SPACE] To Get a Key",
     "For 1 Life I'll give you 1 key\nPress [SPACE] To Get a Key"
 ];
+
+let npcSpeechIndex = 0;
 
 // NPCs dialogue box variables
 let dialogueBox = {
@@ -162,6 +166,7 @@ let home = {
     textFont: gothicFont,
     textFill: 255,
     textSize: 32,
+    message: undefined,
     text: undefined
 }
 
@@ -170,6 +175,7 @@ let end = {
     textFont: gothicFont,
     textFill: 220,
     textSize: 32,
+    message: undefined,
     text: undefined
 }
 
@@ -233,10 +239,12 @@ function draw() {
             bestTimeFormat = timeFormatting(bestTime);
         }
 
-        // Starting menu
-        home.text = `
-Explore, adventure, escape!
+        // Starting menu content
+        home.message = `
+Explore, adventure, escape!`
 
+        home.text = `
+        
 Controls:
 [W]
 [A][S][D]
@@ -245,8 +253,8 @@ Press [SPACE] To Play
 
 Best Time: ${bestTimeFormat}
         `;
-        let textSize = unit / 2;
-        drawMenu(mossyWall, home.textFill, textSize, home.text);
+        let textSize = unit / 1.25;
+        drawMenu(mossyWall, home.textFill, textSize, home.message, home.text);
     }
 
     // Active game state (no menu)
@@ -254,43 +262,55 @@ Best Time: ${bestTimeFormat}
         createGrid(grid);
         game();
     }
-    // Game lost state and menu
+    // Game lost state
     else if (state === "lost") {
-        // Lost menu
+        // Game lost menu content
+        end.message = `
+        
+YOU DIED`
+
         end.text = `
-:'(
+
+        
+        
 
 Press [SPACE]
 To Try Again
 `;
-        let textSize = unit / 1.5;
-        drawMenu(mossyWall, end.textFill, textSize, end.text);
+        let textSize = unit;
+        drawMenu(mossyWall, end.textFill, textSize, end.message, end.text);
     }
-    // Game won state and menu
+    // Game won state
     else if (state === "win") {
 
         let yourTimeFormat = timeFormatting(yourTime);
         let bestTimeFormat = timeFormatting(bestTime);
-
+        // Game won menu content
+        end.message = `
+You Escaped, Congratulations!`
         end.text = `
-Congratulations, you escaped!
     
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-Press [SPACE] To Play
-The Next Level!
-or
+Press [SPACE] To Play The Next Level!
 Press [R] To Play Again
 `;
-        let textSize = unit / 2;
-        drawMenu(ground, end.textFill, textSize, end.text);
+        let textSize = unit / 1.5;
+        drawMenu(ground, end.textFill, textSize, end.message, end.text);
 
         start = null;
     }
 }
 
 function resetGame() {
+    // Empties the previous grid
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            // Removes the item at this position
+            grid[r][c] = " ";
+        }
+    }
     // Resets game elements
     start = null;
     yourTime = 0;
@@ -302,16 +322,13 @@ function resetGame() {
         r: 0,
         c: 6
     };
-    // Empties the previous grid
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            // Removes the item at this position
-            grid[r][c] = " ";
-        }
+    // Sets new grid
+    setGrids();
+    // Starts the game when the grid is defined
+    if (grid !== undefined) {
+        state = "game";
+        startGame();
     }
-    setGrids(); // Sets the starting grid
-    state = "game"; // Switches to the game state
-    startGame(); // Calls the startGame function
 }
 
 // Sets the starting grid
@@ -401,7 +418,6 @@ function createGridItems(gridItemsToPlace, gridItem) {
 
 // Handles game functions when entering game state
 function game() {
-    // drawCharacters();
     drawNPCs(); // Draws the NPC
     drawEnemies(); // Draws the enemy
 
@@ -428,7 +444,7 @@ function drawTiles(asset, c, r, sizeC, sizeR) {
 }
 
 // Draws the menu screens
-function drawMenu(background, contentFill, contentSize, contentText) {
+function drawMenu(background, contentFill, messageSize, menuMessage, contentText) {
     // Screen appearance
     push();
     noStroke();
@@ -445,18 +461,30 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     textSize(unit);
     textAlign(CENTER, CENTER);
     text("Goblin and Dungeon:", width / 2, height / 6);
+    strokeWeight(unit / 10);
     textSize(unit / 1.35);
     text("Adventure in Level 2", width / 2, height / 4);
     pop();
     // Menu content
+    // Menu message
     push();
     textFont(gothicFont);
     fill(contentFill);
     stroke(0);
-    strokeWeight(unit / 21);
-    textSize(contentSize);
+    strokeWeight(unit / 12);
+    textSize(messageSize);
     textAlign(CENTER, TOP);
-    text(contentText, width / 2, height / 3.5);
+    text(menuMessage, width / 2, height / 3.5);
+    pop();
+    // Menu infos
+    push();
+    textFont(gothicFont);
+    fill(contentFill);
+    stroke(0);
+    strokeWeight(unit / 18);
+    textSize(unit / 1.5);
+    textAlign(CENTER, TOP);
+    text(contentText, width / 2, height / 2.75);
     pop();
 }
 
@@ -478,6 +506,7 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
 }
 
 function setNPCs() {
+    npcSpeechIndex = 0;
     setCharacters(npcTotal, npcs, createNPC)
 }
 
@@ -505,8 +534,9 @@ function createNPC(r, c) {
         c: c,
         size: unit,
         name: random(npcNames.deities),
-        speech: npcSpeech.pop()
+        speech: npcSpeech[npcSpeechIndex]
     };
+    npcSpeechIndex++;
     return npc;
 }
 
@@ -577,11 +607,13 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
 
 // Draws the lives in the inventory
 function drawLives() {
+    inventoryLife.size = unit * 1.5;
     drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
 }
 
 // Draws the keys in the inventory
 function drawKeys() {
+    inventoryKey.size = unit * 1.25;
     drawInventoryItems(maxKeys, keys, inventoryKey, key, keyOutline)
 }
 
@@ -621,7 +653,6 @@ function openDialogue() {
             strokeWeight(2);
             fill(0, 200); // Black with reduced opacity 
             rect(3 * unit, 8.125 * unit, 6.75 * unit, 1.75 * unit);
-
             // Dialogue text
             // NPC name
             fill(255); // White
@@ -635,13 +666,15 @@ function openDialogue() {
             textSize(unit / 3);
             text(npc.speech, 3.125 * unit, 9.125 * unit, 6.625 * unit, 1.5 * unit);
             pop();
-
             dialogueOn = true;
+            currentNPC = npc;
+
             return;
         }
     }
     // Disables dialogue
     dialogueOn = false;
+    currentNPC = undefined;
 }
 
 // Formats stop watch and score time
@@ -700,15 +733,18 @@ function keyPressed() {
     // Space
     if (keyCode === 32) {
         // Starts the game from start menu
-        if (state === "start") {
+        if (state === "start" && grid !== undefined) {
             state = "game";
             startGame();
         }
-        // Lets you interact with NPCs during the game
+        // Handles dialogue interactions with NPCs
         else if (state === "game" && dialogueOn) {
-            if (keys.length < maxKeys && lives.length > 1) {
-                lives.pop();
-                keys.push(true);
+            // Lets you get a key for a life
+            if (currentNPC && currentNPC.speech && currentNPC.speech.indexOf("key") !== -1) {
+                if (keys.length < maxKeys && lives.length > 1) {
+                    lives.pop();
+                    keys.push(true);
+                }
             }
         }
         // Lets you replay the game after losing
