@@ -5,7 +5,7 @@
  * 
  * Goblin and Dungeon is a retro-inspired 2D top-down action-adventure game with a roguelite-inspired map generation feel.
  * Each play through features a unique dungeon layout with a grid-based movement, collectibles, NPCs, and obstacles.
- * You play as the lone goblin exploring, adventuring, and escaping unknown environments, but beware the dangerous killer rabbits!
+ * You play as the lone goblin exploring, adventuring, and escaping unknown environments, but beware the dangerous killer crawlers!
  * 
  * Use [A][W][S][D] keys to move around, collect keys and coins, and escape through the door.
  * 
@@ -57,7 +57,7 @@ let fantasyFont;
 
 let goblin;
 
-let rabbit;
+let crawler;
 
 let bloodyWall;
 
@@ -92,7 +92,7 @@ function preload() {
     gothicFont = loadFont('assets/font/alagard.ttf'); // Menu and dialogue font
     fantasyFont = loadFont('assets/font/Alkhemikal.ttf'); // Title and NPC name font
     goblin = loadImage('assets/images/goblin.png'); // Player
-    rabbit = loadImage('assets/images/rabbit.png'); // Enemies
+    crawler = loadImage('assets/images/crawler.png'); // Enemies
     bloodyWall = loadImage('assets/images/bloodybrick.png'); // Wall tiles
     ground = loadImage('assets/images/dirt.png'); // Empty tiles
     coin = loadImage('assets/images/coin.png'); // Coins
@@ -226,7 +226,7 @@ function setup() {
     }
 
     fps = frameRate() || 60; // Calculates the frame rate or set it to 60
-    adjustedMoveInterval = floor(fps / 4); // Adjusts the move interval according to the FPS
+    adjustedMoveInterval = floor(fps / 3); // Adjusts the move interval according to the FPS
     // Sets the grid as the game is setup
     setGrids();
 }
@@ -619,9 +619,9 @@ function drawNPCs() {
     drawCharacters(npcs, wizard)
 }
 
-// Draws the enemies (rabbits)
+// Draws the enemies (crawlers)
 function drawEnemies() {
-    drawCharacters(enemies, rabbit)
+    drawCharacters(enemies, crawler)
 }
 
 // Draws the player
