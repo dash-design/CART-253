@@ -21,7 +21,7 @@
 
 // The game grid
 let baseGrid = [
-    ["R", " ", " ", "N", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", "W", "W", "W"],
+    ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", "W", "W", "W"],
     ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
     ["R", "R", "R", "R", "R", "R", "R", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
     ["P", " ", " ", " ", " ", " ", " ", "R", "R", "R", "R", "R", "R", "R", "R", "R", "R", " ", " ", "W"],
@@ -31,7 +31,7 @@ let baseGrid = [
     ["P", " ", " ", " ", " ", " ", " ", "R", "R", "R", "R", "R", "R", "R", "R", "R", "R", " ", " ", "W"],
     ["R", "R", "R", "R", "R", "R", "R", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
     ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
-    ["R", " ", " ", "N", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
+    ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
     ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W", "W"],
 ];
@@ -128,7 +128,6 @@ function preload() {
     heartOutline = loadImage('assets/images/heartoutline.png'); // Lives outline (for the inventory)
     wizard = loadImage('assets/images/wizard.png'); // NPCs
     npcNames = loadJSON('assets/data/lovecraft.json'); // Names of NPCs
-    night = loadImage('assets/images/mask.png'); // Mask
 }
 
 // Player variables
@@ -162,6 +161,7 @@ let inventoryCoin = {
     c: 0,
     size: unit * 1.25
 }
+
 const maxCoins = 3; // Max number of coins
 let coins = []; // Array of coins
 
@@ -175,24 +175,67 @@ const maxPapers = 3; // Max number of coins
 let papers = []; // Array of coins
 
 // Enemies variables
-let rabbitsTotal = 3; // Total amount of enemies
+let rabbitsTotal = 5; // Total amount of enemies
 let rabbits = []; // Array of enemies
 // Variables used for dynamic enemies movement
 let fps; // Default frame rate
 let adjustedMoveInterval; // Default move interval
 
-let crushersTotal = 3; // Total amount of enemies
+let crushersTotal = 5; // Total amount of enemies
 let crushers = []; // Array of enemies
 
 // NPCs variables
 let npcTotal = 2; // Total number of NPCs
 let npcs = []; // Array of NPCs
 
+let currentNPC = undefined;
+
 // The NPCs dialogues
 let npcSpeech = [
-    "For one Life I'll give you a key\nPress [SPACE] To Get a Key",
-    "For 1 Life I'll give you 1 key\nPress [SPACE] To Get a Key"
+    [
+        "Hey you! I need your help",
+        "You look like you could use an extra key.",
+        "Am I right?",
+        "Well, got a deal for you.",
+        "I lost some important letters, bring them to me and I will give you a key.",
+        "Deal?",
+        "Then get going!"
+    ],
+    [
+        "Hello adventurer!",
+        "It has been a long time since I had company...",
+        "Would you indulge old me?",
+        "Grandiose!",
+        "My name is ${npc.name} by the way.",
+        "You know, you remind me of my younger self.",
+        "You see, I was an adventurer like you...",
+        "Until I took an arrow to the knee.",
+        "I lived so many different adventures in my youth you know.",
+        "Am I boring you with those old stories?",
+        "No? Good.",
+        "Where was I? Ah yes.",
+        "I was just like you, running around unknown dangers...",
+        "... until the day the youknowwhat to the knee.",
+        "The youknowwhat being an...",
+        "An ARROW, exactly!",
+        "Bravo, you are indead listening.",
+        "Anyhow, I am quite busy you see.",
+        "So I have to cut this little conversation of yours short.",
+        "See you adventurer!"
+    ],
+    [
+        "You there! Yeah you!",
+        "Don't take another step!",
+        "I am ${npc.name}, guardian of this bridge.",
+        "Only I can let you cross.",
+        "And it will cost you, let me tell you.",
+        "Three coins is my price.",
+        "For three coins I will raise the bridge and let you accross.",
+        "Well, where are my coins?"
+    ]
 ];
+
+let npcSpeechIndex = {};
 
 // NPCs dialogue box variables
 let dialogueBox = {
@@ -202,10 +245,6 @@ let dialogueBox = {
 }
 let dialogueOn = false; // Off by default
 
-// let mask = {
-//     size: (cols * unit) * 3
-// };
-
 // The state
 let state = "start";
 
@@ -214,6 +253,7 @@ let home = {
     textFont: gothicFont,
     textFill: 255,
     textSize: 32,
+    message: undefined,
     text: undefined
 }
 
@@ -222,6 +262,7 @@ let end = {
     textFont: gothicFont,
     textFill: 220,
     textSize: 32,
+    message: undefined,
     text: undefined
 }
 
@@ -267,7 +308,7 @@ function draw() {
     background(0); // Background is black by default
 
     fps = frameRate() || 60; // Calculates the frame rate or set it to 60
-    adjustedMoveInterval = floor(fps / 4); // Adjusts the move interval according to the FPS
+    // adjustedMoveInterval = floor(fps / 4); // Adjusts the move interval according to the FPS
 
     // Game states
     // Starting menu state
@@ -282,10 +323,12 @@ function draw() {
             bestTimeFormat = timeFormatting(bestTime);
         }
 
-        // Starting menu
-        home.text = `
-Explore, adventure, escape!
+        // Starting menu content
+        home.message = `
+Explore, adventure, escape!`
 
+        home.text = `
+        
 Controls:
 [W]
 [A][S][D]
@@ -294,8 +337,8 @@ Press [SPACE] To Play
 
 Best Time: ${bestTimeFormat}
         `;
-        let textSize = unit / 2;
-        drawMenu(mossyWall, home.textFill, textSize, home.text);
+        let textSize = unit / 1.25;
+        drawMenu(mossyWall, home.textFill, textSize, home.message, home.text);
     }
 
     // Active game state (no menu)
@@ -303,37 +346,42 @@ Best Time: ${bestTimeFormat}
         createGrid(grid);
         game();
     }
-    // Game lost state and menu
+    // Game lost state
     else if (state === "lost") {
-        // Lost menu
+        // Game lost menu content
+        end.message = `
+        
+YOU DIED`
+
         end.text = `
-:'(
+
+        
+        
 
 Press [SPACE]
 To Try Again
 `;
-        let textSize = unit / 1.5;
-        drawMenu(mossyWall, end.textFill, textSize, end.text);
+        let textSize = unit;
+        drawMenu(mossyWall, end.textFill, textSize, end.message, end.text);
     }
-    // Game won state and menu
+    // Game won state
     else if (state === "win") {
 
         let yourTimeFormat = timeFormatting(yourTime);
         let bestTimeFormat = timeFormatting(bestTime);
-
+        // Game won menu content
+        end.message = `
+You Escaped, Congratulations!`
         end.text = `
-Congratulations, you escaped!
     
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-Press [SPACE] To Play
-The Next Level!
-or
-Press [R] To Play Again
+Press [R] To Play The Next Level!
+Press [SPACE] To Play Again
 `;
-        let textSize = unit / 2;
-        drawMenu(ground, end.textFill, textSize, end.text);
+        let textSize = unit / 1.5;
+        drawMenu(ground, end.textFill, textSize, end.message, end.text);
 
         start = null;
     }
@@ -351,8 +399,8 @@ function resetGame() {
     papers = [];
     lives = [true, true, true];
     player = {
-        r: 0,
-        c: 6
+        r: 5,
+        c: 0
     };
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -439,7 +487,7 @@ function createGrid(gridToCreate) {
 
 // Sets game variables and functions when the game starts
 function startGame() {
-    const wallsToPlace = 0; // How many walls the createGridItems will draw
+    const wallsToPlace = 8; // How many walls the createGridItems will draw
     const keysToPlace = 2; // How many keys the createGridItems will draw
     const coinsToPlace = 3; // How many keys the createGridItems will draw
     const papersToPlace = 3; // How many keys the createGridItems will draw
@@ -454,7 +502,6 @@ function startGame() {
 
     lives = [true, true, true]; // Reset the lives
 
-    // setCharacters();
     setRabbits(); // Creates the enemies
     setCrushers();
     setNPCs(); // Creates the NPCs
@@ -468,16 +515,20 @@ function startGame() {
 // Creates items (walls and keys) on random positions
 function createGridItems(gridItemsToPlace, gridItem) {
     while (gridItemsToPlace > 0) {
-        // Find position
-        // let r = floor(random(0, rows - 2));
-        // let c = floor(random(1, cols-3));
-        // Find position
-
         let r;
         let c;
         if (gridItem === "w") {
-            r = floor(random(0, rows - 2));
-            c = floor(random(1, 6));
+            if (gridItemsToPlace <= 3) {
+                r = floor(random(3, 7));
+                c = floor(random(1, 6));
+            }
+            else {
+                do {
+                    r = floor(random(0, rows - 2));
+                    c = floor(random(1, cols - 3));
+                }
+                while (r >= 3 && r <= 7);
+            }
         }
         else {
             r = floor(random(1, rows - 2));
@@ -494,7 +545,6 @@ function createGridItems(gridItemsToPlace, gridItem) {
 
 // Handles game functions when entering game state
 function game() {
-    // drawCharacters();
     drawNPCs(); // Draws the NPC
     drawRabbits(); // Draws the enemy
     drawCrushers();
@@ -502,7 +552,6 @@ function game() {
     moveEnemies(); // Moves the enemies
 
     drawPlayer(); // Draws the player
-    // drawMask(); // Draws mask
     drawInventoryItems(); // Draws items in inventory
     drawLives(); // Draws the player's life
     drawKeys();  // Draws the keys
@@ -525,7 +574,7 @@ function drawTiles(asset, c, r, sizeC, sizeR) {
 }
 
 // Draws the menu screens
-function drawMenu(background, contentFill, contentSize, contentText) {
+function drawMenu(background, contentFill, messageSize, menuMessage, contentText) {
     // Screen appearance
     push();
     noStroke();
@@ -542,23 +591,44 @@ function drawMenu(background, contentFill, contentSize, contentText) {
     textSize(unit);
     textAlign(CENTER, CENTER);
     text("Goblin and Dungeon:", width / 2, height / 6);
+    strokeWeight(unit / 10);
     textSize(unit / 1.35);
     text("Explore Level 1", width / 2, height / 4);
-
     pop();
     // Menu content
+    // Menu message
     push();
     textFont(gothicFont);
     fill(contentFill);
     stroke(0);
-    strokeWeight(unit / 21);
-    textSize(contentSize);
+    strokeWeight(unit / 12);
+    textSize(messageSize);
     textAlign(CENTER, TOP);
-    text(contentText, width / 2, height / 3.5);
+    text(menuMessage, width / 2, height / 3.5);
+    pop();
+    // Menu infos
+    push();
+    textFont(gothicFont);
+    fill(contentFill);
+    stroke(0);
+    strokeWeight(unit / 18);
+    textSize(unit / 1.5);
+    textAlign(CENTER, TOP);
+    text(contentText, width / 2, height / 2.75);
     pop();
 }
 
 function setCharacters(charactersToPlace, characters, createCharacter) {
+    let occupiedCol = [];
+    for (let i = 0; i < cols; i++) {
+        occupiedCol[i] = false;
+    }
+
+    let givenSpeeches = [];
+    for (let i = 0; i < charactersToPlace; i++) {
+        givenSpeeches.push(i);
+    }
+
     while (charactersToPlace > 0) {
 
         let r;
@@ -567,22 +637,32 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
         if (characters === crushers) {
             const openRows = [4, 5, 6];
             r = random(openRows);
-            c = floor(random(8, 15));
+            do {
+                c = floor(random(9, 15));
+            }
+            while (occupiedCol[c]);
+
+            occupiedCol[c] = true;
         }
         else if (characters === rabbits) {
-            // Find position
-            r = floor(random(1, rows));
-            c = floor(random(0, cols));
+            // Find position  
+            do {
+                r = floor(random(1, rows));
+                c = floor(random(1, cols));
+            }
+            while (r >= 4 && r <= 6 && c >= 8 && c < cols - 4);
         }
-        else {
-            // Find position
-            r = floor(random(1, rows));
-            c = floor(random(0, cols));
+        else if (characters === npcs) {
+            r = floor(random(3, 7));
+            c = floor(random(1, 6));
+            // r = floor(random(0, rows - 2));
+            // c = floor(random(1, cols - 3));
         }
         // Place an enemy on an empty tile
         if (characters === npcs) {
-            if (grid[r][c] === "N") {
-                const newCharacter = createCharacter(r, c);
+            if (grid[r][c] === " ") {
+                const npcSpeechIndex = givenSpeeches.pop();
+                const newCharacter = createCharacter(r, c, npcSpeechIndex);
 
                 characters.push(newCharacter);
                 charactersToPlace = charactersToPlace - 1;
@@ -600,7 +680,7 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
 }
 
 function setNPCs() {
-    setCharacters(npcTotal, npcs, createNPC)
+    setCharacters(npcSpeech.length, npcs, createNPC)
 }
 
 function setRabbits() {
@@ -613,6 +693,7 @@ function setCrushers() {
 
 // Creates the enemies
 function createRabbits(r, c) {
+    adjustedMoveInterval = floor(fps / 4); // Adjusts the move interval according to the FPS
     const rabbit = {
         r: r,
         c: c,
@@ -625,6 +706,7 @@ function createRabbits(r, c) {
 }
 
 function createCrushers(r, c) {
+    adjustedMoveInterval = floor(fps / 1.5); // Adjusts the move interval according to the FPS
     const crusher = {
         r: r,
         c: c,
@@ -637,13 +719,14 @@ function createCrushers(r, c) {
 }
 
 // Creates the NPCs
-function createNPC(r, c) {
+function createNPC(r, c, npcSpeechIndex) {
     const npc = {
         r: r,
         c: c,
         size: unit,
         name: random(npcNames.deities),
-        speech: npcSpeech.pop()
+        speech: npcSpeech[npcSpeechIndex],
+        speechIndex: npcSpeechIndex
     };
     return npc;
 }
@@ -719,21 +802,25 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
 }
 
 function drawLives() {
+    inventoryLife.size = unit * 1.125;
     drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
 }
 
 // Draws the keys in the inventory
 function drawKeys() {
+    inventoryKey.size = unit;
     drawInventoryItems(maxKeys, keys, inventoryKey, key, keyOutline)
 }
 
 // Draws the coins in the inventory
 function drawCoins() {
+    inventoryCoin.size = unit * 1.25;
     drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
 }
 
 // Draws the coins in the inventory
 function drawPapers() {
+    inventoryPaper.size = unit * .75;
     drawInventoryItems(maxPapers, papers, inventoryPaper, note, noteOutline)
 }
 
@@ -806,35 +893,35 @@ function moveEnemies() {
 // Handles dialogue and dialogue window when talking to the NPCs
 function openDialogue() {
     for (let npc of npcs) {
-        // Draws dialogue if player on same tile as NPC
         if (player.c === npc.c && player.r === npc.r) {
             // Dialogue window
             push();
             stroke(255, 95); // White with slightly reduced opacity
             strokeWeight(2);
             fill(0, 200); // Black with reduced opacity 
-            rect(3 * unit, 8.125 * unit, 6.75 * unit, 1.75 * unit);
+            rect(5 * unit, 11.125 * unit, 8.75 * unit, 1.75 * unit);
 
-            // Dialogue text
             // NPC name
             fill(255); // White
             textFont(fantasyFont);
             textAlign(TOP, LEFT);
             textSize(unit / 2);
-            text(npc.name + ":\n", 3.25 * unit, 8.625 * unit);
+            text(npc.name + ":\n", 5.25 * unit, 11.625 * unit);
             // NPC dialogue
             textFont(gothicFont);
             textAlign(CENTER, LEFT);
             textSize(unit / 3);
-            text(npc.speech, 3.125 * unit, 9.125 * unit, 6.625 * unit, 1.5 * unit);
+            text(npc.speech[npc.speechIndex], 5.125 * unit, 12.125 * unit, 8.625 * unit, 1.5 * unit);
             pop();
 
             dialogueOn = true;
+            currentNPC = npc;
             return;
         }
     }
-    // Disables dialogue
+    // If no NPC found in same tile
     dialogueOn = false;
+    currentNPC = undefined;
 }
 
 // Formats stop watch and score time
@@ -871,20 +958,6 @@ function checkDeath(enemy) {
 }
 
 /**
- * Mask not needed right now
- */
-
-// // Draws the mask that hide the grid
-// function drawMask() {
-//     push();
-//     noFill();
-//     noStroke();
-//     imageMode(CENTER);
-//     image(night, player.c * unit + unit / 2, player.r * unit + unit / 2, mask.size, mask.size)
-//     pop();
-// }
-
-/**
 * Handles player movement and menu controls
 * Determines which tiles are accessible or not
 * Determines the effect of some tiles when the player moves on them
@@ -910,10 +983,32 @@ function keyPressed() {
             startGame();
         }
         else if (state === "game" && dialogueOn) {
-            if (keys.length < maxKeys && lives.length > 1) {
-                lives.pop();
-                keys.push(true);
+            if (currentNPC) {
+                if (currentNPC.speechIndex < currentNPC.speech.length - 1) {
+                    currentNPC.speechIndex++;
+                }
             }
+            // if (currentNPC) {
+            //     if (currentNPC.speechIndex < currentNPC.speech.length - 1) {
+            //         if (currentNPC.speechIndex === 0) {
+            //             if (papers.length >= maxPapers) {
+            //                 currentNPC.speechIndex++;
+            //             }
+            //         }
+            //         else if (currentNPC.speechIndex === 1) {
+            //             currentNPC.speechIndex++;
+            //             if (keys.length < maxKeys) {
+            //                 keys.push(true);
+            //             }
+            //         }
+            //         else if (currentNPC.speechIndex === 2) {
+            //             currentNPC.speechIndex++;
+            //             if (coins.length >= maxCoins) {
+
+            //             }
+            //         }
+            //     }
+            // }
         }
         else if (state === "lost") {
             resetGame();
@@ -1040,8 +1135,11 @@ function keyPressed() {
 
         // Check if the player moved onto an enemy
         if (moved) {
-            for (let enemy of enemies) {
-                checkDeath(enemy);
+            for (let rabbit of rabbits) {
+                checkDeath(rabbit);
+            }
+            for (let crusher of crushers) {
+                checkDeath(crusher);
             }
         }
     }
