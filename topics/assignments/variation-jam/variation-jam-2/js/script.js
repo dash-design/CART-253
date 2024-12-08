@@ -583,11 +583,11 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         noFill();
         imageMode(CENTER);
         let c;
-        // Column position of the lives
+        // Col position of the lives
         if (inventoryItem === inventoryLife) {
             c = (inventoryItem.c - i) * (unit * 1.25);
         }
-        // Column position of other items (keys)
+        // Col position of other items (keys)
         else {
             c = (inventoryItem.c + i + 1) * (unit * 0.75);
         }

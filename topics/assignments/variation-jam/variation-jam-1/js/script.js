@@ -5,7 +5,7 @@
  * 
  * Goblin and Dungeon is a retro-inspired 2D top-down action-adventure game with a roguelite-inspired map generation.
  * Each play through features a unique dungeon layout with a grid-based movement, collectibles, NPCs, and obstacles.
- * You play as the lone goblin exploring, adventuring, and escaping unknown environments, but beware the dangerous killer rabbits!
+ * You play as the lone goblin exploring, adventuring, and escaping unknown environments!
  * 
  * Use [A][W][S][D] keys to move around, collect keys and escape through the door.
  * 
@@ -73,8 +73,6 @@ let mossyWall;
 
 let ground;
 
-let darkGround;
-
 let water;
 
 let coin;
@@ -99,11 +97,11 @@ let noteOutline;
 
 let brickObject;
 
+let underWater;
+
 let npcNames;
 
 let npcName;
-
-let night;
 
 // Preload game assets
 function preload() {
@@ -114,8 +112,8 @@ function preload() {
     rabbit = loadImage('assets/images/rabbit.png'); // Enemies
     mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
     brickObject = loadImage('assets/images/brickblock.png'); // Wall tiles
-    ground = loadImage('assets/images/grass.png'); // Empty tiles
-    darkGround = loadImage('assets/images/ground.png'); // Empty tiles
+    underWater = loadImage('assets/images/underwaterbrickblock.png'); // Wall tiles
+    ground = loadImage('assets/images/ground.png'); // Empty tiles
     water = loadImage('assets/images/water.png'); // Empty tiles
     coin = loadImage('assets/images/coin.png'); // Coins
     coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
@@ -175,22 +173,38 @@ const maxPapers = 3; // Max number of coins
 let papers = []; // Array of coins
 
 // Enemies variables
-let rabbitsTotal = 5; // Total amount of enemies
-let rabbits = []; // Array of enemies
+let rabbitsTotal = 5; // Total amount of rabbits
+let rabbits = []; // Array of rabbits
+
+let crushersTotal = 6; // Total amount of crushers
+let crushers = []; // Array of crushers
+
 // Variables used for dynamic enemies movement
 let fps; // Default frame rate
 let adjustedMoveInterval; // Default move interval
-
-let crushersTotal = 5; // Total amount of enemies
-let crushers = []; // Array of enemies
 
 // NPCs variables
 let npcTotal = 2; // Total number of NPCs
 let npcs = []; // Array of NPCs
 
-let currentNPC = undefined;
+let currentNPC = undefined; // Defines the NPC being interacted with
 
-let bridgeOpen = false;
+let bridgeOpen = false; // The bridge is closed by default
+
+// Information dialogue
+let infoDialogue = [
+    "Welcome to Goblin and Dungeon\nPress SPACE to continue",
+    "To move use\nW\nA S D",
+    "To interact with characters\nuse SPACE",
+    "Be careful, there are\nkiller bunnies around!",
+    "And crushing walls!",
+    "Here is a little\ntrick before you go:",
+    "Some walls are not\nas heavy as they seem",
+    "But they will still sink...\njust saying",
+    "Go now!"
+];
+
+let infoIndex = 0;
 
 // The NPCs dialogues
 let npcSpeech = [
@@ -201,14 +215,15 @@ let npcSpeech = [
         "Well, got a deal for you.",
         "I lost some important letters, bring them to me and I will give you a key.",
         "Deal?",
-        "Then get going!"
+        "Good, then get going!",
+        "Oh, you found them already? Here take this."
     ],
     [
         "Hello adventurer!",
         "It has been a long time since I had company...",
-        "Would you indulge old me?",
+        "Would you indulge old nameofNPC?",
         "Grandiose!",
-        "My name is ${npc.name} by the way.",
+        "My name is nameofNPC by the way.",
         "You know, you remind me of my younger self.",
         "You see, I was an adventurer like you...",
         "Until I took an arrow to the knee.",
@@ -223,21 +238,23 @@ let npcSpeech = [
         "Bravo, you are indead listening.",
         "Anyhow, I am quite busy you see.",
         "So I have to cut this little conversation of yours short.",
-        "See you adventurer!"
+        "See you adventurer!",
+        "Wait, you dropped this. See you now."
     ],
     [
         "You there! Yeah you!",
         "Don't take another step!",
-        "I am ${npc.name}, guardian of this bridge.",
+        "I am nameofNPC, guardian of this bridge.",
         "Only I can let you cross.",
         "And it will cost you, let me tell you.",
         "Three coins is my price.",
         "For three coins I will raise the bridge and let you accross.",
-        "Well, where are my coins?"
+        "Well, where are my coins?",
+        "Really? You're gonna pay me? Well, go ahead."
     ]
 ];
 
-let npcSpeechIndex = {};
+let npcSpeechIndex = {}; // Index for each NPC's speech
 
 // NPCs dialogue box variables
 let dialogueBox = {
@@ -277,9 +294,11 @@ let bestTime; // Fastest time it took to win
 Creates and populate the grid
 */
 function setup() {
+    // Keeps proportions if the window is smaller
     if (windowHeight < (rows * unit)) {
         unit = windowHeight / rows;
     }
+    // Canvas size according to num of columns and rows and tile size
     createCanvas(cols * unit, rows * unit);
 
     // Retrieves the last saved highscore
@@ -289,9 +308,12 @@ function setup() {
         bestTime = 999999;
     }
 
+    // Sets the starting grid
+
     setGrids();
 }
 
+// Resizes the canvas if the window get smaller
 function windowResized() {
     if (windowHeight < (rows * unit)) {
         unit = windowHeight / rows;
@@ -390,7 +412,7 @@ Press [SPACE] To Play Again
 }
 
 function resetGame() {
-    console.log("reset game");
+    // Resets game elements
     start = null;
     yourTime = 0;
     rabbits = [];
@@ -404,22 +426,27 @@ function resetGame() {
         r: 5,
         c: 0
     };
+    // Empties the previous grid
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             // Removes the item at this position
             grid[r][c] = " ";
         }
     }
+    // Sets new grid
     setGrids();
+    // Starts the game when the grid is defined
     if (grid !== undefined) {
         state = "game";
         startGame();
     }
 }
 
+// Sets the starting grid
 function setGrids() {
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
+            // Each game use a new grid leaving the base grid intact
             grid[r][c] = baseGrid[r][c];
         }
     }
@@ -441,7 +468,7 @@ function createGrid(gridToCreate) {
                 drawTiles(mossyWall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
 
-            // Places the water
+            // Places the river
             if (item === "R") {
                 drawTiles(water, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
@@ -451,9 +478,9 @@ function createGrid(gridToCreate) {
                 drawTiles(brickObject, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
 
-            // Places the dark ground
-            if (item === "d") {
-                drawTiles(darkGround, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+            // Places underwater walls
+            if (item === "b") {
+                drawTiles(underWater, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
             }
 
             // Places the keys
@@ -476,22 +503,20 @@ function createGrid(gridToCreate) {
                 //  If the player has enough keys, the door is opened
                 if (keys.length >= maxKeys) {
                     drawTiles(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
-
-                    // image(ground, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
                 // If not, the door stays locked
                 else {
                     drawTiles(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
-                    // image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
             }
+
             // Places the bridge
             else if (item === "B") {
-                //  If the player has enough keys, the door is opened
+                //  If the player paid the coins the bridge opens
                 if (bridgeOpen === true) {
-                    drawTiles(mossyWall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                    drawTiles(underWater, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
                 }
-                // If not, the door stays locked
+                // If not, the bridge stays locked
                 else {
                     drawTiles(water, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
                 }
@@ -502,23 +527,22 @@ function createGrid(gridToCreate) {
 
 // Sets game variables and functions when the game starts
 function startGame() {
-    const wallsToPlace = 8; // How many walls the createGridItems will draw
+    const wallsToPlace = 8; // How many movable walls the createGridItems will draw
     const keysToPlace = 1; // How many keys the createGridItems will draw
-    const coinsToPlace = 3; // How many keys the createGridItems will draw
-    const papersToPlace = 3; // How many keys the createGridItems will draw
+    const coinsToPlace = 3; // How many coins the createGridItems will draw
+    const papersToPlace = 3; // How many papers the createGridItems will draw
 
     createGridItems(wallsToPlace, "w"); // Handles drawing the walls
     createGridItems(keysToPlace, "k"); // Handles drawing the keys
     createGridItems(coinsToPlace, "c"); // Handles drawing the coins
-    createGridItems(papersToPlace, "p"); // Handles drawing the coins
+    createGridItems(papersToPlace, "p"); // Handles drawing the papers
 
-
-    grid[player.r][player.c] = "N"; // Handles player initial position
+    grid[player.r][player.c] = "i"; // Handles player initial position
 
     lives = [true, true, true]; // Reset the lives
 
-    setRabbits(); // Creates the enemies
-    setCrushers();
+    setRabbits(); // Creates the rabbit enemies
+    setCrushers(); // Creates the crusher enemies
     setNPCs(); // Creates the NPCs
 
     // Sets stop watch when game starts
@@ -527,30 +551,47 @@ function startGame() {
     }
 }
 
-// Creates items (walls and keys) on random positions
+// Creates items (walls, keys, coins, papers) on random positions
 function createGridItems(gridItemsToPlace, gridItem) {
     while (gridItemsToPlace > 0) {
         let r;
         let c;
+        // If wall
         if (gridItem === "w") {
+            // If 3 or less walls to place
+            // Places them in the starting area
             if (gridItemsToPlace <= 3) {
                 r = floor(random(3, 7));
                 c = floor(random(1, 6));
             }
-            else {
+            // If 5 or less, but more than 3, walls to place
+            // Places them in the areas near the start
+            else if (gridItemsToPlace > 3 && gridItemsToPlace <= 5) {
                 do {
                     r = floor(random(0, rows - 2));
-                    c = floor(random(1, cols - 3));
+                    c = floor(random(2, 5));
+                }
+                while (r >= 3 && r <= 7);
+            }
+            // Places walls randomly on the top and bottom areas
+            else {
+                do {
+                    r = floor(random(1, rows - 3));
+                    c = floor(random(2, cols - 4));
                 }
                 while (r >= 3 && r <= 7);
             }
         }
+        // If other items
         else {
-            r = floor(random(1, rows - 2));
-            c = floor(random(1, cols - 3));
+            // Places item randomly outside the start
+            do {
+                r = floor(random(1, rows - 2));
+                c = floor(random(1, cols - 3));
+            }
+            while (r >= 3 && r <= 7);
         }
-
-        // Place an item
+        // Places the item
         if (grid[r][c] === " " && grid[r][c] !== "N") {
             grid[r][c] = gridItem;
             gridItemsToPlace = gridItemsToPlace - 1;
@@ -561,8 +602,8 @@ function createGridItems(gridItemsToPlace, gridItem) {
 // Handles game functions when entering game state
 function game() {
     drawNPCs(); // Draws the NPC
-    drawRabbits(); // Draws the enemy
-    drawCrushers();
+    drawRabbits(); // Draws the rabbit enemy
+    drawCrushers(); // Draw the crusher enemy
 
     moveEnemies(); // Moves the enemies
 
@@ -571,7 +612,7 @@ function game() {
     drawLives(); // Draws the player's life
     drawKeys();  // Draws the keys
     drawCoins();  // Draws the coins
-    drawPapers();  // Draws the coins
+    drawPapers();  // Draws the papers
 
     openDialogue(); // Shows the dialogue wih the NPCs
 
@@ -633,54 +674,65 @@ function drawMenu(background, contentFill, messageSize, menuMessage, contentText
     pop();
 }
 
+// Sets the NPCs and enemies randomly on the map
 function setCharacters(charactersToPlace, characters, createCharacter) {
+    // Used to avoid placing crushers on the same col
     let occupiedCol = [];
     for (let i = 0; i < cols; i++) {
         occupiedCol[i] = false;
     }
 
+    // Used to store assigned dialogues
     let givenSpeeches = [];
     for (let i = 0; i < charactersToPlace; i++) {
         givenSpeeches.push(i);
     }
 
+    // Will continues placing characters until they are all placed
     while (charactersToPlace > 0) {
 
         let r;
         let c;
 
+        // Crushers
         if (characters === crushers) {
-            const openRows = [4, 5, 6];
-            r = random(openRows);
+            // Find position  
+            const openRows = [4, 5, 6]; // The rows they can be on
+            r = random(openRows); // Chooses a random valid row
             do {
-                c = floor(random(9, 15));
+                c = floor(random(9, 15)); // Chooses a radom unoccupied col
             }
-            while (occupiedCol[c]);
+            while (occupiedCol[c]); // Positions to avoid
 
             occupiedCol[c] = true;
         }
+        // Rabbits
         else if (characters === rabbits) {
             // Find position  
             do {
                 r = floor(random(1, rows));
                 c = floor(random(1, cols));
             }
-            while (r >= 4 && r <= 6 && c >= 8 && c < cols - 4);
+            while (r >= 4 && r <= 6 && c >= 8 && c < cols - 4); // Positions to avoid
         }
+        // NPCs
         else if (characters === npcs) {
+            // Find position  
+            // This specific NPC is placed at the bridge
             if (givenSpeeches[charactersToPlace - 1] === 2) {
                 r = 5;
                 c = cols - 5;
             }
+            // The other NPCs are random
             else {
                 do {
                     r = floor(random(0, rows));
                     c = floor(random(1, cols - 3));
                 }
-                while (r > 1 && r < 9);
+                while (r > 1 && r < 9); // Positions to avoid
             }
         }
-        // Place an enemy on an empty tile
+        // Place an NPC on an empty tile
         if (characters === npcs) {
             if (grid[r][c] === " " || grid[r][c] === "N") {
                 const npcSpeechIndex = givenSpeeches.pop();
@@ -690,6 +742,7 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
                 charactersToPlace = charactersToPlace - 1;
             }
         }
+        // Places an enemy on an empty tile
         else if (characters === rabbits || characters === crushers) {
             if (grid[r][c] === " ") {
                 const newCharacter = createCharacter(r, c);
@@ -713,7 +766,7 @@ function setCrushers() {
     setCharacters(crushersTotal, crushers, createCrushers)
 }
 
-// Creates the enemies
+// Creates the rabbit enemies
 function createRabbits(r, c) {
     adjustedMoveInterval = floor(fps / 4); // Adjusts the move interval according to the FPS
     const rabbit = {
@@ -727,6 +780,7 @@ function createRabbits(r, c) {
     return rabbit;
 }
 
+// Creates the crusher enemies
 function createCrushers(r, c) {
     adjustedMoveInterval = floor(fps / 1.5); // Adjusts the move interval according to the FPS
     const crusher = {
@@ -746,9 +800,9 @@ function createNPC(r, c, npcSpeechIndex) {
         r: r,
         c: c,
         size: unit,
-        name: random(npcNames.deities),
-        speech: npcSpeech[npcSpeechIndex],
-        speechIndex: 0
+        name: random(npcNames.deities), // Random name from JSON file
+        speech: npcSpeech[npcSpeechIndex], // Their dialogue from the speech array
+        speechIndex: 0 // NPCs start their dialogue from the first line
     };
     return npc;
 }
@@ -772,12 +826,11 @@ function drawCharacters(characters, characterAsset) {
 function drawNPCs() {
     drawCharacters(npcs, wizard)
 }
-
-// Draws the enemies (rabbits)
+// Draws the rabbit enemies
 function drawRabbits() {
     drawCharacters(rabbits, rabbit)
 }
-
+// Draws the crusher enemies
 function drawCrushers() {
     drawCharacters(crushers, brickObject)
 }
@@ -792,7 +845,7 @@ function drawPlayer() {
     pop();
 }
 
-// Draws the items (keys, lives) in the inventory
+// Draws the items (keys, lives, papers, coins) in the inventory
 function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAssetOutline) {
     for (let i = 0; i < maxItems; i++) {
         push();
@@ -800,16 +853,15 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         noFill();
         imageMode(CENTER);
         let c;
+        // Col position of the lives and keys
         if (inventoryItem === inventoryLife || inventoryItem === inventoryKey) {
             c = (inventoryItem.c - i) * (unit);
-            // * (unit / 1.2) + unit / 1.5;
         }
+        // Col position of other items (coins, papers)
         else {
             c = (inventoryItem.c + i + 1) * (unit * 0.75);
-            // * (unit / 1.2) + unit / 1.5;
         }
         const r = (inventoryItem.r + 0.5) * unit;
-        // + unit / 1.5;
         const size = inventoryItem.size;
         // Displays items if collected
         if (i < items.length) {
@@ -827,19 +879,16 @@ function drawLives() {
     inventoryLife.size = unit * 1.125;
     drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
 }
-
 // Draws the keys in the inventory
 function drawKeys() {
     inventoryKey.size = unit;
     drawInventoryItems(maxKeys, keys, inventoryKey, key, keyOutline)
 }
-
 // Draws the coins in the inventory
 function drawCoins() {
     inventoryCoin.size = unit * 1.25;
     drawInventoryItems(maxCoins, coins, inventoryCoin, coin, coinOutline)
 }
-
 // Draws the coins in the inventory
 function drawPapers() {
     inventoryPaper.size = unit * .75;
@@ -848,65 +897,66 @@ function drawPapers() {
 
 // Moves the enemies
 function moveEnemies() {
-
+    // Rabbits
     for (let rabbit of rabbits) {
         rabbit.moveTime++;
         if (rabbit.moveTime >= rabbit.moveInterval) {
 
             if ((rabbit.r <= 2 || rabbit.r >= 9) && rabbit.c !== cols - 3) {
-                // Next col according to the enemy direction
+                // Next col according to the rabbit direction
                 let nextCol = rabbit.c + rabbit.direction;
 
                 // Checks if next col is valid
                 if (nextCol >= 0 && nextCol < cols && grid[rabbit.r][nextCol] !== "W" && grid[rabbit.r][nextCol] !== "R" && grid[rabbit.r][nextCol] !== "w") {
-                    // Lets the enemy move if it is valid
+                    // Lets the rabbit move if it is valid
                     rabbit.c += rabbit.direction;
                     // Checks collision with the player
                     checkDeath(rabbit);
                 }
                 else {
-                    // Makes the enemy change direction 
+                    // Makes the rabbit change direction 
                     rabbit.direction *= -1;
                 }
             }
             else {
-                // Next col according to the enemy direction
+                // Next col according to the rabbit direction
                 let nextRow = rabbit.r + rabbit.direction;
 
                 // Checks if next col is valid
-                if (nextRow >= 0 && nextRow < rows - 2 && grid[nextRow][rabbit.c] !== "W" && grid[nextRow][rabbit.c] !== "R" && grid[nextRow][rabbit.c] !== "w") {
-                    // Lets the enemy move if it is valid
+                if (nextRow >= 0 && nextRow < rows - 2 && grid[nextRow][rabbit.c] !== "W" && grid[nextRow][rabbit.c] !== "R" && grid[nextRow][rabbit.c] !== "w" && grid[nextRow][rabbit.c] !== "b") {
+                    // Lets the rabbit move if it is valid
                     rabbit.r += rabbit.direction;
                     // Checks collision with the player
                     checkDeath(rabbit);
                 }
                 else {
-                    // Makes the enemy change direction 
+                    // Makes the rabbit change direction 
                     rabbit.direction *= -1;
                 }
             }
-            // Resets enemy movement
+            // Resets rabbit movement
             rabbit.moveTime = 0;
         }
     }
+    // Crushers
     for (let crusher of crushers) {
         crusher.moveTime++;
         if (crusher.moveTime >= crusher.moveInterval) {
-            // Next col according to the enemy direction
+            // Next col according to the crusher direction
             let nextRow = crusher.r + crusher.direction;
 
             // Checks if next col is valid
-            if (nextRow >= 0 && nextRow < rows - 2 && grid[nextRow][crusher.c] !== "W" && grid[nextRow][crusher.c] !== "R" && grid[nextRow][crusher.c] !== "w") {
+            if (nextRow >= 0 && nextRow < rows - 2 && grid[nextRow][crusher.c] !== "W" && grid[nextRow][crusher.c] !== "R" && grid[nextRow][crusher.c] !== "w" && grid[nextRow][crusher.c] !== "b") {
                 // Lets the enemy move if it is valid
                 crusher.r += crusher.direction;
                 // Checks collision with the player
                 checkDeath(crusher);
             }
             else {
-                // Makes the enemy change direction 
+                // Makes the crusher change direction 
                 crusher.direction *= -1;
             }
-            // Resets enemy movement
+            // Resets crusher movement
             crusher.moveTime = 0;
         }
     }
@@ -914,26 +964,29 @@ function moveEnemies() {
 
 // Handles dialogue and dialogue window when talking to the NPCs
 function openDialogue() {
+    if (dialogueOn === true) {
+        push();
+        stroke(255, 95); // White with slightly reduced opacity
+        strokeWeight(2);
+        fill(0, 200); // Black with reduced opacity 
+        rect(5 * unit, 11.125 * unit, 8.75 * unit, 1.75 * unit);
+    }
     for (let npc of npcs) {
         if (player.c === npc.c && player.r === npc.r) {
-            // Dialogue window
-            push();
-            stroke(255, 95); // White with slightly reduced opacity
-            strokeWeight(2);
-            fill(0, 200); // Black with reduced opacity 
-            rect(5 * unit, 11.125 * unit, 8.75 * unit, 1.75 * unit);
-
             // NPC name
             fill(255); // White
             textFont(fantasyFont);
             textAlign(TOP, LEFT);
             textSize(unit / 2);
             text(npc.name + ":\n", 5.25 * unit, 11.625 * unit);
+
+            let modifiedSpeech = npc.speech[npc.speechIndex].replace(/nameofNPC/g, npc.name); // Replace placeholder with NPC's name
+
             // NPC dialogue
             textFont(gothicFont);
             textAlign(CENTER, LEFT);
             textSize(unit / 3);
-            text(npc.speech[npc.speechIndex], 5.125 * unit, 12.125 * unit, 8.625 * unit, 1.5 * unit);
+            text(modifiedSpeech, 5.125 * unit, 12.125 * unit, 8.625 * unit, 1.5 * unit);
             pop();
 
             dialogueOn = true;
@@ -941,7 +994,20 @@ function openDialogue() {
             return;
         }
     }
-    // If no NPC found in same tile
+    if (grid[player.r][player.c] === "i" && infoIndex < infoDialogue.length) {
+        // Info dialogue
+        push();
+        fill(255); // White
+        textFont(pixelFont);
+        textAlign(CENTER, CENTER);
+        textSize(unit / 2.5);
+        text(infoDialogue[infoIndex], (cols / 2 - 0.625) * unit, 12 * unit);
+        pop();
+
+        dialogueOn = true;
+        return;
+    }
+    // If player not on same tile as an NPC
     dialogueOn = false;
     currentNPC = undefined;
 }
@@ -949,10 +1015,10 @@ function openDialogue() {
 // Formats stop watch and score time
 function timeFormatting(totalMillis) {
     // const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
-    const ms = Math.floor(totalMillis % 1000 / 10);
+    // const ms = Math.floor(totalMillis % 1000 / 10);
     const s = Math.floor(totalMillis / 1000) % 60;
     const m = Math.floor(totalMillis / 1000 / 60) % 60;
-    return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
+    return `${nf(m, 2)}:${nf(s, 2)}`;
 }
 
 // Draws the stop watch on the top left corner of the screen
@@ -994,26 +1060,37 @@ function keyPressed() {
     // R
     if (keyCode === 82) {
         if (state === "win") {
+            // Opens next level after winning
             window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
         }
     }
 
     // Space
     if (keyCode === 32) {
+        // Starts the game
         if (state === "start" && grid !== undefined) {
             state = "game";
             startGame();
         }
+        // NPCs and dialogue interactions
         else if (state === "game" && dialogueOn) {
+            if (infoIndex < infoDialogue.length) {
+                if (infoIndex < infoDialogue.length - 1) {
+                    infoIndex++;
+                }
+            }
             if (currentNPC) {
+                // First NPC  
                 if (currentNPC.speech === npcSpeech[0]) {
                     if (papers.length < maxPapers && currentNPC.speechIndex < currentNPC.speech.length - 2) {
                         currentNPC.speechIndex++;
                     }
                     else if (papers.length >= maxPapers && currentNPC.speechIndex < currentNPC.speech.length - 1) {
                         currentNPC.speechIndex++;
-                        papers = [];
-                        keys.push(true);
+                        if (currentNPC.speechIndex === currentNPC.speech.length - 1) {
+                            papers = [];
+                            keys.push(true);
+                        }
                     }
                 }
                 else if (currentNPC.speech === npcSpeech[1]) {
@@ -1038,9 +1115,7 @@ function keyPressed() {
                 }
             }
         }
-
-
-
+        // Lets you replay after game ended
         else if (state === "lost") {
             resetGame();
         }
@@ -1048,6 +1123,7 @@ function keyPressed() {
             resetGame();
         }
     }
+    // Player's movements
     else if (state === "game") {
         // Adjusts the row and column position based on the arrow key
         // A
@@ -1074,7 +1150,7 @@ function keyPressed() {
         let moved = false;
 
         // Checks what is at the position the player tried to move to
-        if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
+        if (grid[newR][newC] === ` ` || grid[newR][newC] === `N` || grid[newR][newC] === `b` || grid[newR][newC] === `i`) {
             // If nothing, the player moves there
             player.r = newR;
             player.c = newC;
@@ -1095,10 +1171,19 @@ function keyPressed() {
             let newBlockR = newR + playerDirR;
             let newBlockC = newC + playerDirC;
 
-            if (newBlockR >= 0 && newBlockR < rows && newBlockC >= 0 && newBlockC < cols && grid[newBlockR][newBlockC] === ` ` || grid[newBlockR][newBlockC] === `R`) {
+            if (newBlockR >= 0 && newBlockR < rows && newBlockC >= 0 && newBlockC < cols && (grid[newBlockR][newBlockC] === ` ` || grid[newBlockR][newBlockC] === `N` || grid[newBlockR][newBlockC] === `R` || grid[newBlockR][newBlockC] === `b`)) {
                 if (grid[newBlockR][newBlockC] === `R`) {
                     grid[newR][newC] = ` `;
-                    grid[newBlockR][newBlockC] = ` `;
+                    grid[newBlockR][newBlockC] = `b`;
+                }
+                else if (grid[newBlockR][newBlockC] === `b`) {
+                    let nextR = newBlockR + playerDirR;
+                    let nextC = newBlockC + playerDirC;
+                    if (nextR >= 0 && nextR < rows && nextC >= 0 && nextC < cols && grid[nextR][nextC] === ` `) {
+                        grid[newBlockR][newBlockC] = `b`;
+                        grid[nextR][nextC] = `w`;
+                        grid[newR][newC] = ` `;
+                    }
                 }
                 else {
                     grid[newR][newC] = ` `;
