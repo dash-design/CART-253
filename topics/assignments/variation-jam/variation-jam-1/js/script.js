@@ -24,11 +24,11 @@ let baseGrid = [
     ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", "W", "W", "W"],
     ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
     ["R", "R", "R", "R", "R", "R", "R", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
-    ["P", " ", " ", " ", " ", " ", " ", "R", "R", "R", "R", "R", "R", "R", "R", "R", "R", " ", " ", "W"],
-    ["P", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
-    ["P", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", "B", " ", "k", "D"],
-    ["P", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
-    ["P", " ", " ", " ", " ", " ", " ", "R", "R", "R", "R", "R", "R", "R", "R", "R", "R", " ", " ", "W"],
+    ["N", " ", " ", " ", " ", " ", " ", "R", "R", "R", "R", "R", "R", "R", "R", "R", "R", " ", " ", "W"],
+    ["N", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
+    ["N", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", "N", "B", " ", "k", "D"],
+    ["N", " ", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
+    ["N", " ", " ", " ", " ", " ", " ", "R", "R", "R", "R", "R", "R", "R", "R", "R", "R", " ", " ", "W"],
     ["R", "R", "R", "R", "R", "R", "R", "R", " ", " ", " ", " ", " ", " ", " ", " ", "R", " ", " ", "W"],
     ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
     ["R", " ", " ", " ", " ", " ", "R", " ", " ", " ", " ", " ", " ", " ", " ", " ", "W", " ", " ", "W"],
@@ -189,6 +189,8 @@ let npcTotal = 2; // Total number of NPCs
 let npcs = []; // Array of NPCs
 
 let currentNPC = undefined;
+
+let bridgeOpen = false;
 
 // The NPCs dialogues
 let npcSpeech = [
@@ -409,8 +411,10 @@ function resetGame() {
         }
     }
     setGrids();
-    state = "game";
-    startGame();
+    if (grid !== undefined) {
+        state = "game";
+        startGame();
+    }
 }
 
 function setGrids() {
@@ -481,6 +485,17 @@ function createGrid(gridToCreate) {
                     // image(door, c * unit + unit / 2, r * unit + unit / 2, unit, unit)
                 }
             }
+            // Places the bridge
+            else if (item === "B") {
+                //  If the player has enough keys, the door is opened
+                if (bridgeOpen === true) {
+                    drawTiles(mossyWall, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                }
+                // If not, the door stays locked
+                else {
+                    drawTiles(water, c * unit + unit / 2, r * unit + unit / 2, unit, unit);
+                }
+            }
         }
     }
 }
@@ -488,7 +503,7 @@ function createGrid(gridToCreate) {
 // Sets game variables and functions when the game starts
 function startGame() {
     const wallsToPlace = 8; // How many walls the createGridItems will draw
-    const keysToPlace = 2; // How many keys the createGridItems will draw
+    const keysToPlace = 1; // How many keys the createGridItems will draw
     const coinsToPlace = 3; // How many keys the createGridItems will draw
     const papersToPlace = 3; // How many keys the createGridItems will draw
 
@@ -498,7 +513,7 @@ function startGame() {
     createGridItems(papersToPlace, "p"); // Handles drawing the coins
 
 
-    grid[player.r][player.c] = "P"; // Handles player initial position
+    grid[player.r][player.c] = "N"; // Handles player initial position
 
     lives = [true, true, true]; // Reset the lives
 
@@ -653,14 +668,21 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
             while (r >= 4 && r <= 6 && c >= 8 && c < cols - 4);
         }
         else if (characters === npcs) {
-            r = floor(random(3, 7));
-            c = floor(random(1, 6));
-            // r = floor(random(0, rows - 2));
-            // c = floor(random(1, cols - 3));
+            if (givenSpeeches[charactersToPlace - 1] === 2) {
+                r = 5;
+                c = cols - 5;
+            }
+            else {
+                do {
+                    r = floor(random(0, rows));
+                    c = floor(random(1, cols - 3));
+                }
+                while (r > 1 && r < 9);
+            }
         }
         // Place an enemy on an empty tile
         if (characters === npcs) {
-            if (grid[r][c] === " ") {
+            if (grid[r][c] === " " || grid[r][c] === "N") {
                 const npcSpeechIndex = givenSpeeches.pop();
                 const newCharacter = createCharacter(r, c, npcSpeechIndex);
 
@@ -726,7 +748,7 @@ function createNPC(r, c, npcSpeechIndex) {
         size: unit,
         name: random(npcNames.deities),
         speech: npcSpeech[npcSpeechIndex],
-        speechIndex: npcSpeechIndex
+        speechIndex: 0
     };
     return npc;
 }
@@ -972,49 +994,58 @@ function keyPressed() {
     // R
     if (keyCode === 82) {
         if (state === "win") {
-            resetGame();
+            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
         }
     }
 
     // Space
     if (keyCode === 32) {
-        if (state === "start") {
+        if (state === "start" && grid !== undefined) {
             state = "game";
             startGame();
         }
         else if (state === "game" && dialogueOn) {
             if (currentNPC) {
-                if (currentNPC.speechIndex < currentNPC.speech.length - 1) {
-                    currentNPC.speechIndex++;
+                if (currentNPC.speech === npcSpeech[0]) {
+                    if (papers.length < maxPapers && currentNPC.speechIndex < currentNPC.speech.length - 2) {
+                        currentNPC.speechIndex++;
+                    }
+                    else if (papers.length >= maxPapers && currentNPC.speechIndex < currentNPC.speech.length - 1) {
+                        currentNPC.speechIndex++;
+                        papers = [];
+                        keys.push(true);
+                    }
+                }
+                else if (currentNPC.speech === npcSpeech[1]) {
+                    if (currentNPC.speechIndex < currentNPC.speech.length - 1) {
+                        currentNPC.speechIndex++;
+                        if (keys.length < maxKeys && currentNPC.speechIndex === currentNPC.speech.length - 1) {
+                            keys.push(true);
+                        }
+                    }
+                }
+                else if (currentNPC.speech === npcSpeech[2]) {
+                    if (coins.length < maxCoins && currentNPC.speechIndex < currentNPC.speech.length - 2) {
+                        currentNPC.speechIndex++;
+                    }
+                    else if (coins.length >= maxCoins && currentNPC.speechIndex < currentNPC.speech.length - 1) {
+                        currentNPC.speechIndex++;
+                        if (currentNPC.speechIndex === currentNPC.speech.length - 1) {
+                            coins = [];
+                            bridgeOpen = true;
+                        }
+                    }
                 }
             }
-            // if (currentNPC) {
-            //     if (currentNPC.speechIndex < currentNPC.speech.length - 1) {
-            //         if (currentNPC.speechIndex === 0) {
-            //             if (papers.length >= maxPapers) {
-            //                 currentNPC.speechIndex++;
-            //             }
-            //         }
-            //         else if (currentNPC.speechIndex === 1) {
-            //             currentNPC.speechIndex++;
-            //             if (keys.length < maxKeys) {
-            //                 keys.push(true);
-            //             }
-            //         }
-            //         else if (currentNPC.speechIndex === 2) {
-            //             currentNPC.speechIndex++;
-            //             if (coins.length >= maxCoins) {
-
-            //             }
-            //         }
-            //     }
-            // }
         }
+
+
+
         else if (state === "lost") {
             resetGame();
         }
         else if (state === "win") {
-            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-2/");
+            resetGame();
         }
     }
     else if (state === "game") {
@@ -1043,11 +1074,18 @@ function keyPressed() {
         let moved = false;
 
         // Checks what is at the position the player tried to move to
-        if (grid[newR][newC] === ` ` || grid[newR][newC] === `N` || grid[newR][newC] === `P`) {
+        if (grid[newR][newC] === ` ` || grid[newR][newC] === `N`) {
             // If nothing, the player moves there
             player.r = newR;
             player.c = newC;
             moved = true;
+        }
+        else if (grid[newR][newC] === `B`) {
+            if (bridgeOpen === true) {
+                player.r = newR;
+                player.c = newC;
+                moved = true;
+            }
         }
         else if (grid[newR][newC] === `w`) {
 
@@ -1074,11 +1112,8 @@ function keyPressed() {
                 moved = true;
             }
             else {
-
                 moved = false;
-
             }
-
         }
         else if (grid[newR][newC] === `k`) {
             // If it's a collectible then empty that spot
@@ -1091,7 +1126,6 @@ function keyPressed() {
                 keys.push(true);
             }
             moved = true;
-
         }
         else if (grid[newR][newC] === `c`) {
             // If it's a collectible then empty that spot
@@ -1132,7 +1166,6 @@ function keyPressed() {
                 storeItem('best time', bestTime);
             }
         }
-
         // Check if the player moved onto an enemy
         if (moved) {
             for (let rabbit of rabbits) {
@@ -1143,6 +1176,5 @@ function keyPressed() {
             }
         }
     }
-
     return false;
 }
