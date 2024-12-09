@@ -19,6 +19,30 @@ Adventure within a fast-paced above-ground dungeon where dangers and friends awa
 [Goblin and Dungeon: Escape the Last Level](https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-3/)
 Escape the dark halls of an underground maze-like dungeon, and complete the Goblin and Dungeon trilogy.
 
+## Credits
+
+This project uses [p5.js](https://p5js.org).
+
+This project assets were made using [pixilart.com](https://www.pixilart.com/dash-design/gallery)
+
+The mazes.json data asset was made by me, using [dCode's Maze Generator](https://www.dcode.fr/maze-generator)
+
+## Attribution
+
+The base code on which the project was builded was taken from [Pippin Barr's "Random tile-based "maze" with collection" example](https://editor.p5js.org/pippinbarr/sketches/Xq3qsbQWA)
+
+The lovecraft.json data asset was taken from [Darius Kazemi's data library on Github](https://github.com/dariusk/corpora/blob/master/data/mythology/lovecraft.json)
+
+The pixel font was sourced from [Font Squirrel by Jason Kottke](https://www.fontsquirrel.com/fonts/silkscreen)
+
+The gothic font (alagard.ttf) was sourced from [Dafont.com and made by Hewett Tsoi](https://www.dafont.com/alagard.font?back=bitmap)
+
+The fantasy font (Alkhemikal.ttf) was sourced from [Dafont.com and made by jeti](https://www.dafont.com/alkhemikal.font)
+
+The stopWatch and timeFormatting functions were developped from [Stopwatch by CarolinaPhoenix on p5js.org](https://editor.p5js.org/CarolinaPhoenix/sketches/kmqlmWhwh)
+
+
+
 
 
 
