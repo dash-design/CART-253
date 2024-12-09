@@ -83,17 +83,15 @@ let npcNames;
 
 let npcName;
 
-let night;
-
 // Preload game assets
 function preload() {
     pixelFont = loadFont('assets/font/slkscr.ttf'); // Stop watch font
     gothicFont = loadFont('assets/font/alagard.ttf'); // Menu and dialogue font
     fantasyFont = loadFont('assets/font/Alkhemikal.ttf'); // Title and NPC name font
     goblin = loadImage('assets/images/goblin.png'); // Player
-    rabbit = loadImage('assets/images/rabbit.png'); // Enemies
-    mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
-    ground = loadImage('assets/images/ground.png'); // Empty tiles
+    rabbit = loadImage('assets/images/rabbit.png'); // Enemy
+    mossyWall = loadImage('assets/images/brick.png'); // Wall tile
+    ground = loadImage('assets/images/ground.png'); // Empty tile
     door = loadImage('assets/images/door.png'); // Door tile
     key = loadImage('assets/images/key.png'); // Keys
     keyOutline = loadImage('assets/images/keyoutline.png'); // Keys outline (for the inventory)
@@ -101,7 +99,6 @@ function preload() {
     heartOutline = loadImage('assets/images/heartoutline.png'); // Lives outline (for the inventory)
     wizard = loadImage('assets/images/wizard.png'); // NPCs
     npcNames = loadJSON('assets/data/lovecraft.json'); // Names of NPCs
-    night = loadImage('assets/images/mask.png'); // Mask
 }
 
 // Player variables
@@ -132,6 +129,7 @@ let keys = []; // Array of keys
 // Enemies variables
 let enemiesTotal = 5; // Total amount of enemies
 let enemies = []; // Array of enemies
+
 // Variables used for dynamic enemies movement
 let fps; // Default frame rate
 let adjustedMoveInterval; // Default move interval 
@@ -148,7 +146,7 @@ let npcSpeech = [
     "For 1 Life I'll give you 1 key\nPress [SPACE] To Get a Key"
 ];
 
-let npcSpeechIndex = 0;
+let npcSpeechIndex = 0; // Which line of dialogue an NPC has
 
 // NPCs dialogue box variables
 let dialogueBox = {
@@ -156,6 +154,7 @@ let dialogueBox = {
     c: 3,
     size: unit
 }
+
 let dialogueOn = false; // Off by default
 
 // The state
@@ -303,6 +302,7 @@ Press [SPACE] To Play Again
     }
 }
 
+// Resets the game when replaying
 function resetGame() {
     // Empties the previous grid
     for (let r = 0; r < rows; r++) {
@@ -392,7 +392,6 @@ function startGame() {
 
     lives = [true, true]; // Reset the lives
 
-    // setCharacters();
     setEnemies(); // Creates the enemies
     setNPCs(); // Creates the NPCs
 
@@ -421,7 +420,7 @@ function game() {
     drawNPCs(); // Draws the NPC
     drawEnemies(); // Draws the enemy
 
-    moveEnemies(); // Moves the enemies
+    moveEnemies(); // Moves the enemy
 
     drawPlayer(); // Draws the player
     drawInventoryItems(); // Draws items in inventory
@@ -495,7 +494,7 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
         // Find position
         let r = floor(random(1, rows));
         let c = floor(random(0, cols));
-        // Place an enemy on an empty tile
+        // Place an enemy or NPC on an empty tile
         if (grid[r][c] === " ") {
             const newCharacter = createCharacter(r, c);
 
@@ -582,7 +581,9 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         noStroke();
         noFill();
         imageMode(CENTER);
+
         let c;
+
         // Col position of the lives
         if (inventoryItem === inventoryLife) {
             c = (inventoryItem.c - i) * (unit * 1.25);
@@ -724,7 +725,7 @@ function keyPressed() {
 
     // R
     if (keyCode === 82) {
-        // Lets you replay the game after winning
+        // Opens next level after winning
         if (state === "win") {
             window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-3/");
         }
@@ -737,7 +738,7 @@ function keyPressed() {
             state = "game";
             startGame();
         }
-        // Handles dialogue interactions with NPCs
+        // Handles dialogue interaction with NPCs
         else if (state === "game" && dialogueOn) {
             // Lets you get a key for a life
             if (currentNPC && currentNPC.speech && currentNPC.speech.indexOf("key") !== -1) {
@@ -785,8 +786,10 @@ function keyPressed() {
             player.c = newC;
             moved = true;
         }
+        // Checks if the player moves on a collectible
+        // Key
         else if (grid[newR][newC] === `k`) {
-            // If it's a collectible then empty that spot
+            // If it's a key, empties that spot
             grid[newR][newC] = ` `;
             // Then the player moves there
             player.r = newR;
@@ -814,7 +817,7 @@ function keyPressed() {
             }
         }
 
-        // Check if the player moved onto an enemy
+        // Check if the player moves onto an enemy
         if (moved) {
             for (let enemy of enemies) {
                 checkDeath(enemy);

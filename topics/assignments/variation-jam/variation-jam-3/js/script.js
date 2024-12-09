@@ -121,7 +121,6 @@ let exit = {
     size: unit
 }
 
-
 // Life variables in the inventory
 let inventoryLife = {
     r: 12,
@@ -168,7 +167,7 @@ let npcSpeech = [
     "For three coins I'll give you a life\nPress [SPACE] To Get a Life"
 ];
 
-let npcSpeechIndex = 0;
+let npcSpeechIndex = 0; // Which line of dialogue an NPC has
 
 // NPCs dialogue box variables
 let dialogueBox = {
@@ -176,6 +175,7 @@ let dialogueBox = {
     c: 3,
     size: unit
 }
+
 let dialogueOn = false; // Off by default
 
 // Mask that hides the map from the player
@@ -227,10 +227,12 @@ function setup() {
 
     fps = frameRate() || 60; // Calculates the frame rate or set it to 60
     adjustedMoveInterval = floor(fps / 3); // Adjusts the move interval according to the FPS
+
     // Sets the grid as the game is setup
     setGrids();
 }
 
+// Resizes the canvas if the window get smaller
 function windowResized() {
     if (windowHeight < (rows * unit)) {
         unit = windowHeight / rows;
@@ -238,7 +240,6 @@ function windowResized() {
     else {
         unit = 64;
     }
-    // unit = windowHeight / rows;
     resizeCanvas(cols * unit, rows * unit);
 }
 
@@ -252,7 +253,7 @@ function draw() {
     // Starting menu state
     if (state === "start") {
 
-        // let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
+        // Displays the best time as "None" if there is no previous time saved
         let bestTimeFormat;
         if (bestTime === 999999) {
             bestTimeFormat = "None";
@@ -316,9 +317,9 @@ You Escaped, Congratulations!`
 Your Time: ${yourTimeFormat}
 Best Time: ${bestTimeFormat}
 
-Press[SPACE] To Play The First Level!
+Press [R] To Play The First Level!
 
-Press [R] To Play Again
+Press [SPACE] To Play Again
 `;
         let textSize = unit;
         drawMenu(ground, end.textFill, textSize, end.message, end.text);
@@ -350,9 +351,9 @@ function resetGame() {
     }
 }
 
-// Sets the current grid
+// Sets the starting grid
 function setGrids() {
-    // grid = random(mazes);
+    // Each game uses a grid from the JSON maze library
     grid = random(mazesLibrary.mazes);
 }
 
@@ -408,16 +409,14 @@ function startGame() {
     // Numbers of items to place
     // Creates the items on the grid
     const coinsToPlace = 3; // How many keys the createGridItems will draw
-    createGridItems(coinsToPlace, "c"); // Handles drawing the keys
+    createGridItems(coinsToPlace, "c"); // Creates the keys
     const keysToPlace = 2; // How many keys the createGridItems will draw
-    createGridItems(keysToPlace, "k"); // Handles drawing the keys
+    createGridItems(keysToPlace, "k"); // Creates the keys
     const doorsToPlace = 1; // How many keys the createGridItems will draw
-    createGridItems(doorsToPlace, "D"); // Handles drawing the keys
+    createGridItems(doorsToPlace, "D"); // Creates the door
 
-    // Resets player's lives
     lives = [true, true, true]; // Reset the lives
 
-    // Sets characters
     setEnemies(); // Creates the enemies
     setNPCs(); // Creates the NPCs
 
@@ -536,7 +535,7 @@ function setPlayer() {
     while (playerPlaced === false) {
         let r = 1;
         let c = floor(random(1, cols - 1));
-        // Place an enemy on an empty tile
+        // Place the player if the tile below is empty
         if (grid[r][c] === " ") {
 
             player.r = 0;
@@ -554,7 +553,7 @@ function setCharacters(charactersToPlace, characters, createCharacter) {
         // Finds position
         let r = floor(random(1, rows));
         let c = floor(random(0, cols));
-        // Places an enemy on an empty tile
+        // Places an enemy or NPC on an empty tile
         if (grid[r][c] === " ") {
             const newCharacter = createCharacter(r, c);
 
@@ -641,16 +640,18 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
         noStroke();
         noFill();
         imageMode(CENTER);
+
         let c;
+
+        // Col position of the lives
         if (inventoryItem === inventoryLife) {
             c = (inventoryItem.c - i - 0.5) * unit;
         }
+        // Col position of other items (keys, coins)
         else {
             c = (inventoryItem.c + i + 0.5) * unit;
         }
-        // * (unit / 1.2) + unit / 1.5;
         const r = (inventoryItem.r + 0.5) * unit;
-        // + unit / 1.5;
         const size = unit * 1.25;
         // Displays items if collected
         if (i < items.length) {
@@ -750,7 +751,7 @@ function timeFormatting(totalMillis) {
     return `${nf(m, 2)}:${nf(s, 2)}.${nf(ms, 2)}`;
 }
 
-// Draws the stop watch on the top left corner of the screen
+// Draws the stop watch on the bottom right corner of the screen
 function stopWatch() {
     const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
     const string = timeFormatting(totalMillis);
@@ -799,19 +800,20 @@ function keyPressed() {
 
     // R
     if (keyCode === 82) {
+        // Lets you play the first level if game won
         if (state === "win") {
-            // location.reload();
-            resetGame();
+            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-1/");
         }
     }
 
     // Space
     if (keyCode === 32) {
+        // Starts the game from start menu
         if (state === "start" && grid !== undefined) {
             state = "game";
             startGame();
         }
-        // Handles dialogue interactions with NPCs
+        // Handles dialogue interaction with NPCs
         else if (state === "game" && dialogueOn) {
             // Lets you get a key for a life
             if (currentNPC && currentNPC.speech && currentNPC.speech.indexOf("key") !== -1) {
@@ -828,18 +830,14 @@ function keyPressed() {
                     coins = [];
                     lives.push(true);
                 }
-
             }
         }
-        // Space lets you replay if game lost
-        else if (state === "lost") {
+        // Lets you replay the game after losing or winning
+        else if (state === "lost" || state === "win") {
             resetGame();
         }
-        // Space lets you play the first level if game won
-        else if (state === "win") {
-            window.open("https://dash-design.github.io/CART-253/topics/assignments/variation-jam/variation-jam-1/");
-        }
     }
+    // Movements
     else if (state === "game") {
         // Adjusts the row and column position based on the arrow key
         // A
@@ -914,7 +912,7 @@ function keyPressed() {
             }
         }
 
-        // Check if the player moved onto an enemy
+        // Check if the player moves onto an enemy
         if (moved) {
             for (let enemy of enemies) {
                 checkDeath(enemy);

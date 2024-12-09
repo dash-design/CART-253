@@ -109,12 +109,12 @@ function preload() {
     gothicFont = loadFont('assets/font/alagard.ttf'); // Menu and dialogue font
     fantasyFont = loadFont('assets/font/Alkhemikal.ttf'); // Title and NPC name font
     goblin = loadImage('assets/images/goblin.png'); // Player
-    rabbit = loadImage('assets/images/rabbit.png'); // Enemies
-    mossyWall = loadImage('assets/images/brick.png'); // Wall tiles
-    brickObject = loadImage('assets/images/brickblock.png'); // Wall tiles
-    underWater = loadImage('assets/images/underwaterbrickblock.png'); // Wall tiles
-    ground = loadImage('assets/images/ground.png'); // Empty tiles
-    water = loadImage('assets/images/water.png'); // Empty tiles
+    rabbit = loadImage('assets/images/rabbit.png'); // Enemy
+    mossyWall = loadImage('assets/images/brick.png'); // Wall tile
+    brickObject = loadImage('assets/images/brickblock.png'); // Crusher and movable block
+    underWater = loadImage('assets/images/underwaterbrickblock.png'); // Underwater movable block
+    ground = loadImage('assets/images/ground.png'); // Empty tile
+    water = loadImage('assets/images/water.png'); // Wall tile
     coin = loadImage('assets/images/coin.png'); // Coins
     coinOutline = loadImage('assets/images/coinoutline.png'); // Coins outline (for the inventory)
     note = loadImage('assets/images/paper.png'); // Coins
@@ -262,6 +262,7 @@ let dialogueBox = {
     c: 3,
     size: unit
 }
+
 let dialogueOn = false; // Off by default
 
 // The state
@@ -309,7 +310,6 @@ function setup() {
     }
 
     // Sets the starting grid
-
     setGrids();
 }
 
@@ -321,7 +321,6 @@ function windowResized() {
     else {
         unit = 64;
     }
-    // unit = windowHeight / rows;
     resizeCanvas(cols * unit, rows * unit);
 }
 
@@ -337,6 +336,7 @@ function draw() {
     // Game states
     // Starting menu state
     if (state === "start") {
+        background(0); // Background is black by default
 
         // let bestTimeFormat = timeFormatting(bestTime); // Retrieves the best time
         let bestTimeFormat;
@@ -426,6 +426,8 @@ function resetGame() {
         r: 5,
         c: 0
     };
+    bridgeOpen = false; // Resets the bridge
+    infoIndex = 0; // Resets the info dialogue
     // Empties the previous grid
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -528,12 +530,12 @@ function createGrid(gridToCreate) {
 // Sets game variables and functions when the game starts
 function startGame() {
     const wallsToPlace = 8; // How many movable walls the createGridItems will draw
-    const keysToPlace = 1; // How many keys the createGridItems will draw
+    // const keysToPlace = 1; // How many keys the createGridItems will draw
     const coinsToPlace = 3; // How many coins the createGridItems will draw
     const papersToPlace = 3; // How many papers the createGridItems will draw
 
     createGridItems(wallsToPlace, "w"); // Handles drawing the walls
-    createGridItems(keysToPlace, "k"); // Handles drawing the keys
+    // createGridItems(keysToPlace, "k"); // Handles drawing the keys
     createGridItems(coinsToPlace, "c"); // Handles drawing the coins
     createGridItems(papersToPlace, "p"); // Handles drawing the papers
 
@@ -875,6 +877,7 @@ function drawInventoryItems(maxItems, items, inventoryItem, itemAsset, itemAsset
     }
 }
 
+// Draws thelives in the inventory
 function drawLives() {
     inventoryLife.size = unit * 1.125;
     drawInventoryItems(maxLives, lives, inventoryLife, heart, heartOutline)
@@ -964,6 +967,7 @@ function moveEnemies() {
 
 // Handles dialogue and dialogue window when talking to the NPCs
 function openDialogue() {
+    // Dialogue window
     if (dialogueOn === true) {
         push();
         stroke(255, 95); // White with slightly reduced opacity
@@ -971,6 +975,7 @@ function openDialogue() {
         fill(0, 200); // Black with reduced opacity 
         rect(5 * unit, 11.125 * unit, 8.75 * unit, 1.75 * unit);
     }
+    // NPCs dialogue
     for (let npc of npcs) {
         if (player.c === npc.c && player.r === npc.r) {
             // NPC name
@@ -994,8 +999,8 @@ function openDialogue() {
             return;
         }
     }
+    // Info dialogue
     if (grid[player.r][player.c] === "i" && infoIndex < infoDialogue.length) {
-        // Info dialogue
         push();
         fill(255); // White
         textFont(pixelFont);
@@ -1021,7 +1026,7 @@ function timeFormatting(totalMillis) {
     return `${nf(m, 2)}:${nf(s, 2)}`;
 }
 
-// Draws the stop watch on the top left corner of the screen
+// Draws the stop watch on the top right corner of the screen
 function stopWatch() {
     const totalMillis = yourTime + (start != null ? Date.now() - start : 0);
     const string = timeFormatting(totalMillis);
@@ -1067,46 +1072,58 @@ function keyPressed() {
 
     // Space
     if (keyCode === 32) {
-        // Starts the game
+        // Starts the game from start menu
         if (state === "start" && grid !== undefined) {
             state = "game";
             startGame();
         }
-        // NPCs and dialogue interactions
+        // Handles dialogue interactions with NPCs
         else if (state === "game" && dialogueOn) {
+            // Info dialogue at player's starting position
             if (infoIndex < infoDialogue.length) {
                 if (infoIndex < infoDialogue.length - 1) {
                     infoIndex++;
                 }
             }
+            // NPCs dialogues
             if (currentNPC) {
-                // First NPC  
+                // Checks which is the current NPC
                 if (currentNPC.speech === npcSpeech[0]) {
+                    // Checks if the players has enough papers to unlock the full dialogue
                     if (papers.length < maxPapers && currentNPC.speechIndex < currentNPC.speech.length - 2) {
                         currentNPC.speechIndex++;
                     }
+                    // If enough papers, the last line is unlocked
                     else if (papers.length >= maxPapers && currentNPC.speechIndex < currentNPC.speech.length - 1) {
                         currentNPC.speechIndex++;
+                        // After finishing the dialogue the player loses the papers, and gets a key
                         if (currentNPC.speechIndex === currentNPC.speech.length - 1) {
                             papers = [];
                             keys.push(true);
                         }
                     }
                 }
+                // Checks which is the current NPC
                 else if (currentNPC.speech === npcSpeech[1]) {
+                    // Checks if the players can progress through the dialogue
                     if (currentNPC.speechIndex < currentNPC.speech.length - 1) {
                         currentNPC.speechIndex++;
+                        // After finishing the dialogue the player gets a key
                         if (keys.length < maxKeys && currentNPC.speechIndex === currentNPC.speech.length - 1) {
                             keys.push(true);
                         }
                     }
                 }
+                // Checks which is the current NPC
                 else if (currentNPC.speech === npcSpeech[2]) {
+                    // Checks if the players has enough coins to unlock the full dialogue
                     if (coins.length < maxCoins && currentNPC.speechIndex < currentNPC.speech.length - 2) {
                         currentNPC.speechIndex++;
                     }
+                    // If enough coins, the last line is unlocked
                     else if (coins.length >= maxCoins && currentNPC.speechIndex < currentNPC.speech.length - 1) {
                         currentNPC.speechIndex++;
+                        // After finishing the dialogue the player loses the coins, and opens the bridge
                         if (currentNPC.speechIndex === currentNPC.speech.length - 1) {
                             coins = [];
                             bridgeOpen = true;
@@ -1115,11 +1132,8 @@ function keyPressed() {
                 }
             }
         }
-        // Lets you replay after game ended
-        else if (state === "lost") {
-            resetGame();
-        }
-        else if (state === "win") {
+        // Lets you replay the game after losing or winning
+        else if (state === "lost" || state === "win") {
             resetGame();
         }
     }
@@ -1156,6 +1170,7 @@ function keyPressed() {
             player.c = newC;
             moved = true;
         }
+        // Player can only move on the bridge if open
         else if (grid[newR][newC] === `B`) {
             if (bridgeOpen === true) {
                 player.r = newR;
@@ -1163,6 +1178,7 @@ function keyPressed() {
                 moved = true;
             }
         }
+        // Player can move this wall
         else if (grid[newR][newC] === `w`) {
 
             let playerDirR = newR - player.r;
@@ -1170,12 +1186,14 @@ function keyPressed() {
 
             let newBlockR = newR + playerDirR;
             let newBlockC = newC + playerDirC;
-
+            // Checks the next position of the wall
+            // If the next position is a river tile, the wall moves and become a submerged wall
             if (newBlockR >= 0 && newBlockR < rows && newBlockC >= 0 && newBlockC < cols && (grid[newBlockR][newBlockC] === ` ` || grid[newBlockR][newBlockC] === `N` || grid[newBlockR][newBlockC] === `R` || grid[newBlockR][newBlockC] === `b`)) {
                 if (grid[newBlockR][newBlockC] === `R`) {
                     grid[newR][newC] = ` `;
                     grid[newBlockR][newBlockC] = `b`;
                 }
+                // If the next position is a submerged wall, the wall moves further
                 else if (grid[newBlockR][newBlockC] === `b`) {
                     let nextR = newBlockR + playerDirR;
                     let nextC = newBlockC + playerDirC;
@@ -1185,11 +1203,11 @@ function keyPressed() {
                         grid[newR][newC] = ` `;
                     }
                 }
+                // If the next position is empty, the wall moves
                 else {
                     grid[newR][newC] = ` `;
                     grid[newBlockR][newBlockC] = `w`;
                 }
-
                 // Then the player moves there
                 player.r = newR;
                 player.c = newC;
@@ -1200,8 +1218,10 @@ function keyPressed() {
                 moved = false;
             }
         }
+        // Checks if the player moves on a collectible
+        // Key
         else if (grid[newR][newC] === `k`) {
-            // If it's a collectible then empty that spot
+            // If it's a key, empties that spot
             grid[newR][newC] = ` `;
             // Then the player moves there
             player.r = newR;
@@ -1212,26 +1232,28 @@ function keyPressed() {
             }
             moved = true;
         }
+        // Coin
         else if (grid[newR][newC] === `c`) {
-            // If it's a collectible then empty that spot
+            // If it's a coin, empties that spot
             grid[newR][newC] = ` `;
             // Then the player moves there
             player.r = newR;
             player.c = newC;
             if (coins.length < maxCoins) {
-                // Increase the number of keys that the player has
+                // Increase the number of coins that the player has
                 coins.push(true);
             }
             moved = true;
         }
+        // Paper
         else if (grid[newR][newC] === `p`) {
-            // If it's a collectible then empty that spot
+            // If it's a paper, empties that spot
             grid[newR][newC] = ` `;
             // Then the player moves there
             player.r = newR;
             player.c = newC;
             if (papers.length < maxPapers) {
-                // Increase the number of keys that the player has
+                // Increase the number of papers that the player has
                 papers.push(true);
             }
             moved = true;
