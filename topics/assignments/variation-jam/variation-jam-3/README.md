@@ -26,6 +26,8 @@ This project uses [p5.js](https://p5js.org).
 
 This project assets were made using [pixilart.com](https://www.pixilart.com/dash-design/gallery)
 
+The mazes.json data asset was made by me, using [dCode's Maze Generator](https://www.dcode.fr/maze-generator)
+
 ## Attribution
 
 The base code on which the project was builded was taken from [Pippin Barr's "Random tile-based "maze" with collection" example](https://editor.p5js.org/pippinbarr/sketches/Xq3qsbQWA)
